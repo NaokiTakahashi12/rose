@@ -1,0 +1,77 @@
+version: '3.5'
+
+services:
+  xwindow:
+    image: busybox
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ~/.Xauthority:/root/.Xauthority
+      - /tmp/.docker.$USER.xauth:/tmp/.docker.xauth:ro
+      - /etc/localtime:/etc/localtime:ro
+  humble_workspace:
+    image: busybox
+    volumes:
+      - ./workspace/humble:/rose/colcon_ws:rw
+  galactic_workspace:
+    image: busybox
+    volumes:
+      - ./workspace/galactic:/rose/colcon_ws:rw
+  developer_local_config:
+    image: busybox
+    volumes:
+      - ~/.vim:/root/.vim:ro
+      - ~/.vim:/root/.config/nvim:ro
+      - ~/.vimrc:/root/.vimrc:ro
+      - ~/.vimrc:/root/.config/nvim/init.vim:ro
+      - ~/.inputrc:/root/.inputrc:ro
+  humble:
+    build:
+      context: ros2/humble
+      args:
+        ROS_DISTRO: humble
+        BASE_IMAGE: ubuntu:22.04
+      target: develop
+    image: naokitakahashi12/rose:humble-develop
+    tty: true
+    privileged: true
+    devices:
+      - /dev/dri
+    volumes_from:
+      - xwindow
+      - humble_workspace
+      - developer_local_config
+    env_file:
+      - env_files/ignition_gazebo.env
+      - env_files/ros2.env
+      - env_files/xwindow.env
+    environment:
+      - ROS_HOSTNAME=humble
+    working_dir: /rose/colcon_ws
+    command: >
+      /bin/bash
+  galactic:
+    build:
+      context: ros2/galactic
+      args:
+        ROS_DISTRO: galactic
+        BASE_IMAGE: ubuntu:20.04
+        #BASE_IMAGE: nvidia/cudagl:11.0.3-runtime-ubuntu20.04
+      target: develop
+    image: naokitakahashi12/rose:galactic-develop
+    tty: true
+    privileged: true
+    devices:
+      - /dev/dri
+    volumes_from:
+      - xwindow
+      - galactic_workspace
+      - developer_local_config
+    env_file:
+      - env_files/ignition_gazebo.env
+      - env_files/ros2.env
+      - env_files/xwindow.env
+    environment:
+      - ROS_HOSTNAME=galactic
+    working_dir: /rose/colcon_ws
+    command: >
+      /bin/bash
