@@ -26,9 +26,10 @@ services:
       - ~/.inputrc:/root/.inputrc:ro
   humble:
     build:
-      context: ros2/humble
+      context: ros2
       args:
         ROS_DISTRO: humble
+        IGNITION_VERSION: fortress
         BASE_IMAGE: ubuntu:22.04
       target: develop
     image: naokitakahashi12/rose:humble-develop
@@ -51,9 +52,10 @@ services:
       /bin/bash
   galactic:
     build:
-      context: ros2/galactic
+      context: ros2
       args:
         ROS_DISTRO: galactic
+        IGNITION_VERSION: fortress
         BASE_IMAGE: ubuntu:20.04
         #BASE_IMAGE: nvidia/cudagl:11.0.3-runtime-ubuntu20.04
       target: develop

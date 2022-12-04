@@ -38,10 +38,10 @@ fi
 os_version_codename=$(grep VERSION_CODENAME /etc/os-release | awk -F '[=]' '{print $2}')
 ogre_apt_package=""
 
-if [ "$os_version_codename" == "jammy" ]
+if [ "$os_version_codename" = "jammy" ]
 then
     ogre_apt_package="libogre-1.9-dev libogre-next-dev"
-elif [ "$os_version_codename" == "focal" ]
+elif [ "$os_version_codename" = "focal" ]
 then
     ogre_apt_package="libogre-1.9-dev libogre-2.2-dev"
 else
@@ -64,7 +64,7 @@ export DEBIAN_FRONTEND=noninteractive \
 && apt-get install --yes --quiet --no-install-recommends \
     libbullet-dev \
     libbullet-extras-dev \
-    "$ogre_apt_package" \
+    $ogre_apt_package \
     libxaw7-dev \
     binutils-dev \
     freeglut3-dev \
@@ -142,21 +142,22 @@ export DEBIAN_FRONTEND=noninteractive \
     --merge-install \
     --executor sequential \
     --parallel-workers $build_thread \
+    --install-base /opt/gz/${IGNITION_VERSION} \
     --cmake-args \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_CXX_STANDARD_LIBRARIES="-lpthread" \
         -DCMAKE_SHARED_LINKER_FLAGS="-lpthread" \
         -DBUILD_TESTING=false \
         -DCMAKE_POSITION_INDEPENDENT_CODE=true \
-&& rm -rf log build \
 && cd ../ \
+&& rm -rf ign_${IGNITION_VERSION}_ws \
 && apt-get remove --purge --yes \
     gnupg2 \
     ninja-build \
     gcc-9 \
     g++-9 \
 && apt-get autoremove --yes \
-|| exit 2
+|| exit 1
 
 if [ -d ign_${IGNITION_VERSION}_ws/install/lib/ignition/ignition-common4 ]
 then
