@@ -51,6 +51,7 @@ export DEBIAN_FRONTEND=noninteractive \
     libboost-timer-dev \
     libboost-chrono-dev \
     libboost-regex-dev \
+    libboost-python-dev \
     libgoogle-glog-dev \
     libgflags-dev \
     libatlas-base-dev \
@@ -65,6 +66,9 @@ export DEBIAN_FRONTEND=noninteractive \
     stow \
     liblua5.2-dev \
     coinor-libipopt-dev \
+    libopencv-dev \
+    libpcl-dev \
+    nlohmann-json3-dev \
 && mkdir install_from_sources \
 && cd install_from_sources/ \
 && git clone --depth 1 https://github.com/rui314/mold.git \
@@ -152,4 +156,4 @@ export DEBIAN_FRONTEND=noninteractive \
     g++-11 \
     gcc-11 \
     stow \
-&& apt-get autoremove --yes
+|| exit 1

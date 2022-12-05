@@ -33,26 +33,35 @@ fi
 export DEBIAN_FRONTEND=noninteractive \
 && apt-get update --quiet --fix-missing \
 && apt-get install --yes --quiet --no-install-recommends \
-    software-properties-common \
-    curl \
-    gpg-agent \
-&& curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
-    -o /usr/share/keyrings/ros-archive-keyring.gpg \
-&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" \
-    | tee /etc/apt/sources.list.d/ros2-latest.list > /dev/null \
-&& apt-get update --quiet \
-&& apt-get install --yes --quiet --no-install-recommends \
-    libgraphicsmagick++1-dev \
-    libompl-dev \
-    libzmq3-dev \
-    libasio-dev \
-    libgeographic-dev \
-&& apt-get install --yes --quiet --no-install-recommends \
-    ros-${ROS_DISTRO}-ros-base \
-    ros-${ROS_DISTRO}-fastrtps \
-    ros-${ROS_DISTRO}-rmw-fastrtps-cpp \
-&& apt-get remove ---purge --yes \
-    software-properties-common \
-    curl \
-    gpg-agent \
+    vim \
+    git \
+    cmake \
+    gcc \
+    g++ \
+    silversearcher-ag \
+    python3-pip \
+    python3-vcstool \
+    python3-colcon-common-extensions \
+    python3-colcon-argcomplete \
+    python3-colcon-cd \
+    python3-colcon-cmake \
+    python3-colcon-pkg-config \
+    python3-colcon-ros \
+    ros-${ROS_DISTRO}-rviz2 \
+    ros-${ROS_DISTRO}-rviz-imu-plugin \
+    ros-${ROS_DISTRO}-octomap-rviz-plugins \
+    ros-${ROS_DISTRO}-rmf-visualization-rviz2-plugins \
+    ros-${ROS_DISTRO}-rqt-image-view \
+    ros-${ROS_DISTRO}-rqt-image-overlay \
+    ros-${ROS_DISTRO}-rqt-image-overlay-layer \
+    ros-${ROS_DISTRO}-rqt-plot \
+    ros-${ROS_DISTRO}-rqt-reconfigure \
+    ros-${ROS_DISTRO}-rqt-robot-dashboard \
+    ros-${ROS_DISTRO}-rqt-robot-monitor \
+    ros-${ROS_DISTRO}-rqt-runtime-monitor \
+    ros-${ROS_DISTRO}-ament-cmake-copyright \
+    ros-${ROS_DISTRO}-ament-clang-tidy \
+    ros-${ROS_DISTRO}-ament-clang-format \
+    ros-${ROS_DISTRO}-ament-mypy \
+    ros-${ROS_DISTRO}-ament-xmllint \
 || exit 1

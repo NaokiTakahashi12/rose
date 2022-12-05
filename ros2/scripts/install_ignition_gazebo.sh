@@ -156,7 +156,6 @@ export DEBIAN_FRONTEND=noninteractive \
     ninja-build \
     gcc-9 \
     g++-9 \
-&& apt-get autoremove --yes \
 || exit 1
 
 if [ -d ign_${IGNITION_VERSION}_ws/install/lib/ignition/ignition-common4 ]

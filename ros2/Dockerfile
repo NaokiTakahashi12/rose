@@ -27,8 +27,20 @@ RUN sh rose/setup/install_ros2.sh \
 
 FROM base AS runtime
 
+COPY repos/preinstall_${ROS_DISTRO}.yaml /rose/setup/
+COPY scripts/build_install_packages.sh /rose/setup/
+
+RUN sh rose/setup/build_install_packages.sh \
+    && apt-get autoremove --yes \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY bash_entrypoint.bash /bash_entrypoint.bash
 COPY ros_entrypoint.sh /ros_entrypoint.sh
+
 ENTRYPOINT ["/ros_entrypoint.sh"]
+
+RUN echo "[ -f /bash_entrypoint.bash ] && source /bash_entrypoint.bash" >> /root/.bashrc
 
 CMD ["bash"]
 
@@ -47,3 +59,12 @@ RUN sh rose/setup/install_ignition_gazebo.sh \
     && apt-get autoremove --yes \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+COPY scripts/install_developer_tools.sh /rose/setup/
+
+RUN sh rose/setup/install_developer_tools.sh \
+    && apt-get autoremove --yes \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+CMD ["bash"]
