@@ -43,6 +43,7 @@ export DEBIAN_FRONTEND=noninteractive \
     g++-11 \
     gcc-11 \
     cmake \
+    ansible \
     ca-certificates \
     libboost-system-dev \
     libboost-filesystem-dev \
@@ -69,20 +70,28 @@ export DEBIAN_FRONTEND=noninteractive \
     libopencv-dev \
     libpcl-dev \
     nlohmann-json3-dev \
+    libtbb-dev \
 && mkdir install_from_sources \
 && cd install_from_sources/ \
-&& git clone --depth 1 https://github.com/rui314/mold.git \
-&& mkdir mold/build \
-&& cd mold/build \
-&& cmake .. \
+&& git clone https://github.com/rui314/mold.git \
+    --depth 1 \
+    --branch v1.7.1 \
+&& cd mold/ \
+&& cmake \
+    -S . \
+    -B build \
     -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
-&& ninja install -j $build_thread \
-&& cd ../../ \
-&& git clone --depth 1 -b development https://github.com/IntelRealSense/librealsense.git \
-&& mkdir librealsense/build \
-&& cd librealsense/build/ \
+&& cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/IntelRealSense/librealsense.git \
+    --depth 1 \
+    --branch development \
+&& cd librealsense/ \
 && cmake \
+    -S . \
+    -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
     -DBUILD_EXAMPLES=false \
@@ -90,62 +99,71 @@ export DEBIAN_FRONTEND=noninteractive \
     -DBUILD_GRAPHICAL_EXAMPLES=false \
     -DBUILD_PCL_EXAMPLES=false \
     -DCMAKE_BUILD_TYPE=Release \
-    .. \
-&& mold -run ninja install -j $build_thread \
-&& cd ../../ \
-&& git clone --depth 1 https://github.com/borglab/gtsam.git \
-&& mkdir gtsam/build \
-&& cd gtsam/build/ \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/borglab/gtsam.git \
+    --depth 1 \
+&& cd gtsam/ \
 && cmake \
+    -S . \
+    -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
     -DGTSAM_BUILD_WITH_MARCH_NATIVE=false \
     -DGTSAM_BUILD_EXAMPLES_ALWAYS=false \
     -DGTSAM_BUILD_TESTS=false \
     -DCMAKE_BUILD_TYPE=Release \
-    .. \
-&& mold -run ninja install -j $build_thread \
-&& cd ../../ \
-&& git clone --depth 1 https://github.com/rbdl/rbdl.git \
-    -b v3.2.1 \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/rbdl/rbdl.git \
+    --depth 1 \
     --recursive \
-&& mkdir rbdl/build \
-&& cd rbdl/build \
+    --branch v3.2.1 \
+&& cd rbdl/ \
 && cmake \
+    -S . \
+    -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_POSITION_INDEPENDENT_CODE=true \
     -DRBDL_BUILD_ADDON_URDFREADER=true \
     -DRBDL_BUILD_ADDON_GEOMETRY=true \
-    .. \
-&& mold -run ninja install -j $build_thread \
-&& cd ../../ \
-&& git clone --depth 1 https://github.com/coin-or/qpOASES.git \
-&& mkdir qpOASES/build \
-&& cd qpOASES/build \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/coin-or/qpOASES.git \
+    --depth 1 \
+&& cd qpOASES/ \
 && cmake \
+    -S . \
+    -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_CXX_FLAGS=-fPIC \
     -DQPOASES_BUILD_EXAMPLES=false \
-    .. \
-&& mold -run ninja install -j $build_thread \
-&& cd ../../ \
-&& git clone --depth 1 --recursive https://github.com/frankaemika/libfranka.git \
-&& mkdir libfranka/build \
-&& cd libfranka/build \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/frankaemika/libfranka.git \
+    --depth 1 \
+    --recursive \
+&& cd libfranka/ \
 && cmake \
+    -S . \
+    -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_EXAMPLES=false \
     -DBUILD_TESTS=false \
-    .. \
-&& mold -run ninja install -j $build_thread \
-&& cd ../../ \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
 && cd ../ \
 && rm -rf install_from_sources \
 && apt-get remove --purge --yes \
