@@ -53,7 +53,13 @@ distoribution_unique_package=""
 
 if [ "${ROS_DISTRO}" = "humble" ]
 then
-    distoribution_unique_package="ros-${ROS_DISTRO}-nlohmann-json-schema-validator-vendor"
+    distoribution_unique_package="
+        ros-${ROS_DISTRO}-rcpputils \
+        ros-${ROS_DISTRO}-nlohmann-json-schema-validator-vendor \
+        ros-${ROS_DISTRO}-generate-parameter-library \
+        ros-${ROS_DISTRO}-rsl \
+        ros-${ROS_DISTRO}-kinematics-interface
+    "
 fi
 
 export DEBIAN_FRONTEND=noninteractive \
@@ -73,6 +79,8 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-test-msgs \
     ros-${ROS_DISTRO}-map-msgs \
     ros-${ROS_DISTRO}-octomap-msgs \
+    ros-${ROS_DISTRO}-ackermann-msgs \
+    ros-${ROS_DISTRO}-geographic-msgs \
     ros-${ROS_DISTRO}-diagnostic-updater \
     ros-${ROS_DISTRO}-rviz-common \
     ros-${ROS_DISTRO}-rviz-default-plugins \
