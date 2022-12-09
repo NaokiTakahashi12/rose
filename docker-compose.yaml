@@ -8,11 +8,11 @@ services:
       - ~/.Xauthority:/root/.Xauthority
       - /tmp/.docker.$USER.xauth:/tmp/.docker.xauth:ro
       - /etc/localtime:/etc/localtime:ro
-  humble_workspace:
+  humble-workspace:
     image: busybox
     volumes:
       - ./workspace/humble:/rose/colcon_ws:rw
-  galactic_workspace:
+  galactic-workspace:
     image: busybox
     volumes:
       - ./workspace/galactic:/rose/colcon_ws:rw
@@ -24,6 +24,17 @@ services:
       - ~/.vimrc:/root/.vimrc:ro
       - ~/.vimrc:/root/.config/nvim/init.vim:ro
       - ~/.inputrc:/root/.inputrc:ro
+  humble-runtime:
+    build:
+      context: ros2
+      args:
+        ROS_DISTRO: humble
+        BASE_IMAGE: ubuntu:22.04
+      target: runtime
+    image: naokitakahashi12/rose:humble-runtime
+    tty: true
+    command: >
+      /bin/bash
   humble:
     build:
       context: ros2
@@ -39,7 +50,7 @@ services:
       - /dev/dri
     volumes_from:
       - xwindow
-      - humble_workspace
+      - humble-workspace
       - developer_local_config
     env_file:
       - env_files/ignition_gazebo.env
@@ -50,6 +61,17 @@ services:
     working_dir: /rose/colcon_ws
     command: >
       /bin/bash
+  galactic-runtime:
+    build:
+      context: ros2
+      args:
+        ROS_DISTRO: galactic
+        BASE_IMAGE: ubuntu:20.04
+      target: runtime
+    image: naokitakahashi12/rose:galactic-runtime
+    tty: true
+    command: >
+      /bin/bash
   galactic:
     build:
       context: ros2
@@ -57,7 +79,6 @@ services:
         ROS_DISTRO: galactic
         IGNITION_VERSION: fortress
         BASE_IMAGE: ubuntu:20.04
-        #BASE_IMAGE: nvidia/cudagl:11.0.3-runtime-ubuntu20.04
       target: develop
     image: naokitakahashi12/rose:galactic-develop
     tty: true
@@ -66,7 +87,7 @@ services:
       - /dev/dri
     volumes_from:
       - xwindow
-      - galactic_workspace
+      - galactic-workspace
       - developer_local_config
     env_file:
       - env_files/ignition_gazebo.env
