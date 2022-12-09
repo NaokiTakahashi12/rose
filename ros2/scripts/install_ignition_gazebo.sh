@@ -23,7 +23,7 @@
 if [ -z "${IGNITION_VERSION}" ]
 then
     echo "Empty IGNITION_VERSION variable"
-    return 2
+    exti 1
 else
     echo "IGNITION_VERSION is ${IGNITION_VERSION}"
 fi

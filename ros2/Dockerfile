@@ -60,6 +60,7 @@ RUN sh rose/setup/install_ignition_gazebo.sh \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+COPY repos/preinstall_develop_${ROS_DISTRO}.yaml /rose/setup/
 COPY scripts/install_developer_tools.sh /rose/setup/
 
 RUN sh rose/setup/install_developer_tools.sh \

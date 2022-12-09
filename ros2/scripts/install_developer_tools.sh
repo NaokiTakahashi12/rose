@@ -25,9 +25,36 @@
 if [ -z "${ROS_DISTRO}" ]
 then
     echo "Empty ROS_DISTRO variable"
-    return 2
+    exit 1
 else
     echo "ROS_DISTRO is ${ROS_DISTRO}"
+fi
+
+repos_file=/rose/setup/preinstall_develop_${ROS_DISTRO}.yaml
+
+if [ ! -f $repos_file ]
+then
+    exit 1
+fi
+
+build_thread=$((`nproc`/2))
+
+if [ 0 -eq $build_thread ]
+then
+    build_thread=1
+fi
+
+if [ -f /opt/ros/${ROS_DISTRO}/setup.sh ]
+then
+    . /opt/ros/${ROS_DISTRO}/setup.sh
+fi
+if [ -f /opt/gz/${IGNITION_VERSION}/setup.sh ]
+then
+    . /opt/gz/${IGNITION_VERSION}/setup.sh
+fi
+if [ -f /opt/ros_buildin/${ROS_DISTRO}/setup.sh ]
+then
+    . /opt/ros_buildin/${ROS_DISTRO}/setup.sh
 fi
 
 export DEBIAN_FRONTEND=noninteractive \
@@ -64,4 +91,21 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-ament-clang-format \
     ros-${ROS_DISTRO}-ament-mypy \
     ros-${ROS_DISTRO}-ament-xmllint \
+&& mkdir -p preinstall_ws/src \
+&& cd preinstall_ws/ \
+&& vcs import src < $repos_file \
+    --recursive \
+&& colcon build \
+    --merge-install \
+    --executor sequential \
+    --parallel-workers $build_thread \
+    --install-base /opt/ros_devel_buildin/${ROS_DISTRO} \
+    --cmake-args \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_CXX_STANDARD_LIBRARIES="-lpthread" \
+        -DCMAKE_SHARED_LINKER_FLAGS="-lpthread" \
+        -DBUILD_TESTING=false \
+        -DCMAKE_POSITION_INDEPENDENT_CODE=true \
+&& cd ../ \
+&& rm -rf preinstall_ws \
 || exit 1

@@ -25,7 +25,7 @@
 if [ -z "${ROS_DISTRO}" ]
 then
     echo "Empty ROS_DISTRO variable"
-    return 2
+    exit 1
 else
     echo "ROS_DISTRO is ${ROS_DISTRO}"
 fi

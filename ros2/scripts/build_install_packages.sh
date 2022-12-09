@@ -25,7 +25,7 @@
 if [ -z "${ROS_DISTRO}" ]
 then
     echo "Empty ROS_DISTRO variable"
-    return 2
+    exit 1
 else
     echo "ROS_DISTRO is ${ROS_DISTRO}"
 fi
@@ -34,7 +34,7 @@ repos_file=/rose/setup/preinstall_${ROS_DISTRO}.yaml
 
 if [ ! -f $repos_file ]
 then
-    exit 0
+    exit 1
 fi
 
 build_thread=$((`nproc`/2))
@@ -57,8 +57,11 @@ then
         ros-${ROS_DISTRO}-rcpputils \
         ros-${ROS_DISTRO}-nlohmann-json-schema-validator-vendor \
         ros-${ROS_DISTRO}-generate-parameter-library \
-        ros-${ROS_DISTRO}-rsl \
-        ros-${ROS_DISTRO}-kinematics-interface
+        ros-${ROS_DISTRO}-rsl
+    "
+else
+    distoribution_unique_package="
+        ros-${ROS_DISTRO}-robot-localization
     "
 fi
 
