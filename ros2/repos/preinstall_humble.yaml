@@ -43,6 +43,10 @@ repositories:
     type: git
     url: https://github.com/ros-controls/ros2_control.git
     version: humble
+  ros_controls/ros2_controllers:
+    type: git
+    url: https://github.com/ros-controls/ros2_controllers.git
+    version: humble
   ros_perception/image_common:
     type: git
     url: https://github.com/ros-perception/image_common.git
