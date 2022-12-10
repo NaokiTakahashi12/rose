@@ -1,0 +1,69 @@
+repositories:
+  BehaviorTree.CPP:
+    type: git
+    url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
+    version: v3.8
+  grid_map:
+    type: git
+    url: https://github.com/ANYbotics/grid_map.git
+    version: humble
+  octomap/octomap_msgs:
+    type: git
+    url: https://github.com/OctoMap/octomap_msgs.git
+    version: ros2
+  robot_localization:
+    type: git
+    url: https://github.com/cra-ros-pkg/robot_localization.git
+    version: humble-devel
+  ros/angles:
+    type: git
+    url: https://github.com/ros/angles.git
+    version: ros2
+  ros/bond_core:
+    type: git
+    url: https://github.com/ros/bond_core.git
+    version: ros2
+  ros/filters:
+    type: git
+    url: https://github.com/ros/filters.git
+    version: ros2
+  ros_controls/control_toolbox:
+    type: git
+    url: https://github.com/ros-controls/control_toolbox.git
+    version: ros2-master
+  ros_controls/kinematics_interface:
+    type: git
+    url: https://github.com/ros-controls/kinematics_interface.git
+    version: master
+  ros_controls/realtime_tools:
+    type: git
+    url: https://github.com/ros-controls/realtime_tools.git
+    version: master
+  ros_controls/ros2_control:
+    type: git
+    url: https://github.com/ros-controls/ros2_control.git
+    version: humble
+  ros_controls/ros2_controllers:
+    type: git
+    url: https://github.com/ros-controls/ros2_controllers.git
+    version: humble
+  ros_perception/image_common:
+    type: git
+    url: https://github.com/ros-perception/image_common.git
+    version: humble
+  ros_perception/image_pipeline:
+    type: git
+    url: https://github.com/ros-perception/image_pipeline.git
+    version: humble
+  ros_perception/laser_geometry:
+    type: git
+    url: https://github.com/ros-perception/laser_geometry.git
+    version: ros2
+  ros_perception/vision_opencv:
+    type: git
+    url: https://github.com/ros-perception/vision_opencv.git
+    version: humble
+  ros_planning/navigation2:
+    type: git
+    url: https://github.com/ros-planning/navigation2.git
+    version: humble
