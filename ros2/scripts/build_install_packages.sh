@@ -84,6 +84,9 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-octomap-msgs \
     ros-${ROS_DISTRO}-ackermann-msgs \
     ros-${ROS_DISTRO}-geographic-msgs \
+    ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-robot-state-publisher \
+    ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-diagnostic-updater \
     ros-${ROS_DISTRO}-rviz-common \
     ros-${ROS_DISTRO}-rviz-default-plugins \
