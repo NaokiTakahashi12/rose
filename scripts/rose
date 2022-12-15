@@ -30,34 +30,47 @@ class RoseCliHandler:
         print('rose version 0.0.0')
 
     def ps(self, args):
-        subprocess.run(
-            self.compose_command
-            + ['ps']
-        )
+        execute_command = self.compose_command + ['ps']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
 
     def ls(self, args):
-        subprocess.run(
-            self.compose_command
-            + ['ls']
-        )
+        execute_command = self.compose_command + ['ls']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
+
+    def logs(self, args):
+        execute_command = self.compose_command + ['logs']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
+
+    def exec(self, args):
+        execute_command = self.compose_command + ['exec']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        execute_command = execute_command + [args.service, 'bash']
+        subprocess.run(execute_command)
 
     def up(self, args):
-        subprocess.run(
-            self.compose_command
-            + ['up']
-        )
+        execute_command = self.compose_command + ['up', '-d']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
 
     def down(self, args):
-        subprocess.run(
-            self.compose_command
-            + ['down']
-        )
+        execute_command = self.compose_command + ['down']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
     
     def build(self, args):
-        subprocess.run(
-            self.compose_command
-            + ['build']
-        )
+        execute_command = self.compose_command + ['build']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
     
     def __init_arg_parser(self):
         self.arg_parser = argparse.ArgumentParser(
@@ -111,6 +124,20 @@ class RoseCliHandler:
         self.parsers['ls'].set_defaults(
             handler=self.ls
         )
+        self.parsers['logs'] = self.sub_arg_parsers.add_parser(
+            'logs',
+            **common_parser_args
+        )
+        self.parsers['logs'].set_defaults(
+            handler=self.logs
+        )
+        self.parsers['exec'] = self.sub_arg_parsers.add_parser(
+            'exec',
+            **common_parser_args
+        )
+        self.parsers['exec'].set_defaults(
+            handler=self.exec
+        )
         self.parsers['up'] = self.sub_arg_parsers.add_parser(
             'up',
             **common_parser_args
@@ -133,13 +160,17 @@ class RoseCliHandler:
             handler=self.build
         )
 
-        # TODO
-        # self.parsers['version'].add_argument(
-        #     '--args',
-        #     nargs='*',
-        #     action='append',
-        #     default=[]
-        # )
+        self.parsers['exec'].add_argument(
+            '--service',
+            default='galactic'
+        )
+
+        for key, parser in self.parsers.items():
+            parser.add_argument(
+                '--args',
+                help='Execute command argment string',
+                default=''
+            )
 
     def __set_this_directory_path(self):
         self.this_script_dir = os.path.dirname(os.path.realpath(__file__))
