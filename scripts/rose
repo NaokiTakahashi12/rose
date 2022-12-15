@@ -55,6 +55,14 @@ class RoseCliHandler:
         subprocess.run(execute_command)
 
     def up(self, args):
+        subprocess.run([
+            'sh',
+            os.path.join(
+                self.rose_package_dir,
+                'scripts',
+                'generate_docker_xauth.sh'
+            )
+        ])
         execute_command = self.compose_command + ['up', '-d']
         if args.args != '':
             execute_command = execute_command + [args.args]
