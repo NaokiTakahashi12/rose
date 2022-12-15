@@ -29,6 +29,9 @@ class RoseCliHandler:
         # TODO
         print('rose version 0.0.0')
 
+    def get_compose_prefix(self, args):
+        print(' '.join(self.compose_command))
+
     def ps(self, args):
         execute_command = self.compose_command + ['ps']
         if args.args != '':
@@ -117,6 +120,13 @@ class RoseCliHandler:
         )
         self.parsers['version'].set_defaults(
             handler=self.version
+        )
+        self.parsers['get_compose_prefix'] = self.sub_arg_parsers.add_parser(
+            'get-compose-prefix',
+            **common_parser_args
+        )
+        self.parsers['get_compose_prefix'].set_defaults(
+            handler=self.get_compose_prefix
         )
         self.parsers['ps'] = self.sub_arg_parsers.add_parser(
             'ps',
