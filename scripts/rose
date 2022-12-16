@@ -210,6 +210,17 @@ class RoseCliHandler:
     def __init_compose_command(self):
         if which('docker') is None:
             raise OSError('Not found docker cil')
+        try:
+            subprocess.run(
+                ['docker', 'compose', 'version'],
+                stderr=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL,
+                check=True
+            )
+        except:
+            print('Not found docker compose v2')
+            print('Please install docker compose v2 https://docs.docker.com/compose/compose-v2/')
+            sys.exit(1)
 
         self.__set_compose_command()
 
