@@ -117,6 +117,7 @@ class RoseCliHandler:
 
         self.parsers['help'] = self.sub_arg_parsers.add_parser(
             'help',
+            help='Show the ROSE help infomation.',
             **common_parser_args
         )
         self.parsers['help'].set_defaults(
@@ -124,6 +125,7 @@ class RoseCliHandler:
         )
         self.parsers['version'] = self.sub_arg_parsers.add_parser(
             'version',
+            help='Show the ROSE version infomation.',
             **common_parser_args
         )
         self.parsers['version'].set_defaults(
@@ -131,6 +133,7 @@ class RoseCliHandler:
         )
         self.parsers['get_compose_prefix'] = self.sub_arg_parsers.add_parser(
             'get-compose-prefix',
+            help='Get execute command prefix.',
             **common_parser_args
         )
         self.parsers['get_compose_prefix'].set_defaults(
@@ -138,6 +141,7 @@ class RoseCliHandler:
         )
         self.parsers['ps'] = self.sub_arg_parsers.add_parser(
             'ps',
+            help='Show constainer process status.',
             **common_parser_args
         )
         self.parsers['ps'].set_defaults(
@@ -145,6 +149,7 @@ class RoseCliHandler:
         )
         self.parsers['ls'] = self.sub_arg_parsers.add_parser(
             'ls',
+            help='List running compose containers.',
             **common_parser_args
         )
         self.parsers['ls'].set_defaults(
@@ -152,6 +157,7 @@ class RoseCliHandler:
         )
         self.parsers['logs'] = self.sub_arg_parsers.add_parser(
             'logs',
+            help='View output log from container.',
             **common_parser_args
         )
         self.parsers['logs'].set_defaults(
@@ -159,6 +165,7 @@ class RoseCliHandler:
         )
         self.parsers['pull'] = self.sub_arg_parsers.add_parser(
             'pull',
+            help='Pull ROSE service images.',
             **common_parser_args
         )
         self.parsers['pull'].set_defaults(
@@ -166,6 +173,7 @@ class RoseCliHandler:
         )
         self.parsers['exec'] = self.sub_arg_parsers.add_parser(
             'exec',
+            help='Execute a bash command in a running container.',
             **common_parser_args
         )
         self.parsers['exec'].set_defaults(
@@ -173,6 +181,7 @@ class RoseCliHandler:
         )
         self.parsers['up'] = self.sub_arg_parsers.add_parser(
             'up',
+            help='Create and start services.',
             **common_parser_args
         )
         self.parsers['up'].set_defaults(
@@ -180,6 +189,7 @@ class RoseCliHandler:
         )
         self.parsers['down'] = self.sub_arg_parsers.add_parser(
             'down',
+            help='Stop and remove services.',
             **common_parser_args
         )
         self.parsers['down'].set_defaults(
@@ -187,6 +197,7 @@ class RoseCliHandler:
         )
         self.parsers['build'] = self.sub_arg_parsers.add_parser(
             'build',
+            help='Build or rebuild services.',
             **common_parser_args
         )
         self.parsers['build'].set_defaults(
