@@ -75,6 +75,7 @@ export DEBIAN_FRONTEND=noninteractive \
     python3-vcstool \
     python3-colcon-common-extensions \
     libpcl-dev \
+    libgps-dev \
     liboctomap-dev \
     nlohmann-json3-dev \
     $distoribution_unique_package \
@@ -113,6 +114,7 @@ export DEBIAN_FRONTEND=noninteractive \
     --packages-ignore \
         nav2_system_tests \
         test_bond \
+        gps_umd \
 && cd ../ \
 && rm -rf preinstall_ws \
 && apt-get remove ---purge --yes \

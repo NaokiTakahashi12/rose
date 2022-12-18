@@ -40,7 +40,12 @@ ogre_apt_package=""
 
 if [ "$os_version_codename" = "jammy" ]
 then
-    ogre_apt_package="libogre-1.9-dev libogre-next-dev"
+    if [ "$IGNITION_VERSION" = "garden" ]
+    then
+        ogre_apt_package="libogre-1.9-dev libogre-next-2.3-dev"
+    else
+        ogre_apt_package="libogre-1.9-dev libogre-next-dev"
+    fi
 elif [ "$os_version_codename" = "focal" ]
 then
     ogre_apt_package="libogre-1.9-dev libogre-2.2-dev"
@@ -56,11 +61,18 @@ export DEBIAN_FRONTEND=noninteractive \
     git \
     gcc-9 \
     g++-9 \
+    wget \
+    software-properties-common \
     cmake \
     make \
     ninja-build \
     python3-vcstool \
     python3-colcon-common-extensions \
+&& wget https://packages.osrfoundation.org/gazebo.gpg \
+    -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg \
+&& echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" \
+    | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null \
+&& apt-get update --quiet \
 && apt-get install --yes --quiet --no-install-recommends \
     libbullet-dev \
     libbullet-extras-dev \
@@ -156,6 +168,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ninja-build \
     gcc-9 \
     g++-9 \
+    software-properties-common \
 || exit 1
 
 if [ -d ign_${IGNITION_VERSION}_ws/install/lib/ignition/ignition-common4 ]

@@ -67,3 +67,7 @@ repositories:
     type: git
     url: https://github.com/ros-planning/navigation2.git
     version: humble
+  swri_robotics/gps_umd:
+    type: git
+    url: https://github.com/swri-robotics/gps_umd
+    version: ros2-devel
