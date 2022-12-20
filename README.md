@@ -2,20 +2,46 @@
 
 My ROS Enviroments
 
+
 ## Usage
 
 Startup
 
 ```shell
-source scripts/setup.bash
-rose up
-rose exec -s galactic
+$ source scripts/setup.bash
+$ rose up
+$ rose exec -s galactic
 ```
+
+or
+
+```shell
+$ docker compose up -d
+$ docker compose exec galactic bash
+```
+
+
+## Requirements
+
+### Dependencies
+
+- [docker](https://docs.docker.com/get-docker/) >= 19.03.4
+- [docker compose v2](https://docs.docker.com/compose/compose-v2/)
+- X11 (optional)
+- python >= 3.10 (optional)
+
+
+### System Resource
+
+- Storage >= 20[GB]
+
+
+## ROSE CLI tools
 
 `rose`sub-commands
 
 ```shell
-rose help
+$ rose help
 usage: rose [-h] {help,version,get-compose-prefix,ps,ls,logs,pull,exec,up,down,build} ...
 
 ROS Enviroment operation tools
