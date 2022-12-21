@@ -16,6 +16,13 @@ class RoseCliHandler:
         self.__init_arg_parser()
         self.__init_compose_command()
 
+        try:
+            import argcomplete
+        except ImportError:
+            pass
+        else:
+            argcomplete.autocomplete(self.arg_parser)
+
         self.parsed_args, self.parsed_unknown = self.arg_parser.parse_known_args()
 
         if hasattr(self.parsed_args, 'handler'):
