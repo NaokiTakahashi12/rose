@@ -64,3 +64,11 @@ positional arguments:
 options:
   -h, --help            show this help message and exit
 ```
+
+
+## Operational Strategies
+
+Tags are divided into "runtime" tags and "develop" tags, each with the following meanings
+
+- A runtime tag is an environment to deploy to a robot.
+- A development-time tag is an environment that includes a simulator to be developed before deploying to a robot.
