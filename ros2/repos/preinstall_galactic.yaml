@@ -7,6 +7,10 @@ repositories:
     type: git
     url: https://github.com/devrite/grid_map.git
     version: galactic-devel
+  imu_tools:
+    type: git
+    url: https://github.com/CCNYRoboticsLab/imu_tools.git
+    version: galactic
   octomap/octomap_msgs:
     type: git
     url: https://github.com/OctoMap/octomap_msgs.git
@@ -15,6 +19,14 @@ repositories:
     type: git
     url: https://github.com/OctoMap/octomap_ros.git
     version: ros2
+  realsense_ros:
+    type: git
+    url: https://github.com/IntelRealSense/realsense-ros.git
+    version: ros2-development
+  robot_localization:
+    type: git
+    url: https://github.com/cra-ros-pkg/robot_localization.git
+    version: galactic-devel
   ros/angles:
     type: git
     url: https://github.com/ros/angles.git
@@ -43,6 +55,10 @@ repositories:
     type: git
     url: https://github.com/ros-controls/ros2_controllers.git
     version: galactic
+  ros_drivers/velodyne:
+    type: git
+    url: https://github.com/ros-drivers/velodyne.git
+    version: galactic-devel
   ros_perception/image_common:
     type: git
     url: https://github.com/ros-perception/image_common.git
@@ -63,3 +79,7 @@ repositories:
     type: git
     url: https://github.com/ros-planning/navigation2.git
     version: galactic
+  ublox:
+    type: git
+    url: https://github.com/KumarRobotics/ublox.git
+    version: galactic-devel
