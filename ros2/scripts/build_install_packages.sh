@@ -66,18 +66,17 @@ else
 fi
 
 export DEBIAN_FRONTEND=noninteractive \
-&& export CC=gcc-11 \
-&& export CXX=g++-11 \
 && apt-get update --quiet --fix-missing \
 && apt-get install --yes --quiet --no-install-recommends \
-    gcc-11 \
-    g++-11 \
+    gcc \
+    g++ \
     python3-vcstool \
     python3-colcon-common-extensions \
-    libpcl-dev \
+    libpcap-dev \
     libgps-dev \
     liboctomap-dev \
     nlohmann-json3-dev \
+    libyaml-cpp-dev \
     $distoribution_unique_package \
     ros-${ROS_DISTRO}-ament-cmake \
     ros-${ROS_DISTRO}-test-msgs \
@@ -115,11 +114,10 @@ export DEBIAN_FRONTEND=noninteractive \
         nav2_system_tests \
         test_bond \
         gps_umd \
+        rviz_imu_plugin \
 && cd ../ \
 && rm -rf preinstall_ws \
 && apt-get remove ---purge --yes \
-    gcc-11 \
-    g++-11 \
     python3-vcstool \
     python3-colcon-common-extensions \
 || exit 1
