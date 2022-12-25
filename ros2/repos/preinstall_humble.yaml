@@ -7,10 +7,18 @@ repositories:
     type: git
     url: https://github.com/ANYbotics/grid_map.git
     version: humble
+  imu_tools:
+    type: git
+    url: https://github.com/CCNYRoboticsLab/imu_tools.git
+    version: humble
   octomap/octomap_msgs:
     type: git
     url: https://github.com/OctoMap/octomap_msgs.git
     version: ros2
+  realsense_ros:
+    type: git
+    url: https://github.com/IntelRealSense/realsense-ros.git
+    version: ros2-development
   robot_localization:
     type: git
     url: https://github.com/cra-ros-pkg/robot_localization.git
@@ -47,6 +55,10 @@ repositories:
     type: git
     url: https://github.com/ros-controls/ros2_controllers.git
     version: humble
+  ros_drivers/velodyne:
+    type: git
+    url: https://github.com/ros-drivers/velodyne.git
+    version: ros2
   ros_perception/image_common:
     type: git
     url: https://github.com/ros-perception/image_common.git
@@ -67,7 +79,15 @@ repositories:
     type: git
     url: https://github.com/ros-planning/navigation2.git
     version: humble
+  rtcm_msgs:
+    type: git
+    url: https://github.com/tilk/rtcm_msgs.git
+    version: master
   swri_robotics/gps_umd:
     type: git
     url: https://github.com/swri-robotics/gps_umd
     version: ros2-devel
+  ublox:
+    type: git
+    url: https://github.com/KumarRobotics/ublox.git
+    version: ros2

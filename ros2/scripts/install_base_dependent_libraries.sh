@@ -164,6 +164,18 @@ export DEBIAN_FRONTEND=noninteractive \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
+&& git clone https://github.com/unitreerobotics/unitree_legged_sdk.git \
+    -b v3.8.0 \
+&& cd unitree_legged_sdk/ \
+&& git checkout 5120926cb0 \
+&& cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
 && cd ../ \
 && rm -rf install_from_sources \
 && apt-get remove --purge --yes \
@@ -171,7 +183,5 @@ export DEBIAN_FRONTEND=noninteractive \
     gpg-agent \
     unzip \
     ninja-build \
-    g++-11 \
-    gcc-11 \
     stow \
 || exit 1
