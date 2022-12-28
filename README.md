@@ -20,6 +20,21 @@ $ docker compose up -d
 $ docker compose exec galactic bash
 ```
 
+## Support ros2 distribution
+
+The ros2 distribution currently supported by rose are
+
++ humble
++ galactic (CUDA)
+
+
+## Local workspace
+
+The development workspace mounted on the container has the following relationship.
+
++ workspace/humble -> humble:/rose/colcon_ws
++ workspace/galactic -> galactic:/rose/colcon_ws
+
 
 ## Requirements
 
