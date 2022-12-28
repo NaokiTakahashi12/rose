@@ -62,9 +62,12 @@ export DEBIAN_FRONTEND=noninteractive \
 && apt-get install --yes --quiet --no-install-recommends \
     vim \
     git \
+    make \
     cmake \
+    cmake-curses-gui \
     gcc \
     g++ \
+    tmux \
     silversearcher-ag \
     python3-pip \
     python3-vcstool \
@@ -106,6 +109,8 @@ export DEBIAN_FRONTEND=noninteractive \
         -DCMAKE_SHARED_LINKER_FLAGS="-lpthread" \
         -DBUILD_TESTING=false \
         -DCMAKE_POSITION_INDEPENDENT_CODE=true \
+    --packages-ignore \
+        champ_gazebo \
 && cd ../ \
 && rm -rf preinstall_ws \
 || exit 1

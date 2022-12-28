@@ -49,8 +49,6 @@ CMD ["bash"]
 FROM runtime AS develop
 
 ARG IGNITION_VERSION=fortress
-# TODO
-#ARG IGNITION_VERSION=garden
 
 ENV IGNITION_VERSION=${IGNITION_VERSION}
 ENV GZ_VERSION=${IGNITION_VERSION}
@@ -69,5 +67,8 @@ RUN sh rose/setup/install_developer_tools.sh \
     && apt-get autoremove --yes \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN echo "[safe]" >> ~/.gitconfig \
+    && echo "    directory = *" >> ~/.gitconfig
 
 CMD ["bash"]
