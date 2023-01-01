@@ -15,6 +15,10 @@ repositories:
     type: git
     url: https://github.com/OctoMap/octomap_msgs.git
     version: ros2
+  plansys2/ros2_planning_system:
+    type: git
+    url: https://github.com/PlanSys2/ros2_planning_system.git
+    version: humble-devel
   realsense_ros:
     type: git
     url: https://github.com/IntelRealSense/realsense-ros.git

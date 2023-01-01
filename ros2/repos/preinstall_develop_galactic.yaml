@@ -3,9 +3,21 @@ repositories:
     type: git
     url: https://github.com/chvmp/champ.git
     version: ros2
-  geometry_rviz_plugins:
+  naokitakahashi12/geometry_rviz_plugins:
     type: git
     url: https://github.com/NaokiTakahashi12/geometry_rviz_plugins.git
+    version: main
+  naokitakahashi12/ros_gz_utils:
+    type: git
+    url: https://github.com/NaokiTakahashi12/ros_gz_utils.git
+    version: main
+  naokitakahashi12/unitree_go1_simulator:
+    type: git
+    url: https://github.com/NaokiTakahashi12/unitree_go1_simulator.git
+    version: main
+  naokitakahashi12/unitree_go1_ros2:
+    type: git
+    url: https://github.com/NaokiTakahashi12/unitree_go1_ros2.git
     version: main
   ros_controls/gz_ros2_control:
     type: git
