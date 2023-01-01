@@ -95,6 +95,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-joy-teleop \
     ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-teleop-twist-keyboard \
+    ros-${ROS_DISTRO}-rclcpp-cascade-lifecycle \
 && mkdir -p preinstall_ws/src \
 && cd preinstall_ws/ \
 && vcs import src < $repos_file \
@@ -115,6 +116,7 @@ export DEBIAN_FRONTEND=noninteractive \
         test_bond \
         gps_umd \
         rviz_imu_plugin \
+        plansys2_tools \
 && cd ../ \
 && rm -rf preinstall_ws \
 && apt-get remove ---purge --yes \

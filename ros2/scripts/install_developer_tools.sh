@@ -80,6 +80,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-rviz2 \
     ros-${ROS_DISTRO}-rviz-imu-plugin \
     ros-${ROS_DISTRO}-octomap-rviz-plugins \
+    ros-${ROS_DISTRO}-plansys2-tools \
     ros-${ROS_DISTRO}-rmf-visualization-rviz2-plugins \
     ros-${ROS_DISTRO}-rqt-image-view \
     ros-${ROS_DISTRO}-rqt-image-overlay \
