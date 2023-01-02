@@ -71,6 +71,18 @@ class RoseCliHandler:
         execute_command = execute_command + [args.service, 'bash']
         subprocess.run(execute_command)
 
+    def start(self, args):
+        execute_command = self.compose_command + ['start']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
+
+    def stop(self, args):
+        execute_command = self.compose_command + ['stop']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
+
     def up(self, args):
         if platform.system() == 'Linux':
             subprocess.run([
@@ -81,7 +93,16 @@ class RoseCliHandler:
                     'generate_docker_xauth.sh'
                 )
             ])
-        execute_command = self.compose_command + ['up', '-d']
+        if args.network_mode == 'host':
+            host_mode_compose = self.compose_command + ['-f',
+                os.path.join(
+                    self.rose_package_dir,
+                    'override',
+                    'docker-compose.host.yaml'
+                )]
+            execute_command = host_mode_compose + ['up', '-d']
+        else:
+            execute_command = self.compose_command + ['up', '-d']
         if args.args != '':
             execute_command = execute_command + [args.args]
         subprocess.run(execute_command)
@@ -186,6 +207,22 @@ class RoseCliHandler:
         self.parsers['exec'].set_defaults(
             handler=self.exec
         )
+        self.parsers['start'] = self.sub_arg_parsers.add_parser(
+            'start',
+            help='Start services.',
+            **common_parser_args
+        )
+        self.parsers['start'].set_defaults(
+            handler=self.start
+        )
+        self.parsers['stop'] = self.sub_arg_parsers.add_parser(
+            'stop',
+            help='Stop services.',
+            **common_parser_args
+        )
+        self.parsers['stop'].set_defaults(
+            handler=self.stop
+        )
         self.parsers['up'] = self.sub_arg_parsers.add_parser(
             'up',
             help='Create and start services.',
@@ -214,7 +251,21 @@ class RoseCliHandler:
         self.parsers['exec'].add_argument(
             '-s',
             '--service',
+            choices=[
+                'humble', 'humble-runtime',
+                'galactic', 'galactic-runtime'
+            ],
             default='galactic'
+        )
+
+        self.parsers['up'].add_argument(
+            '-n',
+            '--network-mode',
+            choices=[
+                'bridge',
+                'host'
+            ],
+            default='bridge'
         )
 
         for key, parser in self.parsers.items():

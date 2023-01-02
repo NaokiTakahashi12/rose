@@ -51,6 +51,8 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-ros-base \
     ros-${ROS_DISTRO}-fastrtps \
     ros-${ROS_DISTRO}-rmw-fastrtps-cpp \
+    ros-${ROS_DISTRO}-rmw-fastrtps-dynamic-cpp \
+    ros-${ROS_DISTRO}-rosbag2-storage-mcap \
 && apt-get remove ---purge --yes \
     software-properties-common \
     curl \
