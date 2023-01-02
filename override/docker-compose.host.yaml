@@ -1,0 +1,11 @@
+version: '3.5'
+
+services:
+  humble-runtime:
+    network_mode: host
+  humble:
+    network_mode: host
+  galactic-runtime:
+    network_mode: host
+  galactic:
+    network_mode: host

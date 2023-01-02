@@ -93,7 +93,16 @@ class RoseCliHandler:
                     'generate_docker_xauth.sh'
                 )
             ])
-        execute_command = self.compose_command + ['up', '-d']
+        if args.network_mode == 'host':
+            host_mode_compose = self.compose_command + ['-f',
+                os.path.join(
+                    self.rose_package_dir,
+                    'override',
+                    'docker-compose.host.yaml'
+                )]
+            execute_command = host_mode_compose + ['up', '-d']
+        else:
+            execute_command = self.compose_command + ['up', '-d']
         if args.args != '':
             execute_command = execute_command + [args.args]
         subprocess.run(execute_command)
@@ -242,7 +251,21 @@ class RoseCliHandler:
         self.parsers['exec'].add_argument(
             '-s',
             '--service',
+            choices=[
+                'humble', 'humble-runtime',
+                'galactic', 'galactic-runtime'
+            ],
             default='galactic'
+        )
+
+        self.parsers['up'].add_argument(
+            '-n',
+            '--network-mode',
+            choices=[
+                'bridge',
+                'host'
+            ],
+            default='bridge'
         )
 
         for key, parser in self.parsers.items():
