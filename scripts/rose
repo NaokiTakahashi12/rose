@@ -71,6 +71,18 @@ class RoseCliHandler:
         execute_command = execute_command + [args.service, 'bash']
         subprocess.run(execute_command)
 
+    def start(self, args):
+        execute_command = self.compose_command + ['start']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
+
+    def stop(self, args):
+        execute_command = self.compose_command + ['stop']
+        if args.args != '':
+            execute_command = execute_command + [args.args]
+        subprocess.run(execute_command)
+
     def up(self, args):
         if platform.system() == 'Linux':
             subprocess.run([
@@ -185,6 +197,22 @@ class RoseCliHandler:
         )
         self.parsers['exec'].set_defaults(
             handler=self.exec
+        )
+        self.parsers['start'] = self.sub_arg_parsers.add_parser(
+            'start',
+            help='Start services.',
+            **common_parser_args
+        )
+        self.parsers['start'].set_defaults(
+            handler=self.start
+        )
+        self.parsers['stop'] = self.sub_arg_parsers.add_parser(
+            'stop',
+            help='Stop services.',
+            **common_parser_args
+        )
+        self.parsers['stop'].set_defaults(
+            handler=self.stop
         )
         self.parsers['up'] = self.sub_arg_parsers.add_parser(
             'up',
