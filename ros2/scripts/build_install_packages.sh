@@ -84,6 +84,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-octomap-msgs \
     ros-${ROS_DISTRO}-ackermann-msgs \
     ros-${ROS_DISTRO}-geographic-msgs \
+    ros-${ROS_DISTRO}-rosbridge-msgs \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-robot-state-publisher \
     ros-${ROS_DISTRO}-joint-state-publisher \
@@ -96,6 +97,10 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-teleop-twist-keyboard \
     ros-${ROS_DISTRO}-rclcpp-cascade-lifecycle \
+    ros-${ROS_DISTRO}-rosbridge-suite \
+    ros-${ROS_DISTRO}-rosbridge-server \
+    ros-${ROS_DISTRO}-rosbridge-library \
+    ros-${ROS_DISTRO}-foxglove-bridge \
 && mkdir -p preinstall_ws/src \
 && cd preinstall_ws/ \
 && vcs import src < $repos_file \
