@@ -85,6 +85,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-ackermann-msgs \
     ros-${ROS_DISTRO}-geographic-msgs \
     ros-${ROS_DISTRO}-rosbridge-msgs \
+    ros-${ROS_DISTRO}-pcl-msgs \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-robot-state-publisher \
     ros-${ROS_DISTRO}-joint-state-publisher \
@@ -105,13 +106,14 @@ export DEBIAN_FRONTEND=noninteractive \
 && cd preinstall_ws/ \
 && vcs import src < $repos_file \
     --recursive \
-&& colcon build \
+&& mold -run colcon build \
     --merge-install \
     --executor sequential \
     --parallel-workers $build_thread \
     --install-base /opt/ros_buildin/${ROS_DISTRO} \
     --cmake-args \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
         -DCMAKE_CXX_STANDARD_LIBRARIES="-lpthread" \
         -DCMAKE_SHARED_LINKER_FLAGS="-lpthread" \
         -DBUILD_TESTING=false \

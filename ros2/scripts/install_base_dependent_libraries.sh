@@ -45,6 +45,7 @@ export DEBIAN_FRONTEND=noninteractive \
     cmake \
     ansible \
     ca-certificates \
+    libboost-all-dev \
     libboost-system-dev \
     libboost-filesystem-dev \
     libboost-serialization-dev \
@@ -103,18 +104,18 @@ export DEBIAN_FRONTEND=noninteractive \
 && cmake --install build \
 && cd ../ \
 && git clone https://github.com/borglab/gtsam.git \
+    -b 4.1.1 \
     --depth 1 \
 && cd gtsam/ \
 && cmake \
     -S . \
     -B build \
-    -G Ninja \
-    -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
+    -DGTSAM_USE_SYSTEM_EIGEN=true \
     -DGTSAM_BUILD_WITH_MARCH_NATIVE=false \
     -DGTSAM_BUILD_EXAMPLES_ALWAYS=false \
     -DGTSAM_BUILD_TESTS=false \
     -DCMAKE_BUILD_TYPE=Release \
-&& mold -run cmake --build build -j $build_thread \
+&& cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
 && git clone https://github.com/rbdl/rbdl.git \
@@ -164,10 +165,9 @@ export DEBIAN_FRONTEND=noninteractive \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
-&& git clone https://github.com/unitreerobotics/unitree_legged_sdk.git \
-    -b v3.8.0 \
+&& git clone https://github.com/NaokiTakahashi12/unitree_legged_sdk.git \
+    -b go1-latest \
 && cd unitree_legged_sdk/ \
-&& git checkout 5120926cb0 \
 && cmake \
     -S . \
     -B build \
