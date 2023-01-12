@@ -77,6 +77,8 @@ export DEBIAN_FRONTEND=noninteractive \
     python3-colcon-cmake \
     python3-colcon-pkg-config \
     python3-colcon-ros \
+    ros-${ROS_DISTRO}-turtlebot3-description \
+    ros-${ROS_DISTRO}-moveit-resources-panda-description \
     ros-${ROS_DISTRO}-rviz2 \
     ros-${ROS_DISTRO}-rviz-imu-plugin \
     ros-${ROS_DISTRO}-octomap-rviz-plugins \
