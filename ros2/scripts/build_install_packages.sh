@@ -87,6 +87,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-rosbridge-msgs \
     ros-${ROS_DISTRO}-pcl-msgs \
     ros-${ROS_DISTRO}-xacro \
+    ros-${ROS_DISTRO}-velodyne-description \
     ros-${ROS_DISTRO}-robot-state-publisher \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-diagnostic-updater \
@@ -94,10 +95,11 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-rviz-common \
     ros-${ROS_DISTRO}-rviz-default-plugins \
     ros-${ROS_DISTRO}-joy \
-    ros-${ROS_DISTRO}-teleop-tools \
     ros-${ROS_DISTRO}-joy-teleop \
+    ros-${ROS_DISTRO}-teleop-tools \
     ros-${ROS_DISTRO}-teleop-twist-joy \
     ros-${ROS_DISTRO}-teleop-twist-keyboard \
+    ros-${ROS_DISTRO}-twist-mux \
     ros-${ROS_DISTRO}-rclcpp-cascade-lifecycle \
     ros-${ROS_DISTRO}-rosbridge-suite \
     ros-${ROS_DISTRO}-rosbridge-server \
