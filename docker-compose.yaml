@@ -20,9 +20,7 @@ services:
     image: busybox
     volumes:
       - ~/.vim:/root/.vim:ro
-      - ~/.vim:/root/.config/nvim:ro
       - ~/.vimrc:/root/.vimrc:ro
-      - ~/.vimrc:/root/.config/nvim/init.vim:ro
       - ~/.inputrc:/root/.inputrc:ro
   host-devices:
     image: busybox
