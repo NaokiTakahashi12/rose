@@ -11,6 +11,10 @@ repositories:
     type: git
     url: https://github.com/CCNYRoboticsLab/imu_tools.git
     version: humble
+  naokitakahashi12/teleop_twist_stamped_joy:
+    type: git
+    url: https://github.com/NaokiTakahashi12/teleop_twist_stamped_joy.git
+    version: main
   octomap/octomap_msgs:
     type: git
     url: https://github.com/OctoMap/octomap_msgs.git
@@ -63,6 +67,10 @@ repositories:
     type: git
     url: https://github.com/ros-drivers/velodyne.git
     version: ros2
+  ros_perception/depthimage_to_laserscan:
+    type: git
+    url: https://github.com/ros-perception/depthimage_to_laserscan.git
+    version: ros2
   ros_perception/image_common:
     type: git
     url: https://github.com/ros-perception/image_common.git
@@ -83,6 +91,10 @@ repositories:
     type: git
     url: https://github.com/ros-perception/perception_pcl.git
     version: ros2
+  ros_perception/pointcloud_to_laserscan:
+    type: git
+    url: https://github.com/ros-perception/pointcloud_to_laserscan.git
+    version: humble
   ros_perception/vision_opencv:
     type: git
     url: https://github.com/ros-perception/vision_opencv.git

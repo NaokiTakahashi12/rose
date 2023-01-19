@@ -86,6 +86,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-geographic-msgs \
     ros-${ROS_DISTRO}-rosbridge-msgs \
     ros-${ROS_DISTRO}-pcl-msgs \
+    ros-${ROS_DISTRO}-domain-bridge \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-velodyne-description \
     ros-${ROS_DISTRO}-robot-state-publisher \
