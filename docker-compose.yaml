@@ -51,6 +51,7 @@ services:
     image: naokitakahashi12/rose:humble-develop
     tty: true
     privileged: true
+    shm_size: 256m
     devices:
       - /dev/dri
     volumes_from:
@@ -107,6 +108,7 @@ services:
     image: naokitakahashi12/rose:galactic-develop
     tty: true
     privileged: true
+    shm_size: 256m
     devices:
       - /dev/dri
     volumes_from:

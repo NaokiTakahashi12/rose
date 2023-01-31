@@ -101,6 +101,14 @@ class RoseCliHandler:
                     'docker-compose.host.yaml'
                 )]
             execute_command = host_mode_compose + ['up', '-d']
+        elif args.network_mode == 'bridge':
+            bridge_mode_compose = self.compose_command + ['-f',
+                os.path.join(
+                    self.rose_package_dir,
+                    'override',
+                    'docker-compose.bridge.yaml'
+                )]
+            execute_command = bridge_mode_compose + ['up', '-d']
         else:
             execute_command = self.compose_command + ['up', '-d']
         if args.args != '':
