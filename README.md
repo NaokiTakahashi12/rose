@@ -87,3 +87,11 @@ Tags are divided into "runtime" tags and "develop" tags, each with the following
 
 - A runtime tag is an environment to deploy to a robot.
 - A development-time tag is an environment that includes a simulator to be developed before deploying to a robot.
+
+
+## Installed ros2 packages
+
++ [humble develop](docs/installed_packages/humble_develop.txt)
++ [humble runtime](docs/installed_packages/humble_runtime.txt)
++ [galactic develop](docs/installed_packages/galactic_develop.txt)
++ [galactic runtime](docs/installed_packages/galactic_runtime.txt)
