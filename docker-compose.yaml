@@ -65,6 +65,8 @@ services:
       - env_files/xwindow.env
     environment:
       - ROS_HOSTNAME=humble
+    volumes:
+      - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
     working_dir: /rose/colcon_ws
     command: >
       /bin/bash
