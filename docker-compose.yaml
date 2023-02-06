@@ -67,6 +67,7 @@ services:
       - ROS_HOSTNAME=humble
     volumes:
       - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
+      - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
     working_dir: /rose/colcon_ws
     command: >
       /bin/bash
