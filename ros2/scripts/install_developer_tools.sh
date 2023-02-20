@@ -58,6 +58,7 @@ then
 fi
 
 export DEBIAN_FRONTEND=noninteractive \
+export RTI_NC_LICENSE_ACCEPTED=yes \
 && apt-get update --quiet --fix-missing \
 && apt-get install --yes --quiet --no-install-recommends \
     vim \
