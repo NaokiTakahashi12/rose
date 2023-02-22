@@ -31,7 +31,6 @@ else
 fi
 
 export DEBIAN_FRONTEND=noninteractive \
-export RTI_NC_LICENSE_ACCEPTED=yes \
 && apt-get update --quiet --fix-missing \
 && apt-get install --yes --quiet --no-install-recommends \
     software-properties-common \
@@ -53,8 +52,6 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     ros-${ROS_DISTRO}-fastrtps \
     ros-${ROS_DISTRO}-rmw-fastrtps-cpp \
     ros-${ROS_DISTRO}-rmw-fastrtps-dynamic-cpp \
-    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    ros-${ROS_DISTRO}-rmw-connextdds \
     ros-${ROS_DISTRO}-rosbag2-storage-mcap \
 && apt-get remove ---purge --yes \
     software-properties-common \

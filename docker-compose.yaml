@@ -65,6 +65,7 @@ services:
       - developer-local-config
       - host-devices
     env_file:
+      - env_files/rust.env
       - env_files/ignition_gazebo.env
       - env_files/ros2.env
       - env_files/xwindow.env
@@ -85,6 +86,7 @@ services:
       target: runtime
     image: naokitakahashi12/rose:humble-runtime
     env_file:
+      - env_files/rust.env
       - env_files/ignition_gazebo.env
       - env_files/ros2.env
       - env_files/xwindow.env
@@ -133,6 +135,7 @@ services:
       - developer-local-config
       - host-devices
     env_file:
+      - env_files/rust.env
       - env_files/ignition_gazebo.env
       - env_files/ros2.env
       - env_files/xwindow.env
