@@ -61,6 +61,7 @@ export DEBIAN_FRONTEND=noninteractive \
 export RTI_NC_LICENSE_ACCEPTED=yes \
 && apt-get update --quiet --fix-missing \
 && apt-get install --yes --quiet --no-install-recommends \
+    curl \
     vim \
     git \
     make \
@@ -119,4 +120,12 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
         champ_gazebo \
 && cd ../ \
 && rm -rf preinstall_ws \
+|| exit 1
+
+export RUST_HOME=/usr/local/lib/rust \
+&& export RUSTUP_HOME=$RUST_HOME/rustup \
+&& export CARGO_HOME=$RUST_HOME/cargo \
+&& mkdir /usr/local/lib/rust \
+&& curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /tmp/rustup.sh \
+&& sh /tmp/rustup.sh -y \
 || exit 1
