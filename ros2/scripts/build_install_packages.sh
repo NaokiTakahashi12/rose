@@ -128,6 +128,7 @@ export DEBIAN_FRONTEND=noninteractive \
         gps_umd \
         rviz_imu_plugin \
         plansys2_tools \
+        nav2_mppi_controller \
 && cd ../ \
 && rm -rf preinstall_ws \
 && apt-get remove ---purge --yes \

@@ -165,7 +165,41 @@ export DEBIAN_FRONTEND=noninteractive \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
+&& git clone https://github.com/xtensor-stack/xtl.git \
+    --depth 1 \
+&& cd xtl/ \
+&& cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/xtensor-stack/xtensor.git \
+    --depth 1 \
+&& cd xtensor/ \
+&& cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/xtensor-stack/xsimd.git \
+    --depth 1 \
+&& cd xsimd/ \
+&& cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+&& mold -run cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
 && git clone https://github.com/NaokiTakahashi12/unitree_legged_sdk.git \
+    --depth 1 \
     -b go1-latest \
 && cd unitree_legged_sdk/ \
 && cmake \
