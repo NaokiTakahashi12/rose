@@ -1,4 +1,8 @@
 repositories:
+  cartographer:
+    type: git
+    url: https://github.com/cartographer-project/cartographer.git
+    version: master
   champ:
     type: git
     url: https://github.com/chvmp/champ.git
@@ -23,6 +27,10 @@ repositories:
     type: git
     url: https://github.com/ros2/rmw_iceoryx.git
     version: humble
+  ros2/cartographer_ros:
+    type: git
+    url: https://github.com/ros2/cartographer_ros.git
+    version: ros2
   ros_controls/gz_ros2_control:
     type: git
     url: https://github.com/ros-controls/gz_ros2_control.git
