@@ -50,6 +50,14 @@ then
 fi
 
 distoribution_unique_package=""
+build_ignore_packages="
+        nav2_system_tests \
+        test_bond \
+        gps_umd \
+        rviz_imu_plugin \
+        plansys2_tools \
+        nav2_mppi_controller \
+"
 
 if [ "${ROS_DISTRO}" = "humble" ]
 then
@@ -123,12 +131,7 @@ export DEBIAN_FRONTEND=noninteractive \
         -DBUILD_TESTING=false \
         -DCMAKE_POSITION_INDEPENDENT_CODE=true \
     --packages-ignore \
-        nav2_system_tests \
-        test_bond \
-        gps_umd \
-        rviz_imu_plugin \
-        plansys2_tools \
-        nav2_mppi_controller \
+        $build_ignore_packages \
 && cd ../ \
 && rm -rf preinstall_ws \
 && apt-get remove ---purge --yes \

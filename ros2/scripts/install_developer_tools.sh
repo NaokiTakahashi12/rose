@@ -20,8 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# TODO argument of rosdistro
+build_thread=$((`nproc`/2))
 
+if [ 0 -eq $build_thread ]
+then
+    build_thread=1
+fi
+
+# TODO argument of rosdistro
 if [ -z "${ROS_DISTRO}" ]
 then
     echo "Empty ROS_DISTRO variable"
@@ -57,6 +63,22 @@ then
     . /opt/ros_buildin/${ROS_DISTRO}/setup.sh
 fi
 
+build_ignore_packages="
+        champ_gazebo \
+"
+
+if [ "${ROS_DISTRO}" = "humble" ]
+then
+    build_ignore_packages="
+        $build_ignore_packages \
+    "
+else
+    build_ignore_packages="
+        $build_ignore_packages \
+        unitree_go1_bridge \
+    "
+fi
+
 export DEBIAN_FRONTEND=noninteractive \
 export RTI_NC_LICENSE_ACCEPTED=yes \
 && apt-get update --quiet --fix-missing \
@@ -71,6 +93,7 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     g++ \
     tmux \
     silversearcher-ag \
+    libcairo-dev \
     python3-pip \
     python3-vcstool \
     python3-colcon-common-extensions \
@@ -101,6 +124,22 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     ros-${ROS_DISTRO}-ament-clang-format \
     ros-${ROS_DISTRO}-ament-mypy \
     ros-${ROS_DISTRO}-ament-xmllint \
+&& mkdir install_from_sources \
+&& cd install_from_sources/ \
+&& git clone https://github.com/abseil/abseil-cpp.git \
+&& cd abseil-cpp/ \
+&& git checkout 2151058 \
+&& cmake \
+    -S . \
+    -B build \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_POSITION_INDEPENDENT_CODE=true \
+    -Dprotobuf_BUILD_TESTS=false \
+&& cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd .. \
+&& cd .. \
+&& rm -rf install_from_sources \
 && mkdir -p preinstall_ws/src \
 && cd preinstall_ws/ \
 && vcs import src < $repos_file \
@@ -117,7 +156,7 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
         -DBUILD_TESTING=false \
         -DCMAKE_POSITION_INDEPENDENT_CODE=true \
     --packages-ignore \
-        champ_gazebo \
+        $build_ignore_packages \
 && cd ../ \
 && rm -rf preinstall_ws \
 || exit 1
