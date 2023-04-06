@@ -92,6 +92,8 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     gcc \
     g++ \
     tmux \
+    fzf \
+    zoxide \
     silversearcher-ag \
     libcairo-dev \
     python3-pip \
