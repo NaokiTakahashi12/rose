@@ -93,7 +93,6 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     g++ \
     tmux \
     fzf \
-    zoxide \
     silversearcher-ag \
     libcairo-dev \
     python3-pip \
@@ -169,4 +168,7 @@ export RUST_HOME=/usr/local/lib/rust \
 && mkdir /usr/local/lib/rust \
 && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > /tmp/rustup.sh \
 && sh /tmp/rustup.sh -y \
+&& . /usr/local/lib/rust/cargo/env \
+&& cargo install \
+    zoxide \
 || exit 1
