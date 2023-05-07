@@ -7,6 +7,10 @@ repositories:
     type: git
     url: https://github.com/chvmp/champ.git
     version: ros2
+  naokitakahashi12/fzf_ros2:
+    type: git
+    url: https://github.com/NaokiTakahashi12/fzf_ros2.git
+    version: main
   naokitakahashi12/geometry_rviz_plugins:
     type: git
     url: https://github.com/NaokiTakahashi12/geometry_rviz_plugins.git

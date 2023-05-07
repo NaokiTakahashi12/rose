@@ -3,6 +3,10 @@ repositories:
     type: git
     url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
     version: v3.8
+  generate_parameter_library:
+    type: git 
+    url: https://github.com/PickNikRobotics/generate_parameter_library.git
+    version: main
   grid_map:
     type: git
     url: https://github.com/ANYbotics/grid_map.git
@@ -14,6 +18,10 @@ repositories:
   naokitakahashi12/teleop_twist_stamped_joy:
     type: git
     url: https://github.com/NaokiTakahashi12/teleop_twist_stamped_joy.git
+    version: main
+  naokitakahashi12/legged_motion_msgs:
+    type: git
+    url: https://github.com/NaokiTakahashi12/legged_motion_msgs.git
     version: main
   octomap/octomap_msgs:
     type: git
@@ -43,6 +51,10 @@ repositories:
     type: git
     url: https://github.com/ros/filters.git
     version: ros2
+  ros_controls/control_msgs:
+    type: git
+    url: https://github.com/ros-controls/control_msgs.git
+    version: humble
   ros_controls/control_toolbox:
     type: git
     url: https://github.com/ros-controls/control_toolbox.git

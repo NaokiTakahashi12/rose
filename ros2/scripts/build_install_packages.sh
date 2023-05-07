@@ -57,6 +57,7 @@ build_ignore_packages="
         rviz_imu_plugin \
         plansys2_tools \
         nav2_mppi_controller \
+        generate_parameter_library_example \
 "
 
 if [ "${ROS_DISTRO}" = "humble" ]
@@ -64,7 +65,6 @@ then
     distoribution_unique_package="
         ros-${ROS_DISTRO}-rcpputils \
         ros-${ROS_DISTRO}-nlohmann-json-schema-validator-vendor \
-        ros-${ROS_DISTRO}-generate-parameter-library \
         ros-${ROS_DISTRO}-rsl
     "
 else
@@ -80,6 +80,7 @@ export DEBIAN_FRONTEND=noninteractive \
     g++ \
     python3-vcstool \
     python3-colcon-common-extensions \
+    python3-typeguard \
     libpcap-dev \
     libgps-dev \
     liboctomap-dev \
