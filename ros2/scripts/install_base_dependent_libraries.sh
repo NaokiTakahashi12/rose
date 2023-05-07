@@ -76,7 +76,7 @@ export DEBIAN_FRONTEND=noninteractive \
 && cd install_from_sources/ \
 && git clone https://github.com/rui314/mold.git \
     --depth 1 \
-    --branch v1.7.1 \
+    --branch v1.11.0 \
 && cd mold/ \
 && cmake \
     -S . \
