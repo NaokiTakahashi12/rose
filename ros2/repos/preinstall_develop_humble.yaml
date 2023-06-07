@@ -1,4 +1,8 @@
 repositories:
+  actuator_msgs:
+    type: git
+    url: https://github.com/rudislabs/actuator_msgs.git
+    version: main
   cartographer:
     type: git
     url: https://github.com/cartographer-project/cartographer.git
@@ -38,7 +42,7 @@ repositories:
   ros_controls/gz_ros2_control:
     type: git
     url: https://github.com/ros-controls/gz_ros2_control.git
-    version: master
+    version: e82d30b
   ros_gz:
     type: git
     url: https://github.com/gazebosim/ros_gz.git
