@@ -16,6 +16,8 @@ class RoseCliHandler:
         self.__init_arg_parser()
         self.__init_compose_command()
 
+        self.default_profile = 'humble'
+
         try:
             import argcomplete
         except ImportError:
@@ -93,6 +95,8 @@ class RoseCliHandler:
                     'generate_docker_xauth.sh'
                 )
             ])
+        # TODO
+        profile_option = ['--profile', self.default_profile]
         if args.network_mode == 'host':
             host_mode_compose = self.compose_command + ['-f',
                 os.path.join(
@@ -100,7 +104,7 @@ class RoseCliHandler:
                     'override',
                     'docker-compose.host.yaml'
                 )]
-            execute_command = host_mode_compose + ['up', '-d']
+            execute_command = host_mode_compose
         elif args.network_mode == 'bridge':
             bridge_mode_compose = self.compose_command + ['-f',
                 os.path.join(
@@ -108,21 +112,28 @@ class RoseCliHandler:
                     'override',
                     'docker-compose.bridge.yaml'
                 )]
-            execute_command = bridge_mode_compose + ['up', '-d']
+            execute_command = bridge_mode_compose
         else:
-            execute_command = self.compose_command + ['up', '-d']
+            execute_command = self.compose_command
+        execute_command += profile_option
+        execute_command += ['up', '-d']
         if args.args != '':
             execute_command = execute_command + [args.args]
+        print(execute_command)
         subprocess.run(execute_command)
 
     def down(self, args):
-        execute_command = self.compose_command + ['down']
+        execute_command = self.compose_command
+        execute_command += ['--profile', self.default_profile]
+        execute_command += ['down']
         if args.args != '':
-            execute_command = execute_command + [args.args]
+            execute_command += [args.args]
         subprocess.run(execute_command)
     
     def build(self, args):
-        execute_command = self.compose_command + ['build']
+        execute_command = self.compose_command
+        execute_command += ['--profile', self.default_profile]
+        execute_command += ['build']
         if args.args != '':
             execute_command = execute_command + [args.args]
         subprocess.run(execute_command)
