@@ -1,0 +1,29 @@
+version: '3.5'
+
+services:
+  galactic-runtime:
+    build:
+      args:
+        BASE_IMAGE: nvcr.io/nvidia/l4t-pytorch:r35.2.1-pth2.0-py3
+    image: naokitakahashi12/rose:galactic-runtime-l4t-pytorch-r35.2.1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+  galactic:
+    build:
+      args:
+        BASE_IMAGE: nvcr.io/nvidia/l4t-pytorch:r35.2.1-pth2.0-py3
+    image: naokitakahashi12/rose:galactic-develop-l4t-pytorch-r35.2.1
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
