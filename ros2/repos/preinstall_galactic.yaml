@@ -78,7 +78,7 @@ repositories:
   ros_perception/vision_opencv:
     type: git
     url: https://github.com/ros-perception/vision_opencv.git
-    version: humble
+    version: galactic
   ros_planning/navigation2:
     type: git
     url: https://github.com/ros-planning/navigation2.git

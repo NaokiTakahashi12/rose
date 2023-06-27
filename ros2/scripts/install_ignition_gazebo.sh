@@ -161,6 +161,7 @@ export DEBIAN_FRONTEND=noninteractive \
         -DCMAKE_SHARED_LINKER_FLAGS="-lpthread" \
         -DBUILD_TESTING=false \
         -DCMAKE_POSITION_INDEPENDENT_CODE=true \
+        -DSKIP_PYBIND11=true \
 && cd ../ \
 && rm -rf ign_${IGNITION_VERSION}_ws \
 && apt-get remove --purge --yes \

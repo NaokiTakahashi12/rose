@@ -66,11 +66,18 @@ fi
 build_ignore_packages="
         champ_gazebo \
 "
+distoribution_package=""
 
 if [ "${ROS_DISTRO}" = "humble" ]
 then
     build_ignore_packages="
         $build_ignore_packages \
+    "
+    distoribution_package="
+        $distoribution_package \
+        ros-${ROS_DISTRO}-rqt-image-view \
+        ros-${ROS_DISTRO}-rqt-image-overlay \
+        ros-${ROS_DISTRO}-rqt-image-overlay-layer \
     "
 else
     build_ignore_packages="
@@ -94,7 +101,7 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     tmux \
     fzf \
     silversearcher-ag \
-    libcairo-dev \
+    libcairo2-dev \
     python3-pip \
     python3-vcstool \
     python3-colcon-common-extensions \
@@ -112,9 +119,6 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     ros-${ROS_DISTRO}-octomap-rviz-plugins \
     ros-${ROS_DISTRO}-plansys2-tools \
     ros-${ROS_DISTRO}-rmf-visualization-rviz2-plugins \
-    ros-${ROS_DISTRO}-rqt-image-view \
-    ros-${ROS_DISTRO}-rqt-image-overlay \
-    ros-${ROS_DISTRO}-rqt-image-overlay-layer \
     ros-${ROS_DISTRO}-rqt-plot \
     ros-${ROS_DISTRO}-rqt-reconfigure \
     ros-${ROS_DISTRO}-rqt-robot-dashboard \
@@ -125,6 +129,7 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     ros-${ROS_DISTRO}-ament-clang-format \
     ros-${ROS_DISTRO}-ament-mypy \
     ros-${ROS_DISTRO}-ament-xmllint \
+    $distoribution_package \
 && mkdir install_from_sources \
 && cd install_from_sources/ \
 && git clone https://github.com/abseil/abseil-cpp.git \

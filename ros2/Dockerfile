@@ -14,7 +14,6 @@ ENV ROS_DISTRO=${ROS_DISTRO}
 COPY scripts/install_base_dependent_libraries.sh /rose/setup/
 
 RUN apt-get update --quiet \
-    && apt-get upgrade --quiet --yes \
     && sh rose/setup/install_base_dependent_libraries.sh \
     && apt-get autoremove --yes \
     && apt-get clean \

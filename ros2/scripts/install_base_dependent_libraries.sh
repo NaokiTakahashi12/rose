@@ -27,6 +27,15 @@ then
     build_thread=1
 fi
 
+# To avoid Jetson /tmp/apt-dpkg-install-cLwPHV/261-libopencv-dev_4.5.4-8-g3e4c170df4_arm64.deb
+if ! apt list --installed | grep -q libopencv-dev
+then
+    export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update --quiet \
+    && apt-get install --yes --quiet --no-install-recommends \
+        libopencv-dev
+fi
+
 export DEBIAN_FRONTEND=noninteractive \
 && export CXX=g++-11 \
 && export CC=gcc-11 \
@@ -68,7 +77,6 @@ export DEBIAN_FRONTEND=noninteractive \
     stow \
     liblua5.2-dev \
     coinor-libipopt-dev \
-    libopencv-dev \
     libpcl-dev \
     nlohmann-json3-dev \
     libtbb-dev \
