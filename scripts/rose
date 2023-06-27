@@ -14,6 +14,13 @@ from shutil import which
 class RoseCliHandler:
     def __init__(self):
         self.__init_arg_parser()
+
+        if self.__is_nvidia_jetson():
+            # Since there is only support for 20.04
+            self.default_profile = 'galactic'
+        else:
+            self.default_profile = 'humble'
+
         self.__init_compose_command()
 
         try:
@@ -100,7 +107,7 @@ class RoseCliHandler:
                     'override',
                     'docker-compose.host.yaml'
                 )]
-            execute_command = host_mode_compose + ['up', '-d']
+            execute_command = host_mode_compose
         elif args.network_mode == 'bridge':
             bridge_mode_compose = self.compose_command + ['-f',
                 os.path.join(
@@ -108,17 +115,20 @@ class RoseCliHandler:
                     'override',
                     'docker-compose.bridge.yaml'
                 )]
-            execute_command = bridge_mode_compose + ['up', '-d']
+            execute_command = bridge_mode_compose
         else:
-            execute_command = self.compose_command + ['up', '-d']
+            execute_command = self.compose_command
+        execute_command += ['up', '-d']
         if args.args != '':
             execute_command = execute_command + [args.args]
+        print(execute_command)
         subprocess.run(execute_command)
 
     def down(self, args):
-        execute_command = self.compose_command + ['down']
+        execute_command = self.compose_command
+        execute_command += ['down']
         if args.args != '':
-            execute_command = execute_command + [args.args]
+            execute_command += [args.args]
         subprocess.run(execute_command)
     
     def build(self, args):
@@ -309,12 +319,12 @@ class RoseCliHandler:
             self.this_script_dir,
             '..'
         )
-
         self.compose_command = []
         self.compose_command.append('docker')
         self.compose_command.append('compose')
 
         self.compose_command += self.__gen_compose_file_path()
+        self.compose_command += ['--profile', self.default_profile]
 
     def __gen_compose_file_path(self):
         compose_file_override = []
@@ -326,18 +336,30 @@ class RoseCliHandler:
                 'docker-compose.yaml'
             )
         )
+        platform_specificate_compose = None
 
-        if not which('nvidia-smi') is None:
-            compose_file_override.append('-f')
-            compose_file_override.append(
-                os.path.join(
-                    self.rose_package_dir,
-                    'override',
-                    'docker-compose.nvidia.yaml'
-                )
+        if self.__has_nvidia_driver():
+            platform_specificate_compose = 'docker-compose.nvidia.yaml'
+        elif self.__is_nvidia_jetson():
+            platform_specificate_compose = 'docker-compose.jetson.yaml'
+
+        if platform_specificate_compose is not None:
+            compose_path = os.path.join(
+                self.rose_package_dir,
+                'override',
+                platform_specificate_compose
             )
+            if not os.path.exists(compose_path):
+                raise RuntimeError('Not found override compose path ' + compose_path)
+            compose_file_override += ['-f', compose_path]
 
         return compose_file_override
+
+    def __has_nvidia_driver(self):
+        return which('nvidia-smi') is not None
+
+    def __is_nvidia_jetson(self):
+        return which('tegrastats') is not None
 
 
 if __name__ == '__main__':

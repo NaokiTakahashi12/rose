@@ -10,10 +10,14 @@ services:
       - /etc/localtime:/etc/localtime:ro
   humble-workspace:
     image: busybox
+    profiles:
+      - humble
     volumes:
       - ./workspace/humble:/rose/colcon_ws:rw
   galactic-workspace:
     image: busybox
+    profiles:
+      - galactic
     volumes:
       - ./workspace/galactic:/rose/colcon_ws:rw
   developer-local-config:
@@ -35,6 +39,8 @@ services:
         BASE_IMAGE: ubuntu:22.04
       target: runtime
     image: naokitakahashi12/rose:humble-runtime
+    profiles:
+      - humble
     tty: true
     volumes_from:
       - host-devices
@@ -54,6 +60,8 @@ services:
         BASE_IMAGE: ubuntu:22.04
       target: develop
     image: naokitakahashi12/rose:humble-develop
+    profiles:
+      - humble
     tty: true
     privileged: true
     shm_size: 256m
@@ -85,6 +93,8 @@ services:
         BASE_IMAGE: ubuntu:22.04
       target: runtime
     image: naokitakahashi12/rose:humble-runtime
+    profiles:
+      - humble
     env_file:
       - env_files/rust.env
       - env_files/ignition_gazebo.env
@@ -105,6 +115,8 @@ services:
         BASE_IMAGE: ubuntu:20.04
       target: runtime
     image: naokitakahashi12/rose:galactic-runtime
+    profiles:
+      - galactic
     tty: true
     volumes_from:
       - host-devices
@@ -124,6 +136,8 @@ services:
         BASE_IMAGE: ubuntu:20.04
       target: develop
     image: naokitakahashi12/rose:galactic-develop
+    profiles:
+      - galactic
     tty: true
     privileged: true
     shm_size: 256m
