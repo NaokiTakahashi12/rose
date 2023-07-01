@@ -121,7 +121,6 @@ class RoseCliHandler:
         execute_command += ['up', '-d']
         if args.args != '':
             execute_command = execute_command + [args.args]
-        print(execute_command)
         subprocess.run(execute_command)
 
     def down(self, args):

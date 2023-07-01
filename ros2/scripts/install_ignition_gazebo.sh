@@ -165,11 +165,7 @@ export DEBIAN_FRONTEND=noninteractive \
 && cd ../ \
 && rm -rf ign_${IGNITION_VERSION}_ws \
 && apt-get remove --purge --yes \
-    gnupg2 \
     ninja-build \
-    gcc-9 \
-    g++-9 \
-    software-properties-common \
 || exit 1
 
 if [ -d ign_${IGNITION_VERSION}_ws/install/lib/ignition/ignition-common4 ]
