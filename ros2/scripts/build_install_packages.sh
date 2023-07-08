@@ -78,6 +78,7 @@ export DEBIAN_FRONTEND=noninteractive \
 && apt-get install --yes --quiet --no-install-recommends \
     gcc \
     g++ \
+    python3-pip \
     python3-vcstool \
     python3-colcon-common-extensions \
     python3-typeguard \
@@ -115,6 +116,8 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-rosbridge-server \
     ros-${ROS_DISTRO}-rosbridge-library \
     ros-${ROS_DISTRO}-foxglove-bridge \
+&& python3 -m pip install --no-cache-dir \
+    dash \
 && mkdir -p preinstall_ws/src \
 && cd preinstall_ws/ \
 && vcs import src < $repos_file \
