@@ -28,6 +28,13 @@ The ros2 distribution currently supported by rose are
 + galactic (CUDA)
 
 
+## Support platform
+
++ x86-64
++ aarch64
++ Jetson AGX Orin
+
+
 ## Local workspace
 
 The development workspace mounted on the container has the following relationship.
@@ -57,12 +64,12 @@ The development workspace mounted on the container has the following relationshi
 
 ```shell
 $ rose help
-usage: rose [-h] {help,version,get-compose-prefix,ps,ls,logs,pull,exec,up,down,build} ...
+usage: rose [-h] {help,version,get-compose-prefix,ps,ls,logs,pull,exec,start,stop,up,down,build} ...
 
 ROS Enviroment operation tools
 
 positional arguments:
-  {help,version,get-compose-prefix,ps,ls,logs,pull,exec,up,down,build}
+  {help,version,get-compose-prefix,ps,ls,logs,pull,exec,start,stop,up,down,build}
                         ROS Enviroment sub-commands
     help                Show the ROSE help infomation.
     version             Show the ROSE version infomation.
@@ -72,6 +79,8 @@ positional arguments:
     logs                View output log from container.
     pull                Pull ROSE service images.
     exec                Execute a bash command in a running container.
+    start               Start services.
+    stop                Stop services.
     up                  Create and start services.
     down                Stop and remove services.
     build               Build or rebuild services.
