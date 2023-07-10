@@ -74,7 +74,7 @@ repositories:
   ros_drivers/velodyne:
     type: git
     url: https://github.com/ros-drivers/velodyne.git
-    version: galactic-devel
+    version: ros2
   ros_perception/image_common:
     type: git
     url: https://github.com/ros-perception/image_common.git
