@@ -82,11 +82,14 @@ export DEBIAN_FRONTEND=noninteractive \
     python3-vcstool \
     python3-colcon-common-extensions \
     python3-typeguard \
+    doxygen \
     libpcap-dev \
     libgps-dev \
     liboctomap-dev \
     nlohmann-json3-dev \
     libyaml-cpp-dev \
+    libfmt-dev \
+    librange-v3-dev \
     $distoribution_unique_package \
     ros-${ROS_DISTRO}-ament-cmake \
     ros-${ROS_DISTRO}-test-msgs \
@@ -141,4 +144,5 @@ export DEBIAN_FRONTEND=noninteractive \
 && apt-get remove ---purge --yes \
     python3-vcstool \
     python3-colcon-common-extensions \
+    doxygen \
 || exit 1

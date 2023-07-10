@@ -82,7 +82,6 @@ then
 else
     build_ignore_packages="
         $build_ignore_packages \
-        unitree_go1_bridge \
     "
 fi
 
