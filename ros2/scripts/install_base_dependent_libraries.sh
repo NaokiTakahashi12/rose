@@ -36,6 +36,12 @@ then
         libopencv-dev
 fi
 
+CUDA_SUPPORT="false"
+if type "nvcc" > /dev/null 2>&1
+then
+    CUDA_SUPPORT="true"
+fi
+
 export DEBIAN_FRONTEND=noninteractive \
 && export CXX=g++-11 \
 && export CC=gcc-11 \
@@ -107,6 +113,8 @@ export DEBIAN_FRONTEND=noninteractive \
     -DGLFW_BUILD_EXAMPLES=false \
     -DBUILD_GRAPHICAL_EXAMPLES=false \
     -DBUILD_PCL_EXAMPLES=false \
+    -DBUILD_WITH_CUDA="$CUDA_SUPPORT" \
+    -DBUILD_WITH_OPENMP=true \
     -DCMAKE_BUILD_TYPE=Release \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
