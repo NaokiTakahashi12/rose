@@ -68,6 +68,8 @@ export DEBIAN_FRONTEND=noninteractive \
     libboost-timer-dev \
     libboost-chrono-dev \
     libboost-regex-dev \
+    libboost-date-time-dev \
+    libboost-iostreams-dev \
     libboost-python-dev \
     libgoogle-glog-dev \
     libgflags-dev \
@@ -83,14 +85,20 @@ export DEBIAN_FRONTEND=noninteractive \
     stow \
     liblua5.2-dev \
     coinor-libipopt-dev \
-    libpcl-dev \
+    libboost-all-dev \
+    libeigen3-dev \
+    libvtk7-dev \
+    libqhull-dev \
+    libopenni-dev \
+    libopenni2-dev \
     nlohmann-json3-dev \
     libtbb-dev \
+    liblz4-dev \
 && mkdir install_from_sources \
 && cd install_from_sources/ \
 && git clone https://github.com/rui314/mold.git \
     --depth 1 \
-    --branch v1.11.0 \
+    --branch v2.0.0 \
 && cd mold/ \
 && cmake \
     -S . \
@@ -98,6 +106,45 @@ export DEBIAN_FRONTEND=noninteractive \
     -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
 && cmake --build build -j $build_thread \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/flann-lib/flann.git \
+    --depth 1 \
+    --branch 1.9.2 \
+&& cd flann/ \
+&& cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DBUILD_CUDA_LIB="$CUDA_SUPPORT" \
+    -DCUDA_SDK_ROOT_DIR=/usr/local/cuda \
+    -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+    -DNVCC_COMPILER_BINDIR=/usr/bin \
+    -DBUILD_EXAMPLES=false \
+    -DBUILD_DOC=false \
+    -DBUILD_TESTS=false \
+    -DCMAKE_BUILD_TYPE=Release \
+&& VERBOSE=1 cmake --build build -j 1 \
+&& cmake --install build \
+&& cd ../ \
+&& git clone https://github.com/PointCloudLibrary/pcl.git \
+    --depth 1 \
+    --branch pcl-1.12.1 \
+&& cd pcl/ \
+&& cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
+    -DBUILD_GPU="$CUDA_SUPPORT" \
+    -DWITH_CUDA="$CUDA_SUPPORT" \
+    -DBUILD_CUDA="$CUDA_SUPPORT" \
+    -DBUILD_gpu_kinfu_large_scale_to=false \
+    -DBUILD_gpu_kinfu_large_scale=false \
+    -DBUILD_gpu_kinfu_tools=false \
+    -DBUILD_gpu_kinfu=false \
+    -DCMAKE_BUILD_TYPE=Release \
+&& mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
 && git clone https://github.com/IntelRealSense/librealsense.git \
