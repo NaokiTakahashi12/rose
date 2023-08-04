@@ -13,14 +13,15 @@ from shutil import which
 
 class RoseCliHandler:
     def __init__(self):
-        self.__init_arg_parser()
-
         if self.__is_nvidia_jetson():
             # Since there is only support for 20.04
             self.default_profile = 'galactic'
+            self.default_exec_service = 'galactic'
         else:
             self.default_profile = 'humble'
+            self.default_exec_service = 'humble'
 
+        self.__init_arg_parser()
         self.__init_compose_command()
 
         try:
@@ -272,7 +273,7 @@ class RoseCliHandler:
                 'humble', 'humble-runtime',
                 'galactic', 'galactic-runtime'
             ],
-            default='humble'
+            default=self.default_exec_service
         )
 
         self.parsers['up'].add_argument(
