@@ -31,6 +31,10 @@ repositories:
     type: git
     url: https://github.com/NaokiTakahashi12/unitree_go1_ros2.git
     version: main
+  ros/eigen_stl_containers:
+    type: git
+    url: https://github.com/ros/eigen_stl_containers.git
+    version: ros2
   ros2/rmw_iceoryx:
     type: git
     url: https://github.com/ros2/rmw_iceoryx.git
@@ -47,3 +51,39 @@ repositories:
     type: git
     url: https://github.com/gazebosim/ros_gz.git
     version: humble
+  ros_planning/geometric_shapes:
+    type: git
+    url: https://github.com/ros-planning/geometric_shapes.git
+    version: ros2
+  ros_planning/moveit2:
+    type: git
+    url: https://github.com/ros-planning/moveit2.git
+    version: humble
+  ros_planning/moveit_msgs:
+    type: git
+    url: https://github.com/ros-planning/moveit_msgs.git
+    version: humble
+  ros_planning/moveit_resources:
+    type: git
+    url: https://github.com/ros-planning/moveit_resources.git
+    version: humble
+  ros_planning/random_numbers:
+    type: git
+    url: https://github.com/ros-planning/random_numbers.git
+    version: ros2
+  ros_planning/srdfdom:
+    type: git
+    url: https://github.com/ros-planning/srdfdom.git
+    version: ros2
+  ros_planning/warehouse_ros:
+    type: git
+    url: https://github.com/ros-planning/warehouse_ros.git
+    version: ros2
+  ws_perception/object_recognition_msgs:
+    type: git
+    url: https://github.com/wg-perception/object_recognition_msgs.git
+    version: ros2
+  pantor/ruckig:
+    type: git
+    url: https://github.com/pantor/ruckig.git
+    version: master
