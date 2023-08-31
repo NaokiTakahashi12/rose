@@ -102,6 +102,7 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     silversearcher-ag \
     libcairo2-dev \
     python3-pip \
+    python3-flask \
     python3-vcstool \
     python3-colcon-common-extensions \
     python3-colcon-argcomplete \
@@ -118,6 +119,7 @@ export RTI_NC_LICENSE_ACCEPTED=yes \
     ros-${ROS_DISTRO}-octomap-rviz-plugins \
     ros-${ROS_DISTRO}-plansys2-tools \
     ros-${ROS_DISTRO}-rmf-visualization-rviz2-plugins \
+    ros-${ROS_DISTRO}-slam-toolbox \
     ros-${ROS_DISTRO}-rqt-plot \
     ros-${ROS_DISTRO}-rqt-reconfigure \
     ros-${ROS_DISTRO}-rqt-robot-dashboard \
