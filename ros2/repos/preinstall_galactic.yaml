@@ -1,5 +1,5 @@
 repositories:
-  BehaviorTree.CPP:
+  behavior_tree_cpp:
     type: git
     url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
     version: v3.8
@@ -99,6 +99,26 @@ repositories:
     type: git
     url: https://github.com/ros-planning/navigation2.git
     version: galactic
+  rst_tu_dortmund/costmap_converter:
+    type: git
+    url: https://github.com/rst-tu-dortmund/costmap_converter.git
+    version: ros2
+  rst_tu_dortmund/teb_local_planner:
+    type: git
+    url: https://github.com/rst-tu-dortmund/teb_local_planner.git
+    version: ros2-master
+  rtabmap:
+    type: git
+    url: https://github.com/introlab/rtabmap.git
+    version: galactic-devel
+  rtcm_msgs:
+    type: git
+    url: https://github.com/tilk/rtcm_msgs.git
+    version: master
+  swri_robotics/gps_umd:
+    type: git
+    url: https://github.com/swri-robotics/gps_umd
+    version: ros2-devel
   ublox:
     type: git
     url: https://github.com/KumarRobotics/ublox.git

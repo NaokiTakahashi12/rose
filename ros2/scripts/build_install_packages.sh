@@ -91,6 +91,8 @@ export DEBIAN_FRONTEND=noninteractive \
     libfmt-dev \
     librange-v3-dev \
     $distoribution_unique_package \
+    ros-${ROS_DISTRO}-libg2o \
+    ros-${ROS_DISTRO}-ament-cmake \
     ros-${ROS_DISTRO}-ament-cmake \
     ros-${ROS_DISTRO}-test-msgs \
     ros-${ROS_DISTRO}-map-msgs \
