@@ -138,6 +138,7 @@ export DEBIAN_FRONTEND=noninteractive \
         -DCMAKE_CXX_STANDARD_LIBRARIES="-lpthread" \
         -DCMAKE_SHARED_LINKER_FLAGS="-lpthread" \
         -DBUILD_TESTING=false \
+        -DWITH_QT=false \
         -DCMAKE_POSITION_INDEPENDENT_CODE=true \
     --packages-ignore \
         $build_ignore_packages \
