@@ -91,6 +91,8 @@ export DEBIAN_FRONTEND=noninteractive \
     libfmt-dev \
     librange-v3-dev \
     $distoribution_unique_package \
+    ros-${ROS_DISTRO}-libg2o \
+    ros-${ROS_DISTRO}-ament-cmake \
     ros-${ROS_DISTRO}-ament-cmake \
     ros-${ROS_DISTRO}-test-msgs \
     ros-${ROS_DISTRO}-map-msgs \
@@ -136,6 +138,7 @@ export DEBIAN_FRONTEND=noninteractive \
         -DCMAKE_CXX_STANDARD_LIBRARIES="-lpthread" \
         -DCMAKE_SHARED_LINKER_FLAGS="-lpthread" \
         -DBUILD_TESTING=false \
+        -DWITH_QT=false \
         -DCMAKE_POSITION_INDEPENDENT_CODE=true \
     --packages-ignore \
         $build_ignore_packages \
