@@ -19,6 +19,10 @@ repositories:
     type: git
     url: https://github.com/NaokiTakahashi12/teleop_twist_stamped_joy.git
     version: main
+  naokitakahashi12/joint_state_merger:
+    type: git
+    url: https://github.com/NaokiTakahashi12/joint_state_merger.git
+    version: main
   naokitakahashi12/legged_motion_msgs:
     type: git
     url: https://github.com/NaokiTakahashi12/legged_motion_msgs.git
