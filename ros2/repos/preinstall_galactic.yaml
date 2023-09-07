@@ -11,6 +11,18 @@ repositories:
     type: git
     url: https://github.com/CCNYRoboticsLab/imu_tools.git
     version: galactic
+  naokitakahashi12/teleop_twist_stamped_joy:
+    type: git
+    url: https://github.com/NaokiTakahashi12/teleop_twist_stamped_joy.git
+    version: main
+  naokitakahashi12/joint_state_merger:
+    type: git
+    url: https://github.com/NaokiTakahashi12/joint_state_merger.git
+    version: main
+  naokitakahashi12/legged_motion_msgs:
+    type: git
+    url: https://github.com/NaokiTakahashi12/legged_motion_msgs.git
+    version: main
   octomap/octomap_msgs:
     type: git
     url: https://github.com/OctoMap/octomap_msgs.git
@@ -106,7 +118,7 @@ repositories:
   rst_tu_dortmund/teb_local_planner:
     type: git
     url: https://github.com/rst-tu-dortmund/teb_local_planner.git
-    version: ros2-master
+    version: galactic
   rtabmap:
     type: git
     url: https://github.com/introlab/rtabmap.git
