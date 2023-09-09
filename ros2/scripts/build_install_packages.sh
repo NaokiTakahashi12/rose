@@ -58,6 +58,7 @@ build_ignore_packages="
         plansys2_tools \
         nav2_mppi_controller \
         generate_parameter_library_example \
+        python_orocos_kdl_vendor \
 "
 
 if [ "${ROS_DISTRO}" = "humble" ]
@@ -101,6 +102,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-geographic-msgs \
     ros-${ROS_DISTRO}-rosbridge-msgs \
     ros-${ROS_DISTRO}-pcl-msgs \
+    ros-${ROS_DISTRO}-tf2-sensor-msgs \
     ros-${ROS_DISTRO}-domain-bridge \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-velodyne-description \
