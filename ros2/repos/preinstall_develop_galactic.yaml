@@ -51,3 +51,11 @@ repositories:
     type: git
     url: https://github.com/SteveMacenski/slam_toolbox.git
     version: galactic
+  stella_cv/stella_vslam:
+    type: git
+    url: https://github.com/stella-cv/stella_vslam.git
+    version: main
+  stella_cv/stella_vslam_ros:
+    type: git
+    url: https://github.com/stella-cv/stella_vslam_ros.git
+    version: galactic-devel
