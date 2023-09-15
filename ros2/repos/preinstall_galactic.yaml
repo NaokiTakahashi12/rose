@@ -50,7 +50,7 @@ repositories:
   realsense_ros:
     type: git
     url: https://github.com/IntelRealSense/realsense-ros.git
-    version: ros2-development
+    version: 4.54.1
   robot_localization:
     type: git
     url: https://github.com/cra-ros-pkg/robot_localization.git
