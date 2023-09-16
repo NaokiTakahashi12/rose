@@ -1,8 +1,4 @@
 repositories:
-  actuator_msgs:
-    type: git
-    url: https://github.com/rudislabs/actuator_msgs.git
-    version: main
   cartographer:
     type: git
     url: https://github.com/cartographer-project/cartographer.git
@@ -63,14 +59,18 @@ repositories:
     type: git
     url: https://github.com/ros-planning/moveit2.git
     version: humble
-  ros_planning/moveit_msgs:
-    type: git
-    url: https://github.com/ros-planning/moveit_msgs.git
-    version: humble
   ros_planning/moveit_resources:
     type: git
     url: https://github.com/ros-planning/moveit_resources.git
     version: humble
+  ros_planning/moveit_task_constructor:
+    type: git
+    url: https://github.com/ros-planning/moveit_task_constructor.git
+    version: humble
+  ros_planning/moveit_visual_tools:
+    type: git
+    url: https://github.com/ros-planning/moveit_visual_tools.git
+    version: ros2
   ros_planning/random_numbers:
     type: git
     url: https://github.com/ros-planning/random_numbers.git
@@ -91,13 +91,13 @@ repositories:
     type: git
     url: https://github.com/pantor/ruckig.git
     version: v0.9.2
+  pick_nik_robotics/rviz_visual_tools:
+    type: git
+    url: https://github.com/PickNikRobotics/rviz_visual_tools.git
+    version: ros2
   vizanti:
     type: git
     url: https://github.com/MoffKalast/vizanti.git
-    version: ros2
-  ws_perception/object_recognition_msgs:
-    type: git
-    url: https://github.com/wg-perception/object_recognition_msgs.git
     version: ros2
   slam_toolbox:
     type: git

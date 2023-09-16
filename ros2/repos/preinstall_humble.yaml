@@ -1,12 +1,12 @@
 repositories:
+  actuator_msgs:
+    type: git
+    url: https://github.com/rudislabs/actuator_msgs.git
+    version: main
   behavior_tree_cpp:
     type: git
     url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
     version: v3.8
-  generate_parameter_library:
-    type: git 
-    url: https://github.com/PickNikRobotics/generate_parameter_library.git
-    version: main
   grid_map:
     type: git
     url: https://github.com/ANYbotics/grid_map.git
@@ -31,6 +31,18 @@ repositories:
     type: git
     url: https://github.com/OctoMap/octomap_msgs.git
     version: ros2
+  pick_nik_robotics/generate_parameter_library:
+    type: git 
+    url: https://github.com/PickNikRobotics/generate_parameter_library.git
+    version: main
+  pick_nik_robotics/graph_msgs:
+    type: git
+    url: https://github.com/PickNikRobotics/graph_msgs.git
+    version: ros2
+  pick_nik_robotics/launch_param_builder:
+    type: git
+    url: https://github.com/PickNikRobotics/launch_param_builder.git
+    version: main
   plansys2/ros2_planning_system:
     type: git
     url: https://github.com/PlanSys2/ros2_planning_system.git
@@ -123,6 +135,10 @@ repositories:
     type: git
     url: https://github.com/ros-planning/navigation2.git
     version: humble
+  ros_planning/moveit_msgs:
+    type: git
+    url: https://github.com/ros-planning/moveit_msgs.git
+    version: humble
   rst_tu_dortmund/costmap_converter:
     type: git
     url: https://github.com/rst-tu-dortmund/costmap_converter.git
@@ -139,6 +155,10 @@ repositories:
     type: git
     url: https://github.com/tilk/rtcm_msgs.git
     version: master
+  ws_perception/object_recognition_msgs:
+    type: git
+    url: https://github.com/wg-perception/object_recognition_msgs.git
+    version: ros2
   swri_robotics/gps_umd:
     type: git
     url: https://github.com/swri-robotics/gps_umd
