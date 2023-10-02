@@ -27,10 +27,6 @@ repositories:
     type: git
     url: https://github.com/NaokiTakahashi12/unitree_go1_ros2.git
     version: main
-  naokitakahashi12/pcl_localization_ros2:
-    type: git
-    url: https://github.com/naokitakahashi12/pcl_localization_ros2.git
-    version: fix/build-dependencies
   ros/eigen_stl_containers:
     type: git
     url: https://github.com/ros/eigen_stl_containers.git
@@ -50,6 +46,10 @@ repositories:
   ros_gz:
     type: git
     url: https://github.com/gazebosim/ros_gz.git
+    version: humble
+  ros_perception/point_cloud_transport:
+    type: git
+    url: https://github.com/ros-perception/point_cloud_transport.git
     version: humble
   ros_planning/geometric_shapes:
     type: git
@@ -87,6 +87,10 @@ repositories:
     type: git
     url: https://github.com/rsasaki0109/lidarslam_ros2.git
     version: humble
+  rsasaki0109/pcl_localization_ros2:
+    type: git
+    url: https://github.com/rsasaki0109/pcl_localization_ros2.git
+    version: main
   pantor/ruckig:
     type: git
     url: https://github.com/pantor/ruckig.git

@@ -100,7 +100,6 @@ export DEBIAN_FRONTEND=noninteractive \
 && mkdir CMake/build \
 && cd CMake/build \
 && ../bootstrap \
-    --generator=Ninja \
 && make -j $build_thread \
 && make install \
 && cd ../ \
