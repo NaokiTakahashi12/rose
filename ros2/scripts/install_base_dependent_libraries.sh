@@ -93,8 +93,8 @@ export DEBIAN_FRONTEND=noninteractive \
     nlohmann-json3-dev \
     libtbb-dev \
     liblz4-dev \
-&& mkdir install_from_sources \
-&& cd install_from_sources/ \
+&& mkdir /tmp/install_from_sources \
+&& cd /tmp/install_from_sources/ \
 && git clone https://github.com/Kitware/CMake.git \
     --depth 1 \
 && mkdir CMake/build \
@@ -114,7 +114,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DCMAKE_BUILD_TYPE=Release \
 && cmake --build build -j $build_thread \
 && cmake --install build \
-&& cd ../ \
+&& cd ../../ \
 && git clone https://github.com/flann-lib/flann.git \
     --depth 1 \
     --branch 1.9.2 \
