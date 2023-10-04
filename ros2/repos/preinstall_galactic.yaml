@@ -54,7 +54,7 @@ repositories:
   pick_nik_robotics/rsl:
     type: git
     url: https://github.com/PickNikRobotics/RSL.git
-    version: main
+    version: 0.2.2
   intel_realsense/realsense_ros:
     type: git
     url: https://github.com/IntelRealSense/realsense-ros.git

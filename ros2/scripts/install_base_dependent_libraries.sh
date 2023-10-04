@@ -57,7 +57,6 @@ export DEBIAN_FRONTEND=noninteractive \
     ninja-build \
     g++-11 \
     gcc-11 \
-    cmake \
     ansible \
     ca-certificates \
     libboost-all-dev \
@@ -94,8 +93,16 @@ export DEBIAN_FRONTEND=noninteractive \
     nlohmann-json3-dev \
     libtbb-dev \
     liblz4-dev \
-&& mkdir install_from_sources \
-&& cd install_from_sources/ \
+&& mkdir /tmp/install_from_sources \
+&& cd /tmp/install_from_sources/ \
+&& git clone https://github.com/Kitware/CMake.git \
+    --depth 1 \
+&& mkdir CMake/build \
+&& cd CMake/build \
+&& ../bootstrap \
+&& make -j $build_thread \
+&& make install \
+&& cd ../ \
 && git clone https://github.com/rui314/mold.git \
     --depth 1 \
     --branch v2.0.0 \
@@ -107,7 +114,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DCMAKE_BUILD_TYPE=Release \
 && cmake --build build -j $build_thread \
 && cmake --install build \
-&& cd ../ \
+&& cd ../../ \
 && git clone https://github.com/flann-lib/flann.git \
     --depth 1 \
     --branch 1.9.2 \
@@ -124,7 +131,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DBUILD_DOC=false \
     -DBUILD_TESTS=false \
     -DCMAKE_BUILD_TYPE=Release \
-&& VERBOSE=1 cmake --build build -j 1 \
+&& cmake --build build -j 1 \
 && cmake --install build \
 && cd ../ \
 && git clone https://github.com/PointCloudLibrary/pcl.git \
@@ -173,6 +180,7 @@ export DEBIAN_FRONTEND=noninteractive \
 && cmake \
     -S . \
     -B build \
+    -G Ninja \
     -DGTSAM_USE_SYSTEM_EIGEN=true \
     -DGTSAM_BUILD_WITH_MARCH_NATIVE=false \
     -DGTSAM_BUILD_EXAMPLES_ALWAYS=false \
