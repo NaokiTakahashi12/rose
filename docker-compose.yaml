@@ -42,8 +42,11 @@ services:
     profiles:
       - humble
     tty: true
+    privileged: true
     volumes_from:
       - host-devices
+    env_file:
+      - env_files/ros2.env
     environment:
       - ROS_HOSTNAME=humble-runtime
     volumes:
