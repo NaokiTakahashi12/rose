@@ -109,10 +109,15 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-robot-state-publisher \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-diagnostic-updater \
+    ros-${ROS_DISTRO}-compressed-depth-image-transport \
+    ros-${ROS_DISTRO}-compressed-image-transport \
+    ros-${ROS_DISTRO}-theora-image-transport \
+    ros-${ROS_DISTRO}-turbojpeg-compressed-image-transport \
     ros-${ROS_DISTRO}-backward-ros \
     ros-${ROS_DISTRO}-rviz-common \
     ros-${ROS_DISTRO}-rviz-default-plugins \
     ros-${ROS_DISTRO}-joy \
+    ros-${ROS_DISTRO}-joy-linux \
     ros-${ROS_DISTRO}-joy-teleop \
     ros-${ROS_DISTRO}-teleop-tools \
     ros-${ROS_DISTRO}-teleop-twist-joy \
