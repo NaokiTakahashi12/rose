@@ -104,6 +104,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-rosbridge-msgs \
     ros-${ROS_DISTRO}-pcl-msgs \
     ros-${ROS_DISTRO}-tf2-sensor-msgs \
+    ros-${ROS_DISTRO}-vision-msgs \
     ros-${ROS_DISTRO}-domain-bridge \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-velodyne-description \
