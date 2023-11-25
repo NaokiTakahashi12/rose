@@ -178,6 +178,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DBUILD_PCL_EXAMPLES=false \
     -DBUILD_WITH_CUDA="$CUDA_SUPPORT" \
     -DBUILD_WITH_OPENMP=true \
+    -DBUILD_WITH_DDS=true \
     -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
