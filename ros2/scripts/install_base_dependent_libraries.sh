@@ -42,6 +42,8 @@ then
     CUDA_SUPPORT="true"
 fi
 
+CMAKE_BUILD_TYPE="Release"
+
 export DEBIAN_FRONTEND=noninteractive \
 && export CXX=g++-11 \
 && export CC=gcc-11 \
@@ -111,7 +113,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -S . \
     -B build \
     -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../../ \
@@ -130,7 +132,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DBUILD_EXAMPLES=false \
     -DBUILD_DOC=false \
     -DBUILD_TESTS=false \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && cmake --build build -j 1 \
 && cmake --install build \
 && cd ../ \
@@ -150,7 +152,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DBUILD_gpu_kinfu_large_scale=false \
     -DBUILD_gpu_kinfu_tools=false \
     -DBUILD_gpu_kinfu=false \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
@@ -169,7 +171,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DBUILD_PCL_EXAMPLES=false \
     -DBUILD_WITH_CUDA="$CUDA_SUPPORT" \
     -DBUILD_WITH_OPENMP=true \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
@@ -185,7 +187,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -DGTSAM_BUILD_WITH_MARCH_NATIVE=false \
     -DGTSAM_BUILD_EXAMPLES_ALWAYS=false \
     -DGTSAM_BUILD_TESTS=false \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
@@ -199,7 +201,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
     -DCMAKE_POSITION_INDEPENDENT_CODE=true \
     -DRBDL_BUILD_ADDON_URDFREADER=true \
     -DRBDL_BUILD_ADDON_GEOMETRY=true \
@@ -214,7 +216,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
     -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_CXX_FLAGS=-fPIC \
     -DQPOASES_BUILD_EXAMPLES=false \
@@ -230,7 +232,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
     -DBUILD_EXAMPLES=false \
     -DBUILD_TESTS=false \
 && mold -run cmake --build build -j $build_thread \
@@ -243,7 +245,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -S . \
     -B build \
     -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
@@ -254,7 +256,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -S . \
     -B build \
     -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
@@ -265,7 +267,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -S . \
     -B build \
     -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
@@ -277,7 +279,7 @@ export DEBIAN_FRONTEND=noninteractive \
     -S . \
     -B build \
     -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
 && cd ../ \
