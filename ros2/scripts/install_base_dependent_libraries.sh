@@ -78,6 +78,7 @@ export DEBIAN_FRONTEND=noninteractive \
     libeigen3-dev \
     libceres-dev \
     libusb-1.0-0-dev \
+    libudev-dev \
     libxrandr-dev \
     libxinerama-dev \
     libxcursor-dev \
@@ -88,7 +89,8 @@ export DEBIAN_FRONTEND=noninteractive \
     coinor-libipopt-dev \
     libboost-all-dev \
     libeigen3-dev \
-    libvtk7-dev \
+    freeglut3-dev \
+    libglx-dev \
     libqhull-dev \
     libopenni-dev \
     libopenni2-dev \
@@ -145,13 +147,18 @@ export DEBIAN_FRONTEND=noninteractive \
     -B build \
     -G Ninja \
     -DCMAKE_LINKER=/usr/local/libexec/mold/ld \
-    -DBUILD_GPU="$CUDA_SUPPORT" \
-    -DWITH_CUDA="$CUDA_SUPPORT" \
+    -DCMAKE_CXX_STANDARD=17 \
     -DBUILD_CUDA="$CUDA_SUPPORT" \
+    -DWITH_CUDA="$CUDA_SUPPORT" \
+    -DWITH_VTK=false \
+    -DWITH_PCAP=false \
+    -DWITH_QT=false \
+    -DCUDA_SDK_ROOT_DIR=/usr/local/cuda \
     -DBUILD_gpu_kinfu_large_scale_to=false \
     -DBUILD_gpu_kinfu_large_scale=false \
     -DBUILD_gpu_kinfu_tools=false \
     -DBUILD_gpu_kinfu=false \
+    -DBUILD_gpu_octree=false \
     -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
 && mold -run cmake --build build -j $build_thread \
 && cmake --install build \
