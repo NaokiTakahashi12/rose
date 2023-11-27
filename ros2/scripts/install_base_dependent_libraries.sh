@@ -60,6 +60,7 @@ export DEBIAN_FRONTEND=noninteractive \
     g++-11 \
     gcc-11 \
     ansible \
+    make \
     ca-certificates \
     libboost-all-dev \
     libboost-system-dev \
