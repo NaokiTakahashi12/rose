@@ -97,6 +97,8 @@ export DEBIAN_FRONTEND=noninteractive \
     nlohmann-json3-dev \
     libtbb-dev \
     liblz4-dev \
+    libopenmpi-dev \
+    libhdf5-dev \
 && mkdir /tmp/install_from_sources \
 && cd /tmp/install_from_sources/ \
 && git clone https://github.com/Kitware/CMake.git \

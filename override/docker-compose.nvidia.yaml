@@ -4,7 +4,7 @@ services:
   humble-runtime:
     build:
       args:
-        BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
+        BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
     image: naokitakahashi12/rose:humble-runtime-cuda-12.2.0
     deploy:
       resources:
@@ -17,7 +17,7 @@ services:
   humble-foxglove-bridge:
     build:
       args:
-        BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
+        BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
     image: naokitakahashi12/rose:humble-runtime-cuda-12.2.0
     deploy:
       resources:
@@ -30,7 +30,7 @@ services:
   humble:
     build:
       args:
-        BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
+        BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
     image: naokitakahashi12/rose:humble-devel-cuda-12.2.0
     deploy:
       resources:
