@@ -92,6 +92,8 @@ export DEBIAN_FRONTEND=noninteractive \
     libyaml-cpp-dev \
     libfmt-dev \
     librange-v3-dev \
+    libogg-dev \
+    libtheora-dev \
     $distoribution_unique_package \
     ros-${ROS_DISTRO}-libg2o \
     ros-${ROS_DISTRO}-ament-cmake \
@@ -111,9 +113,6 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-robot-state-publisher \
     ros-${ROS_DISTRO}-joint-state-publisher \
     ros-${ROS_DISTRO}-diagnostic-updater \
-    ros-${ROS_DISTRO}-compressed-depth-image-transport \
-    ros-${ROS_DISTRO}-compressed-image-transport \
-    ros-${ROS_DISTRO}-theora-image-transport \
     ros-${ROS_DISTRO}-backward-ros \
     ros-${ROS_DISTRO}-rviz-common \
     ros-${ROS_DISTRO}-rviz-default-plugins \
