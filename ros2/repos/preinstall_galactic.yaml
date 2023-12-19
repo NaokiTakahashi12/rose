@@ -115,6 +115,10 @@ repositories:
     type: git
     url: https://github.com/ros-perception/image_pipeline.git
     version: 46adf83
+  ros_perception/image_transport_plugins:
+    type: git
+    url: https://github.com/ros-perception/image_transport_plugins.git
+    version: foxy-devel
   ros_perception/laser_geometry:
     type: git
     url: https://github.com/ros-perception/laser_geometry.git
