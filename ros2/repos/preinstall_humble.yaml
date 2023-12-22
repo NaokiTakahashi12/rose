@@ -111,6 +111,10 @@ repositories:
     type: git
     url: https://github.com/ros-perception/image_pipeline.git
     version: humble
+  ros_perception/image_transport_plugins:
+    type: git
+    url: https://github.com/ros-perception/image_transport_plugins.git
+    version: humble
   ros_perception/laser_filters:
     type: git
     url: https://github.com/ros-perception/laser_filters.git
