@@ -107,6 +107,7 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-pcl-msgs \
     ros-${ROS_DISTRO}-tf2-sensor-msgs \
     ros-${ROS_DISTRO}-vision-msgs \
+    ros-${ROS_DISTRO}-can-msgs \
     ros-${ROS_DISTRO}-domain-bridge \
     ros-${ROS_DISTRO}-xacro \
     ros-${ROS_DISTRO}-velodyne-description \
@@ -128,6 +129,8 @@ export DEBIAN_FRONTEND=noninteractive \
     ros-${ROS_DISTRO}-rosbridge-server \
     ros-${ROS_DISTRO}-rosbridge-library \
     ros-${ROS_DISTRO}-foxglove-bridge \
+    ros-${ROS_DISTRO}-foxglove-bridge \
+    ros-${ROS_DISTRO}-ros2-socketcan \
 && python3 -m pip install --no-cache-dir \
     dash \
 && mkdir -p preinstall_ws/src \
