@@ -115,6 +115,10 @@ repositories:
     type: git
     url: https://github.com/ros-perception/image_transport_plugins.git
     version: humble
+  ros_perception/imu_pipeline:
+    type: git
+    url: https://github.com/ros-perception/imu_pipeline.git
+    version: ros2
   ros_perception/laser_filters:
     type: git
     url: https://github.com/ros-perception/laser_filters.git
@@ -142,6 +146,10 @@ repositories:
   ros_planning/moveit_msgs:
     type: git
     url: https://github.com/ros-planning/moveit_msgs.git
+    version: humble
+  ros_misc_utilities/ffmpeg_image_transport_msgs:
+    type: git
+    url: https://github.com/ros-misc-utilities/ffmpeg_image_transport_msgs.git
     version: humble
   rst_tu_dortmund/costmap_converter:
     type: git

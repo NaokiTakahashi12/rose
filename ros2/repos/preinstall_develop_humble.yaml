@@ -1,4 +1,8 @@
 repositories:
+  ament/ament_lint:
+    type: git
+    url: https://github.com/ament/ament_lint.git
+    version: humble
   cartographer:
     type: git
     url: https://github.com/cartographer-project/cartographer.git
@@ -83,6 +87,10 @@ repositories:
     type: git
     url: https://github.com/ros-planning/warehouse_ros.git
     version: ros2
+  ros_misc_utilities/ffmpeg_image_transport:
+    type: git
+    url: https://github.com/ros-misc-utilities/ffmpeg_image_transport.git
+    version: humble
   pantor/ruckig:
     type: git
     url: https://github.com/pantor/ruckig.git
