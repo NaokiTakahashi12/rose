@@ -4,6 +4,7 @@
 import os
 import sys
 import platform
+import distro
 
 import argparse
 import subprocess
@@ -13,7 +14,7 @@ from shutil import which
 
 class RoseCliHandler:
     def __init__(self):
-        if self.__is_nvidia_jetson():
+        if self.__is_nvidia_jetson() and distro.version() == '20.04':
             # Since there is only support for 20.04
             self.default_profile = 'galactic'
             self.default_exec_service = 'galactic'
