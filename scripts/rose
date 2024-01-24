@@ -338,10 +338,10 @@ class RoseCliHandler:
         )
         platform_specificate_compose = None
 
-        if self.__has_nvidia_driver():
-            platform_specificate_compose = 'docker-compose.nvidia.yaml'
-        elif self.__is_nvidia_jetson():
+        if self.__is_nvidia_jetson():
             platform_specificate_compose = 'docker-compose.jetson.yaml'
+        elif self.__has_nvidia_driver():
+            platform_specificate_compose = 'docker-compose.nvidia.yaml'
 
         if platform_specificate_compose is not None:
             compose_path = os.path.join(
