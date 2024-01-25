@@ -1,4 +1,8 @@
 repositories:
+  ament/ament_lint:
+    type: git
+    url: https://github.com/ament/ament_lint.git
+    version: humble
   champ:
     type: git
     url: https://github.com/chvmp/champ.git

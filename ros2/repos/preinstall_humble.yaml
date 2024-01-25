@@ -7,6 +7,10 @@ repositories:
     type: git
     url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
     version: v3.8
+  flynneva/udp_msgs:
+    type: git
+    url: https://github.com/flynneva/udp_msgs.git
+    version: main
   grid_map:
     type: git
     url: https://github.com/ANYbotics/grid_map.git
@@ -99,6 +103,10 @@ repositories:
     type: git
     url: https://github.com/ros-drivers/velodyne.git
     version: ros2
+  ros_drivers/transport_drivers:
+    type: git
+    url: https://github.com/ros-drivers/transport_drivers.git
+    version: humble
   ros_perception/depthimage_to_laserscan:
     type: git
     url: https://github.com/ros-perception/depthimage_to_laserscan.git
@@ -115,6 +123,10 @@ repositories:
     type: git
     url: https://github.com/ros-perception/image_transport_plugins.git
     version: humble
+  ros_perception/imu_pipeline:
+    type: git
+    url: https://github.com/ros-perception/imu_pipeline.git
+    version: ros2
   ros_perception/laser_filters:
     type: git
     url: https://github.com/ros-perception/laser_filters.git
@@ -142,6 +154,10 @@ repositories:
   ros_planning/moveit_msgs:
     type: git
     url: https://github.com/ros-planning/moveit_msgs.git
+    version: humble
+  ros_misc_utilities/ffmpeg_image_transport_msgs:
+    type: git
+    url: https://github.com/ros-misc-utilities/ffmpeg_image_transport_msgs.git
     version: humble
   rst_tu_dortmund/costmap_converter:
     type: git

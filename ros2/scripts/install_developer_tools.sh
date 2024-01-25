@@ -75,6 +75,7 @@ then
     "
     distoribution_package="
         $distoribution_package \
+        ros-${ROS_DISTRO}-zbar-ros \
         ros-${ROS_DISTRO}-rqt-image-view \
         ros-${ROS_DISTRO}-rqt-image-overlay \
         ros-${ROS_DISTRO}-rqt-image-overlay-layer \
