@@ -55,6 +55,10 @@ repositories:
     type: git
     url: https://github.com/ros-perception/point_cloud_transport.git
     version: humble
+  ros_perception/point_cloud_transport_plugins:
+    type: git
+    url: https://github.com/ros-perception/point_cloud_transport_plugins.git
+    version: humble
   ros_planning/geometric_shapes:
     type: git
     url: https://github.com/ros-planning/geometric_shapes.git

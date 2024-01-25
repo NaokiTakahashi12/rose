@@ -7,6 +7,10 @@ repositories:
     type: git
     url: https://github.com/BehaviorTree/BehaviorTree.CPP.git
     version: v3.8
+  flynneva/udp_msgs:
+    type: git
+    url: https://github.com/flynneva/udp_msgs.git
+    version: main
   grid_map:
     type: git
     url: https://github.com/ANYbotics/grid_map.git
@@ -99,6 +103,10 @@ repositories:
     type: git
     url: https://github.com/ros-drivers/velodyne.git
     version: ros2
+  ros_drivers/transport_drivers:
+    type: git
+    url: https://github.com/ros-drivers/transport_drivers.git
+    version: humble
   ros_perception/depthimage_to_laserscan:
     type: git
     url: https://github.com/ros-perception/depthimage_to_laserscan.git
