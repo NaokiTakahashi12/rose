@@ -1,6 +1,4 @@
-version: '3.5'
-
 services:
   humble-foxglove-bridge:
     ports:
-      - 8765:8765
+      - '8765:8765'
