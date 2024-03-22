@@ -1,4 +1,13 @@
-version: '3.5'
+---
+x-env-files: &ros2-develop-env-files
+  - env_files/rust.env
+  - env_files/ignition_gazebo.env
+  - env_files/ros2.env
+  - env_files/xwindow.env
+
+x-rmw-profile-files: &ros2-rmw-profile-files
+  - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
+  - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
 
 services:
   xwindow:
@@ -49,9 +58,7 @@ services:
       - env_files/ros2.env
     environment:
       - ROS_HOSTNAME=humble-runtime
-    volumes:
-      - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
-      - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
+    volumes: *ros2-rmw-profile-files
     command: >
       /bin/bash
   humble:
@@ -75,16 +82,10 @@ services:
       - humble-workspace
       - developer-local-config
       - host-devices
-    env_file:
-      - env_files/rust.env
-      - env_files/ignition_gazebo.env
-      - env_files/ros2.env
-      - env_files/xwindow.env
+    env_file: *ros2-develop-env-files
     environment:
       - ROS_HOSTNAME=humble
-    volumes:
-      - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
-      - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
+    volumes: *ros2-rmw-profile-files
     working_dir: /rose/colcon_ws
     command: >
       /bin/bash
@@ -98,16 +99,10 @@ services:
     image: naokitakahashi12/rose:humble-runtime
     profiles:
       - humble
-    env_file:
-      - env_files/rust.env
-      - env_files/ignition_gazebo.env
-      - env_files/ros2.env
-      - env_files/xwindow.env
+    env_file: *ros2-develop-env-files
     environment:
       - ROS_HOSTNAME=humble-foxglove-bridge
-    volumes:
-      - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
-      - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
+    volumes: *ros2-rmw-profile-files
     command: >
       ros2 run foxglove_bridge foxglove_bridge
   galactic-runtime:
@@ -123,11 +118,11 @@ services:
     tty: true
     volumes_from:
       - host-devices
+    env_file:
+      - env_files/ros2.env
     environment:
       - ROS_HOSTNAME=galactic-runtime
-    volumes:
-      - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
-      - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
+    volumes: *ros2-rmw-profile-files
     command: >
       /bin/bash
   galactic:
@@ -151,16 +146,10 @@ services:
       - galactic-workspace
       - developer-local-config
       - host-devices
-    env_file:
-      - env_files/rust.env
-      - env_files/ignition_gazebo.env
-      - env_files/ros2.env
-      - env_files/xwindow.env
+    env_file: *ros2-develop-env-files
     environment:
       - ROS_HOSTNAME=galactic
-    volumes:
-      - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
-      - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
+    volumes: *ros2-rmw-profile-files
     working_dir: /rose/colcon_ws
     command: >
       /bin/bash
