@@ -107,6 +107,10 @@ repositories:
     type: git
     url: https://github.com/ros-drivers/transport_drivers.git
     version: humble
+  ros_industrial/ros2_canopen:
+    type: git
+    url: https://github.com/ros-industrial/ros2_canopen.git
+    version: humble
   ros_perception/depthimage_to_laserscan:
     type: git
     url: https://github.com/ros-perception/depthimage_to_laserscan.git

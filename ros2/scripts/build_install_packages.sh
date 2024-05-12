@@ -94,6 +94,9 @@ export DEBIAN_FRONTEND=noninteractive \
     librange-v3-dev \
     libogg-dev \
     libtheora-dev \
+    libtool \
+    liblttng-ust-dev \
+    liblttng-ctl-dev \
     $distoribution_unique_package \
     ros-${ROS_DISTRO}-libg2o \
     ros-${ROS_DISTRO}-ament-cmake \
