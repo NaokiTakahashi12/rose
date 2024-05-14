@@ -37,7 +37,7 @@ then
     exit 1
 fi
 
-build_thread=$((`nproc`/2))
+build_thread=$((`nproc`/2+`nproc`/4))
 
 if [ 0 -eq $build_thread ]
 then
@@ -140,10 +140,11 @@ export DEBIAN_FRONTEND=noninteractive \
 && cd preinstall_ws/ \
 && vcs import src < $repos_file \
     --recursive \
-&& mold -run colcon build \
+&& MAKEFLAGS=$build_thread \
+   mold -run colcon build \
     --merge-install \
-    --executor sequential \
-    --parallel-workers $build_thread \
+    --executor parallel \
+    --parallel-workers $((`nproc`/8+1)) \
     --install-base /opt/ros_buildin/${ROS_DISTRO} \
     --cmake-args \
         -DCMAKE_BUILD_TYPE=Release \
