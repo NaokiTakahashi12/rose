@@ -1,0 +1,157 @@
+---
+- hosts: all
+  tasks:
+    - name: Install ROSE common ROS 2 packages
+      block:
+        - name: Get ROS 2 distro
+          register: ros_distro
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROS_DISTRO") }}
+        - name: Install RMW packages
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-rmw-cyclonedds-cpp
+        - name: Install message packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-std-msgs
+              - ros-{{ ros_distro.stdout }}-sensor-msgs
+              - ros-{{ ros_distro.stdout }}-geometry-msgs
+              - ros-{{ ros_distro.stdout }}-actuator-msgs
+              - ros-{{ ros_distro.stdout }}-control-msgs
+              - ros-{{ ros_distro.stdout }}-nav-msgs
+              - ros-{{ ros_distro.stdout }}-map-msgs
+              - ros-{{ ros_distro.stdout }}-moveit-msgs
+              - ros-{{ ros_distro.stdout }}-diagnostic-msgs
+              - ros-{{ ros_distro.stdout }}-can-msgs
+              - ros-{{ ros_distro.stdout }}-gps-msgs
+              - ros-{{ ros_distro.stdout }}-vision-msgs
+        - name: Install ros2-control packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-ros2-control
+              - ros-{{ ros_distro.stdout }}-ros2-controllers
+        - name: Install nav2 packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-nav2-amcl
+              - ros-{{ ros_distro.stdout }}-nav2-bt-navigator
+              - ros-{{ ros_distro.stdout }}-nav2-behaviors
+              - ros-{{ ros_distro.stdout }}-nav2-controller
+              - ros-{{ ros_distro.stdout }}-nav2-planner
+              - ros-{{ ros_distro.stdout }}-nav2-map-server
+              - ros-{{ ros_distro.stdout }}-nav2-costmap-2d
+        - name: Install moveit2 packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-moveit-servo
+              - ros-{{ ros_distro.stdout }}-moveit-ros-planning
+              - ros-{{ ros_distro.stdout }}-moveit-ros-control-interface
+        - name: Install plansys2 packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-plansys2-msgs
+              - ros-{{ ros_distro.stdout }}-plansys2-bringup
+        - name: Install grid_map package
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-grid-map-msgs
+              - ros-{{ ros_distro.stdout }}-grid-map-core
+              - ros-{{ ros_distro.stdout }}-grid-map-filters
+              - ros-{{ ros_distro.stdout }}-grid-map-loader
+              - ros-{{ ros_distro.stdout }}-grid-map-pcl
+              - ros-{{ ros_distro.stdout }}-grid-map-octomap
+              - ros-{{ ros_distro.stdout }}-grid-map-sdf
+        - name: Install image transport packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-image-transport
+              - ros-{{ ros_distro.stdout }}-image-transport-plugins
+              - ros-{{ ros_distro.stdout }}-ffmpeg-image-transport
+        - name: Install point cloud transport packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-point-cloud-transport
+              - ros-{{ ros_distro.stdout }}-point-cloud-transport-plugins
+        - name: Install perception packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-image-proc
+              - ros-{{ ros_distro.stdout }}-apriltag-ros
+              - ros-{{ ros_distro.stdout }}-stereo-image-proc
+              - ros-{{ ros_distro.stdout }}-depthimage-to-laserscan
+              - ros-{{ ros_distro.stdout }}-depth-image-proc
+              - ros-{{ ros_distro.stdout }}-pcl-ros
+              - ros-{{ ros_distro.stdout }}-cv-bridge
+        - name: Install IMU data processor packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-imu-pipeline
+              - ros-{{ ros_distro.stdout }}-imu-processors
+              - ros-{{ ros_distro.stdout }}-imu-complementary-filter
+              - ros-{{ ros_distro.stdout }}-imu-filter-madgwick
+              - ros-{{ ros_distro.stdout }}-imu-transformer
+        - name: Install filter packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-filters
+              - ros-{{ ros_distro.stdout }}-laser-filters
+              - ros-{{ ros_distro.stdout }}-robot-localization
+        - name: Install micro-ros packages without jazzy
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-micro-ros-msgs
+              - ros-{{ ros_distro.stdout }}-micro-ros-diagnostic-bridge
+        - name: Install ROS 2 utils packages without jazzy
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-ros2-socketcan
+              - ros-{{ ros_distro.stdout }}-joy
+              - ros-{{ ros_distro.stdout }}-joy-linux
+              - ros-{{ ros_distro.stdout }}-teleop-tools
+              - ros-{{ ros_distro.stdout }}-teleop-twist-joy
+              - ros-{{ ros_distro.stdout }}-ublox
+              - ros-{{ ros_distro.stdout }}-ublox-gps
+              - ros-{{ ros_distro.stdout }}-realsense2-camera
+              - ros-{{ ros_distro.stdout }}-velodyne
+        - name: Install ROS 2 utils packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-diagnostics
+              - ros-{{ ros_distro.stdout }}-xacro
+              - ros-{{ ros_distro.stdout }}-domain-bridge
+              - ros-{{ ros_distro.stdout }}-robot-state-publisher
+              - ros-{{ ros_distro.stdout }}-joint-state-publisher
+

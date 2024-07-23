@@ -1,0 +1,55 @@
+---
+- hosts: all
+  tasks:
+    - name: Install ROSE develop builtin packages from source
+      block:
+        - name: Get ROS 2 distro
+          register: ros_distro
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROS_DISTRO") }}
+        - name: Get builtin source directory
+          register: develop_builtin_ws_directory
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROSE_WORKSPACE") }}/builtin
+        - name: Get repos source directory
+          register: repos_directory
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROSE_WORKSPACE") }}/repos
+        - name: Create workspace directory
+          block:
+            - file:
+                path: "{{ develop_builtin_ws_directory.stdout }}"
+                state: directory
+            - file:
+                path: "{{ develop_builtin_ws_directory.stdout }}/src"
+                state: directory
+        - name: Clone builtin source
+          shell: |
+            vcs import {{ develop_builtin_ws_directory.stdout }}/src \
+              < {{ repos_directory.stdout }}/develop_builtin.yaml
+        - name: Build builtin workspace
+          args:
+              chdir: "{{ develop_builtin_ws_directory.stdout }}"
+              executable: /bin/bash
+          shell: |
+            source /opt/ros/{{ ros_distro.stdout }}/setup.bash
+            colcon build \
+              --merge-install \
+              --cmake-args \
+                -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" \
+                -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" \
+                -D CMAKE_MODULE_LINKER_FLAGS="-fuse-ld=mold" \
+                -D CMAKE_BUILD_TYPE=Release
+        - name: Add COLCON_IGNORE builtin workspace
+          file:
+            path: "{{ develop_builtin_ws_directory.stdout }}/COLCON_IGNORE"
+            state: touch

@@ -1,0 +1,9 @@
+---
+- hosts: all
+  tasks:
+    - name: Install source management packages
+      apt:
+        install_recommends: false
+        package:
+         - git-core
+         - ca-certificates

@@ -1,0 +1,79 @@
+---
+- hosts: all
+  tasks:
+    - name: Get ROS 2 distro
+      register: ros_distro
+      shell: |
+        if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
+          exit 129; \
+        fi
+        echo {{ lookup("env", "ROS_DISTRO") }}
+    - name: Install ROS 2 simulation packages
+      when: ros_distro.stdout in ['humble', 'galactic']
+      block:
+        - name: Get builtin source directory
+          register: simulator_ws_directory
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROSE_WORKSPACE") }}/builtin/gz_sim
+        - name: Get builtin repos directory
+          register: repos_directory
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROSE_WORKSPACE") }}/repos
+        - name: Create simulator workspace directory
+          block:
+            - file:
+                path: "{{ simulator_ws_directory.stdout }}"
+                state: directory
+            - file:
+                path: "{{ simulator_ws_directory.stdout }}/src"
+                state: directory
+        - name: Setup apt-key for gz-sim
+          block:
+            - name: Add gazebo GPG key
+              get_url:
+                url: https://packages.osrfoundation.org/gazebo.gpg
+                dest: /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+            - name: Get dpkg architecture
+              register: dpkg_architecture
+              shell: |
+                dpkg --print-architecture
+            - name: Add gazebo apt source list
+              apt_repository:
+                repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable {{ ansible_distribution_release }} main"
+                filename: gazebo-stable
+            - name: Update apt cache
+              apt:
+                update_cache: true
+        - name: Install gz-sim
+          apt:
+            package:
+              - gz-{{ lookup("env", "GZ_VERSION") }}
+        - name: Install ROS 2 integrate packages
+          block:
+            - name: Clone gz-sim builtin source
+              shell: |
+                vcs import {{ simulator_ws_directory.stdout }}/src \
+                  < {{ repos_directory.stdout }}/gz_sim_builtin.yaml
+            - name: Build gz-sim workspace
+              args:
+                  chdir: "{{ simulator_ws_directory.stdout }}"
+                  executable: /bin/bash
+              shell: |
+                source /opt/ros/{{ ros_distro.stdout }}/setup.bash
+                colcon build \
+                  --merge-install \
+                  --cmake-args \
+                    -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" \
+                    -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" \
+                    -D CMAKE_MODULE_LINKER_FLAGS="-fuse-ld=mold" \
+                    -D CMAKE_BUILD_TYPE=Release
+            - name: Add COLCON_IGNORE workspace
+              file:
+                path: "{{ simulator_ws_directory.stdout }}/COLCON_IGNORE"
+                state: touch
