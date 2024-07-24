@@ -13,44 +13,69 @@ services:
   xwindow:
     image: busybox
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - ~/.Xauthority:/root/.Xauthority
-      - /tmp/.docker.$USER.xauth:/tmp/.docker.xauth:ro
-      - /etc/localtime:/etc/localtime:ro
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix
+        read_only: true
+      - type: bind
+        source: ~/.Xauthority
+        target: /root/.Xauthority
+      - type: bind
+        source: /etc/localtime
+        target: /etc/localtime
+        read_only: true
   humble-workspace:
     image: busybox
     profiles:
       - humble
     volumes:
-      - ./workspace/humble:/rose/colcon_ws:rw
-  galactic-workspace:
-    image: busybox
-    profiles:
-      - galactic
-    volumes:
-      - ./workspace/galactic:/rose/colcon_ws:rw
+      - type: bind
+        source: ./workspace/humble/src
+        target: /rose/colcon_ws/src
+      - type: bind
+        source: ./workspace/humble/build
+        target: /rose/colcon_ws/build
+      - type: bind
+        source: ./workspace/humble/install
+        target: /rose/colcon_ws/install
   developer-local-config:
     image: busybox
     volumes:
-      - ~/.vim:/root/.vim:ro
-      - ~/.vimrc:/root/.vimrc:ro
-      - ~/.inputrc:/root/.inputrc:ro
+      - type: bind
+        source: ~/.vim
+        target: /root/.vim
+        read_only: true
+      - type: bind
+        source: ~/.vimrc
+        target: /root/.vimrc
+        read_only: true
+      - type: bind
+        source: ~/.inputrc
+        target: /root/.inputrc
+        read_only: true
   host-devices:
     image: busybox
     privileged: true
     volumes:
-      - /var/run/udev
+      - type: bind
+        source: /var/run/udev
+        target: /var/run/udev
+      - type: bind
+        source: /tmp
+        target: /tmp
+      - type: bind
+        source: /dev
+        target: /dev
   humble-runtime:
     build:
-      context: ros2
+      context: docker
       args:
         ROS_DISTRO: humble
         BASE_IMAGE: ubuntu:22.04
-      target: runtime
+      target: rose-runtime
     image: naokitakahashi12/rose:humble-runtime
     profiles:
       - humble
-    tty: true
     privileged: true
     volumes_from:
       - host-devices
@@ -59,16 +84,15 @@ services:
     environment:
       - ROS_HOSTNAME=humble-runtime
     volumes: *ros2-rmw-profile-files
-    command: >
-      /bin/bash
+    command: iox-roudi
   humble:
     build:
-      context: ros2
+      context: docker
       args:
         ROS_DISTRO: humble
         IGNITION_VERSION: garden
         BASE_IMAGE: ubuntu:22.04
-      target: develop
+      target: rose-develop
     image: naokitakahashi12/rose:humble-develop
     profiles:
       - humble
@@ -86,16 +110,15 @@ services:
     environment:
       - ROS_HOSTNAME=humble
     volumes: *ros2-rmw-profile-files
-    working_dir: /rose/colcon_ws
     command: >
       /bin/bash
   humble-foxglove-bridge:
     build:
-      context: ros2
+      context: docker
       args:
         ROS_DISTRO: humble
         BASE_IMAGE: ubuntu:22.04
-      target: runtime
+      target: rose-runtime
     image: naokitakahashi12/rose:humble-runtime
     profiles:
       - humble
@@ -105,51 +128,3 @@ services:
     volumes: *ros2-rmw-profile-files
     command: >
       ros2 run foxglove_bridge foxglove_bridge
-  galactic-runtime:
-    build:
-      context: ros2
-      args:
-        ROS_DISTRO: galactic
-        BASE_IMAGE: ubuntu:20.04
-      target: runtime
-    image: naokitakahashi12/rose:galactic-runtime
-    profiles:
-      - galactic
-    tty: true
-    volumes_from:
-      - host-devices
-    env_file:
-      - env_files/ros2.env
-    environment:
-      - ROS_HOSTNAME=galactic-runtime
-    volumes: *ros2-rmw-profile-files
-    command: >
-      /bin/bash
-  galactic:
-    build:
-      context: ros2
-      args:
-        ROS_DISTRO: galactic
-        IGNITION_VERSION: fortress
-        BASE_IMAGE: ubuntu:20.04
-      target: develop
-    image: naokitakahashi12/rose:galactic-develop
-    profiles:
-      - galactic
-    tty: true
-    privileged: true
-    shm_size: 256m
-    devices:
-      - /dev/dri
-    volumes_from:
-      - xwindow
-      - galactic-workspace
-      - developer-local-config
-      - host-devices
-    env_file: *ros2-develop-env-files
-    environment:
-      - ROS_HOSTNAME=galactic
-    volumes: *ros2-rmw-profile-files
-    working_dir: /rose/colcon_ws
-    command: >
-      /bin/bash

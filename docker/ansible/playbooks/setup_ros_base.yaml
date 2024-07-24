@@ -1,0 +1,34 @@
+---
+- hosts: all
+  tasks:
+    - name: Setup apt-key for ROS 2
+      block:
+        - name: Add ROS 2 GPG key
+          get_url:
+            url: https://raw.githubusercontent.com/ros/rosdistro/master/ros.key
+            dest: /usr/share/keyrings/ros-archive-keyring.gpg
+        - name: Get dpkg architecture
+          register: dpkg_architecture
+          shell: |
+            dpkg --print-architecture
+        - name: Add ROS 2 apt source
+          apt_repository:
+            repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu {{ ansible_distribution_release }} main"
+        - name: Update apt cache
+          apt:
+            update_cache: true
+    - name: Install ros-base packages
+      block:
+        - name: Get ROS 2 distro
+          register: ros_distro
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROS_DISTRO") }}
+        - name: Install ros-base
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-ros-base
+

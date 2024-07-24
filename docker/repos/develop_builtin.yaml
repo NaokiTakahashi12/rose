@@ -1,0 +1,53 @@
+repositories:
+  naokitakahashi12/teleop_twist_stamped_joy:
+    type: git
+    url: https://github.com/NaokiTakahashi12/teleop_twist_stamped_joy.git
+    version: main
+  naokitakahashi12/joint_state_merger:
+    type: git
+    url: https://github.com/NaokiTakahashi12/joint_state_merger.git
+    version: main
+  naokitakahashi12/legged_motion_msgs:
+    type: git
+    url: https://github.com/NaokiTakahashi12/legged_motion_msgs.git
+    version: main
+  # naokitakahashi12/witmotion_ros2:
+  #   type: git
+  #   url: https://github.com/NaokiTakahashi12/witmotion_ros2.git
+  #   version: main
+  naokitakahashi12/cybergear_ros2:
+    type: git
+    url: https://github.com/NaokiTakahashi12/cybergear_ros2.git
+    version: main
+  naokitakahashi12/ros2_ftxui_vendor:
+    type: git
+    url: https://github.com/NaokiTakahashi12/ros2_ftxui_vendor.git
+    version: main
+  naokitakahashi12/ros2_tviz:
+    type: git
+    url: https://github.com/NaokiTakahashi12/ros2_tviz.git
+    version: main
+  naokitakahashi12/dummy_odometry:
+    type: git
+    url: https://github.com/NaokiTakahashi12/dummy_odometry.git
+    version: main
+  naokitakahashi12/nav_waypoint_manager:
+    type: git
+    url: https://github.com/NaokiTakahashi12/nav_waypoint_manager.git
+    version: main
+  naokitakahashi12/rbdl_vendor:
+    type: git
+    url: https://github.com/NaokiTakahashi12/rbdl_vendor.git
+    version: main
+  naokitakahashi12/unitree_go1_ros2:
+    type: git
+    url: https://github.com/NaokiTakahashi12/unitree_go1_ros2.git
+    version: main
+  naokitakahashi12/livox_sdk2_vendor:
+    type: git
+    url: https://github.com/NaokiTakahashi12/livox_sdk2_vendor.git
+    version: main
+  naokitakahashi12/livox_ros_driver2:
+    type: git
+    url: https://github.com/NaokiTakahashi12/livox_ros_driver2.git
+    version: humble

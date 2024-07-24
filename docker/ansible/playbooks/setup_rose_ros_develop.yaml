@@ -1,0 +1,79 @@
+---
+- hosts: all
+  tasks:
+    - name: Install compile toolchain packages
+      block:
+        - name: Install compile dependency from apt
+          apt:
+            install_recommends: false
+            package:
+              - gcc
+              - g++
+              - make
+              - ninja-build
+              - ccache
+              - cmake
+              - vim
+              - mold
+        - name: Install compile dependency from pip
+          pip:
+            name:
+              - vcstool
+              - colcon-common-extensions
+              - colcon-mixin
+              - colcon-metadata
+              - lark
+              - numpy
+        - name: Install colcon mixin
+          shell: |
+            colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
+        - name: Update colcon mixin
+          shell: |
+            colcon mixin update default
+    - name: Install ROSE develop command line tools
+      apt:
+        install_recommends: false
+        package:
+          - i2c-tools
+    - name: Install ROSE develop ROS 2 packages
+      block:
+        - name: Get ROS 2 distro
+          register: ros_distro
+          shell: |
+            if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
+              exit 129; \
+            fi
+            echo {{ lookup("env", "ROS_DISTRO") }}
+        - name: Install develop common packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-ament-cmake
+              - ros-{{ ros_distro.stdout }}-ament-cmake-vendor-package
+              - ros-{{ ros_distro.stdout }}-generate-parameter-library
+              - ros-{{ ros_distro.stdout }}-rviz2
+        - name: Install tool optional packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-cartographer-ros
+              - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
+              - ros-{{ ros_distro.stdout }}-rqt-image-view
+        - name: Install foxglove packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-foxglove-bridge
+        - name: Install develop optional packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-rviz-default-plugins
+              - ros-{{ ros_distro.stdout }}-rviz-imu-plugin
+              - ros-{{ ros_distro.stdout }}-nav2-rviz-plugins
+              - ros-{{ ros_distro.stdout }}-octomap-rviz-plugins
+              - ros-{{ ros_distro.stdout }}-grid-map-rviz-plugin
