@@ -6,7 +6,3 @@ services:
     network_mode: host
   humble-foxglove-bridge:
     network_mode: host
-  galactic-runtime:
-    network_mode: host
-  galactic:
-    network_mode: host

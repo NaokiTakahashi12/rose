@@ -39,29 +39,3 @@ services:
               count: all
               capabilities:
                 - gpu
-  galactic-runtime:
-    build:
-      args:
-        BASE_IMAGE: nvidia/cudagl:11.0.3-runtime-ubuntu20.04
-    image: naokitakahashi12/rose:galactic-runtime-cudagl-11.0.3
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities:
-                - gpu
-  galactic:
-    build:
-      args:
-        BASE_IMAGE: nvidia/cudagl:11.0.3-runtime-ubuntu20.04
-    image: naokitakahashi12/rose:galactic-develop-cudagl-11.0.3
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities:
-                - gpu
