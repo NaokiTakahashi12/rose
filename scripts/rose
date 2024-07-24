@@ -44,7 +44,7 @@ class RoseCliHandler:
 
     def version(self, args):
         # TODO
-        print('rose version 0.0.0')
+        print('rose version 0.1.0')
 
     def get_compose_prefix(self, args):
         print(' '.join(self.compose_command))
