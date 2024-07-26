@@ -2,7 +2,7 @@
 <CycloneDDS>
   <Domain id="any">
     <SharedMemory>
-      <Enable>true</Enable>
+      <Enable>false</Enable>
       <LogLevel>info</LogLevel>
     </SharedMemory>
     <Compatibility>
@@ -17,6 +17,8 @@
       <DontRoute>false</DontRoute>
       <MulticastRecvNetworkInterfaceAddresses>all</MulticastRecvNetworkInterfaceAddresses>
       <RedundantNetworking>true</RedundantNetworking>
+      <Transport>udp</Transport>
+      <MaxMessageSize>65500B</MaxMessageSize>
       <Interfaces>
         <NetworkInterface autodetermine="true" priority="default" multicast="default"/>
       </Interfaces>
