@@ -5,9 +5,18 @@ x-env-files: &ros2-develop-env-files
   - env_files/ros2.env
   - env_files/xwindow.env
 
-x-rmw-profile-files: &ros2-rmw-profile-files
+x-ros2-shared-volumes: &ros2-shared-volumes
   - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
   - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
+  - type: bind
+    source: /var/run/udev
+    target: /var/run/udev
+  - type: bind
+    source: /tmp
+    target: /tmp
+  - type: bind
+    source: /dev
+    target: /dev
 
 services:
   xwindow:
@@ -53,19 +62,6 @@ services:
         source: ~/.inputrc
         target: /root/.inputrc
         read_only: true
-  host-devices:
-    image: busybox
-    privileged: true
-    volumes:
-      - type: bind
-        source: /var/run/udev
-        target: /var/run/udev
-      - type: bind
-        source: /tmp
-        target: /tmp
-      - type: bind
-        source: /dev
-        target: /dev
   humble-runtime:
     build:
       context: docker
@@ -76,14 +72,18 @@ services:
     image: naokitakahashi12/rose:humble-runtime
     profiles:
       - humble
+    shm_size: 256m
     privileged: true
-    volumes_from:
-      - host-devices
+    pid: host
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    volumes: *ros2-shared-volumes
     env_file:
       - env_files/ros2.env
     environment:
       - ROS_HOSTNAME=humble-runtime
-    volumes: *ros2-rmw-profile-files
     command: iox-roudi
   humble:
     build:
@@ -96,20 +96,24 @@ services:
     image: naokitakahashi12/rose:humble-develop
     profiles:
       - humble
+    shm_size: 256m
     tty: true
     privileged: true
-    shm_size: 256m
+    pid: host
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
     devices:
       - /dev/dri
     volumes_from:
       - xwindow
       - humble-workspace
       - developer-local-config
-      - host-devices
+    volumes: *ros2-shared-volumes
     env_file: *ros2-develop-env-files
     environment:
       - ROS_HOSTNAME=humble
-    volumes: *ros2-rmw-profile-files
     command: >
       /bin/bash
   humble-foxglove-bridge:
@@ -125,6 +129,6 @@ services:
     env_file: *ros2-develop-env-files
     environment:
       - ROS_HOSTNAME=humble-foxglove-bridge
-    volumes: *ros2-rmw-profile-files
+    volumes: *ros2-shared-volumes
     command: >
       ros2 run foxglove_bridge foxglove_bridge
