@@ -74,6 +74,9 @@
             package:
               - ros-{{ ros_distro.stdout }}-rviz-default-plugins
               - ros-{{ ros_distro.stdout }}-rviz-imu-plugin
+              - ros-{{ ros_distro.stdout }}-rviz-2d-overlay-plugins
               - ros-{{ ros_distro.stdout }}-nav2-rviz-plugins
               - ros-{{ ros_distro.stdout }}-octomap-rviz-plugins
               - ros-{{ ros_distro.stdout }}-grid-map-rviz-plugin
+              - ros-{{ ros_distro.stdout }}-vision-msgs-rviz-plugins
+              - ros-{{ ros_distro.stdout }}-polygon-rviz-plugins
