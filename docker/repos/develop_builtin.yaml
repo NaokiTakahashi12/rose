@@ -11,10 +11,10 @@ repositories:
     type: git
     url: https://github.com/NaokiTakahashi12/legged_motion_msgs.git
     version: main
-  # naokitakahashi12/witmotion_ros2:
-  #   type: git
-  #   url: https://github.com/NaokiTakahashi12/witmotion_ros2.git
-  #   version: main
+  naokitakahashi12/witmotion_ros2:
+    type: git
+    url: https://github.com/NaokiTakahashi12/witmotion_ros2.git
+    version: main
   naokitakahashi12/cybergear_ros2:
     type: git
     url: https://github.com/NaokiTakahashi12/cybergear_ros2.git
@@ -51,3 +51,7 @@ repositories:
     type: git
     url: https://github.com/NaokiTakahashi12/livox_ros_driver2.git
     version: humble
+  naokitakahashi12/fzf_ros2:
+    type: git
+    url: https://github.com/NaokiTakahashi12/fzf_ros2.git
+    version: main

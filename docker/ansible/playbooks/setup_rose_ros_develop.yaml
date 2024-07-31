@@ -15,6 +15,7 @@
               - cmake
               - vim
               - mold
+              - fzf
         - name: Install compile dependency from pip
           pip:
             name:
