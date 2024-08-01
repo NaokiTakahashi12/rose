@@ -32,7 +32,16 @@ if [ -z "$ROS_DOMAIN_ID" ]
 then
     export ROS_DOMAIN_ID=22
 fi
-if [ -z "$ROS_LOCALHOST_ONLY" ]
+if [ "$ROS_DISTRO" = "jazzy" ]
 then
-    export ROS_LOCALHOST_ONLY=0
+    if [ -z "$ROS_AUTOMATIC_DISCOVERY_RANGE" ]
+    then
+        export ROS_AUTOMATIC_DISCOVERY_RANGE=3
+    fi
+elif [ "$ROS_DISTRO" = "humble" ]
+then
+    if [ -z "$ROS_LOCALHOST_ONLY" ]
+    then
+        export ROS_LOCALHOST_ONLY=0
+    fi
 fi
