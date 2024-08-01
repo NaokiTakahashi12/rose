@@ -33,6 +33,20 @@ services:
         source: /etc/localtime
         target: /etc/localtime
         read_only: true
+  jazzy-workspace:
+    image: busybox
+    profiles:
+      - jazzy
+    volumes:
+      - type: bind
+        source: ./workspace/jazzy/src
+        target: /rose/colcon_ws/src
+      - type: bind
+        source: ./workspace/jazzy/build
+        target: /rose/colcon_ws/build
+      - type: bind
+        source: ./workspace/jazzy/install
+        target: /rose/colcon_ws/install
   humble-workspace:
     image: busybox
     profiles:
@@ -62,6 +76,59 @@ services:
         source: ~/.inputrc
         target: /root/.inputrc
         read_only: true
+  jazzy-runtime:
+    build:
+      context: docker
+      args:
+        ROS_DISTRO: jazzy
+        BASE_IMAGE: ubuntu:24.04
+      target: rose-runtime
+    image: naokitakahashi12/rose:jazzy-runtime
+    profiles:
+      - jazzy
+    shm_size: 256m
+    privileged: true
+    pid: host
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    volumes: *ros2-shared-volumes
+    env_file:
+      - env_files/ros2.env
+    environment:
+      - ROS_HOSTNAME=jazzy-runtime
+    command: iox-roudi
+  jazzy:
+    build:
+      context: docker
+      args:
+        ROS_DISTRO: jazzy
+        BASE_IMAGE: ubuntu:24.04
+      target: rose-develop
+    image: naokitakahashi12/rose:jazzy-develop
+    profiles:
+      - jazzy
+    shm_size: 256m
+    tty: true
+    privileged: true
+    pid: host
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    devices:
+      - /dev/dri
+    volumes_from:
+      - xwindow
+      - jazzy-workspace
+      - developer-local-config
+    volumes: *ros2-shared-volumes
+    env_file: *ros2-develop-env-files
+    environment:
+      - ROS_HOSTNAME=jazzy
+    command: >
+      /bin/bash
   humble-runtime:
     build:
       context: docker
