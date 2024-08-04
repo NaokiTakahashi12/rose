@@ -17,6 +17,14 @@ x-ros2-shared-volumes: &ros2-shared-volumes
   - type: bind
     source: /dev
     target: /dev
+  - type: bind
+    source: ./rmw_profiles/rmw_cyclonedds_profile.xml
+    target: /rose/colcon_ws/profiles/rmw_cyclonedds_profile.xml
+    read_only: true
+  - type: bind
+    source: ./rmw_profiles/rmw_fastrtps_profile.xml
+    target: /rose/colcon_ws/profiles/rmw_fastrtps_profile.xml
+    read_only: true
 
 services:
   xwindow:
@@ -184,18 +192,12 @@ services:
     command: >
       /bin/bash
   humble-foxglove-bridge:
-    build:
-      context: docker
-      args:
-        ROS_DISTRO: humble
-        BASE_IMAGE: ubuntu:22.04
-      target: rose-runtime
-    image: naokitakahashi12/rose:humble-runtime
+    image: naokitakahashi12/rose:humble-develop
     profiles:
       - humble
+    volumes: *ros2-shared-volumes
     env_file: *ros2-develop-env-files
     environment:
       - ROS_HOSTNAME=humble-foxglove-bridge
-    volumes: *ros2-shared-volumes
     command: >
       ros2 run foxglove_bridge foxglove_bridge

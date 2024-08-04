@@ -13,11 +13,11 @@ services:
               count: all
               capabilities:
                 - gpu
-  humble-foxglove-bridge:
+  humble:
     build:
       args:
         BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
-    image: naokitakahashi12/rose:humble-runtime-cuda-12.2.0
+    image: naokitakahashi12/rose:humble-devel-cuda-12.2.0
     deploy:
       resources:
         reservations:
@@ -26,10 +26,7 @@ services:
               count: all
               capabilities:
                 - gpu
-  humble:
-    build:
-      args:
-        BASE_IMAGE: nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
+  humble-foxglove-bridge:
     image: naokitakahashi12/rose:humble-devel-cuda-12.2.0
     deploy:
       resources:

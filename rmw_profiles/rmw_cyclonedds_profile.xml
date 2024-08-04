@@ -1,23 +1,27 @@
 <?xml version="1.0"?>
-<CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/iceoryx/etc/cyclonedds.xsd">
+<CycloneDDS>
   <Domain id="any">
+    <SharedMemory>
+      <Enable>false</Enable>
+      <LogLevel>info</LogLevel>
+    </SharedMemory>
+    <Compatibility>
+      <ManySocketsMode>single</ManySocketsMode>
+    </Compatibility>
+    <Discovery>
+      <EnableTopicDiscoveryEndpoints>false</EnableTopicDiscoveryEndpoints>
+    </Discovery>
     <General>
+      <AllowMulticast>true</AllowMulticast>
+      <EnableMulticastLoopback>true</EnableMulticastLoopback>
+      <DontRoute>false</DontRoute>
+      <MulticastRecvNetworkInterfaceAddresses>all</MulticastRecvNetworkInterfaceAddresses>
+      <RedundantNetworking>true</RedundantNetworking>
+      <Transport>udp</Transport>
+      <MaxMessageSize>65500B</MaxMessageSize>
       <Interfaces>
         <NetworkInterface autodetermine="true" priority="default" multicast="default"/>
       </Interfaces>
-      <AllowMulticast>default</AllowMulticast>
-      <Transport>udp</Transport>
     </General>
-    <Internal>
-      <MultipleReceiveThreads>true</MultipleReceiveThreads>
-    </Internal>
-    <Tracing>
-      <Verbosity>config</Verbosity>
-      <OutputFile>cdds.log.${CYCLONEDDS_PID}</OutputFile>
-    </Tracing>
-    <SharedMemory>
-      <Enable>true</Enable>
-      <LogLevel>info</LogLevel>
-    </SharedMemory>
   </Domain>
 </CycloneDDS>
