@@ -66,6 +66,10 @@
               - ros-{{ ros_distro.stdout }}-cartographer-ros
               - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
               - ros-{{ ros_distro.stdout }}-rqt-image-view
+              - ros-{{ ros_distro.stdout }}-rqt-plot
+              - ros-{{ ros_distro.stdout }}-rqt-robot-monitor
+              - ros-{{ ros_distro.stdout }}-rqt-runtime-monitor
+              - ros-{{ ros_distro.stdout }}-rqt-service-caller
         - name: Install foxglove packages
           when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
           apt:
