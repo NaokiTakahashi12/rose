@@ -72,7 +72,14 @@
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-foxglove-bridge
-        - name: Install develop optional packages
+        - name: Install plotjuggler packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-plotjuggler
+              - ros-{{ ros_distro.stdout }}-plotjuggler-ros
+        - name: Install rviz2 plugins packages
           when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
           apt:
             install_recommends: false

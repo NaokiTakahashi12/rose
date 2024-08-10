@@ -32,6 +32,7 @@
               - ros-{{ ros_distro.stdout }}-can-msgs
               - ros-{{ ros_distro.stdout }}-gps-msgs
               - ros-{{ ros_distro.stdout }}-vision-msgs
+              - ros-{{ ros_distro.stdout }}-plotjuggler-msgs
         - name: Install ros2-control packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
