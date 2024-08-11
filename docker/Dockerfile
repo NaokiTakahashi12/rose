@@ -97,6 +97,7 @@ RUN export DEBIANFRONTEND=nointeractive \
     && rm -rf /var/lib/apt/lists/*
 
 COPY repos/develop_builtin.yaml ${ROSE_WORKSPACE}/repos/develop_builtin.yaml
+COPY repos/develop_builtin_${ROS_DISTRO}.yaml ${ROSE_WORKSPACE}/repos/develop_builtin_${ROS_DISTRO}.yaml
 COPY ansible/playbooks/setup_rose_ros_develop_builtin.yaml /ansible/playbooks/setup_rose_ros_develop_builtin.yaml
 RUN . /opt/pylocal/bin/activate \
     && ansible-playbook \

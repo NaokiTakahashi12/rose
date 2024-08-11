@@ -35,6 +35,15 @@
         - name: Update colcon mixin
           shell: |
             colcon mixin update default
+    - name: Install micro-ROS depencency packages
+      apt:
+        install_recommends: false
+        package:
+          - flex
+          - bison
+          - usbutils
+          - libncurses-dev
+          - libfastcdr-dev
     - name: Install ROSE develop command line tools
       apt:
         install_recommends: false

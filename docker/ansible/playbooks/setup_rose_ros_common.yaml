@@ -33,6 +33,8 @@
               - ros-{{ ros_distro.stdout }}-gps-msgs
               - ros-{{ ros_distro.stdout }}-vision-msgs
               - ros-{{ ros_distro.stdout }}-plotjuggler-msgs
+              - ros-{{ ros_distro.stdout }}-micro-ros-diagnostic-msgs
+              - ros-{{ ros_distro.stdout }}-micro-ros-msgs
         - name: Install ros2-control packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
@@ -145,6 +147,12 @@
               - ros-{{ ros_distro.stdout }}-ublox-gps
               - ros-{{ ros_distro.stdout }}-realsense2-camera
               - ros-{{ ros_distro.stdout }}-velodyne
+        - name: Install micro-ROS diagnostic bridge
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-micro-ros-diagnostic-bridge
         - name: Install ROS 2 utils packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
