@@ -33,9 +33,15 @@
                 path: "{{ develop_builtin_ws_directory.stdout }}/src"
                 state: directory
         - name: Clone builtin source
-          shell: |
-            vcs import {{ develop_builtin_ws_directory.stdout }}/src \
-              < {{ repos_directory.stdout }}/develop_builtin.yaml
+          block:
+            - name: Clone builtin common source
+              shell: |
+                vcs import {{ develop_builtin_ws_directory.stdout }}/src \
+                  < {{ repos_directory.stdout }}/develop_builtin.yaml
+            - name: Clone builtin distro source
+              shell: |
+                vcs import {{ develop_builtin_ws_directory.stdout }}/src \
+                  < {{ repos_directory.stdout }}/develop_builtin_{{ ros_distro.stdout }}.yaml
         - name: Build builtin workspace
           args:
               chdir: "{{ develop_builtin_ws_directory.stdout }}"

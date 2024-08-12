@@ -27,9 +27,6 @@ services:
               capabilities:
                 - gpu
   humble-foxglove-bridge:
-    build:
-      args:
-        BASE_IMAGE: nvcr.io/nvidia/l4t-cuda:12.2.2-devel-arm64-ubuntu22.04
     image: naokitakahashi12/rose:humble-develop-l4t-pytorch-r35.2.1
     deploy:
       resources:

@@ -35,6 +35,15 @@
         - name: Update colcon mixin
           shell: |
             colcon mixin update default
+    - name: Install micro-ROS depencency packages
+      apt:
+        install_recommends: false
+        package:
+          - flex
+          - bison
+          - usbutils
+          - libncurses-dev
+          - libfastcdr-dev
     - name: Install ROSE develop command line tools
       apt:
         install_recommends: false
@@ -66,14 +75,25 @@
               - ros-{{ ros_distro.stdout }}-cartographer-ros
               - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
               - ros-{{ ros_distro.stdout }}-rqt-image-view
+              - ros-{{ ros_distro.stdout }}-rqt-plot
+              - ros-{{ ros_distro.stdout }}-rqt-robot-monitor
+              - ros-{{ ros_distro.stdout }}-rqt-runtime-monitor
+              - ros-{{ ros_distro.stdout }}-rqt-service-caller
         - name: Install foxglove packages
           when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
           apt:
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-foxglove-bridge
-        - name: Install develop optional packages
+        - name: Install plotjuggler packages
           when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-plotjuggler
+              - ros-{{ ros_distro.stdout }}-plotjuggler-ros
+        - name: Install rviz2 plugins packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:
