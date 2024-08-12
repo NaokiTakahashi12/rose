@@ -93,7 +93,7 @@
               - ros-{{ ros_distro.stdout }}-plotjuggler
               - ros-{{ ros_distro.stdout }}-plotjuggler-ros
         - name: Install rviz2 plugins packages
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:

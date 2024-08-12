@@ -70,7 +70,7 @@
               - ros-{{ ros_distro.stdout }}-plansys2-msgs
               - ros-{{ ros_distro.stdout }}-plansys2-bringup
         - name: Install grid_map package
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:
