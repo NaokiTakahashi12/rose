@@ -6,8 +6,6 @@ x-env-files: &ros2-develop-env-files
   - env_files/xwindow.env
 
 x-ros2-shared-volumes: &ros2-shared-volumes
-  - ./rmw_profiles/rmw_fastrtps_profile.xml:/rmw_fastrtps_profile.xml:ro
-  - ./rmw_profiles/rmw_cyclonedds_profile.xml:/rmw_cyclonedds_profile.xml:ro
   - type: bind
     source: /var/run/udev
     target: /var/run/udev
@@ -96,7 +94,6 @@ services:
       - jazzy
     shm_size: 256m
     privileged: true
-    pid: host
     cap_add:
       - SYS_ADMIN
     security_opt:
@@ -120,7 +117,6 @@ services:
     shm_size: 256m
     tty: true
     privileged: true
-    pid: host
     cap_add:
       - SYS_ADMIN
     security_opt:
@@ -149,7 +145,6 @@ services:
       - humble
     shm_size: 256m
     privileged: true
-    pid: host
     cap_add:
       - SYS_ADMIN
     security_opt:
@@ -174,7 +169,6 @@ services:
     shm_size: 256m
     tty: true
     privileged: true
-    pid: host
     cap_add:
       - SYS_ADMIN
     security_opt:
