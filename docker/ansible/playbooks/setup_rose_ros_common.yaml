@@ -147,6 +147,19 @@
               - ros-{{ ros_distro.stdout }}-ublox-gps
               - ros-{{ ros_distro.stdout }}-realsense2-camera
               - ros-{{ ros_distro.stdout }}-velodyne
+        - name: Install flexbe packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-flexbe-msgs
+              - ros-{{ ros_distro.stdout }}-flexbe-behavior-engine
+              - ros-{{ ros_distro.stdout }}-flexbe-core
+              - ros-{{ ros_distro.stdout }}-flexbe-input
+              - ros-{{ ros_distro.stdout }}-flexbe-mirror
+              - ros-{{ ros_distro.stdout }}-flexbe-onboard
+              - ros-{{ ros_distro.stdout }}-flexbe-states
+              - ros-{{ ros_distro.stdout }}-flexbe-widget
         - name: Install micro-ROS diagnostic bridge
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
