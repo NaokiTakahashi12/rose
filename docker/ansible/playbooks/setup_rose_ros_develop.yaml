@@ -20,6 +20,7 @@
           pip:
             name:
               - vcstool
+              - rosdep
               - colcon-common-extensions
               - colcon-mixin
               - colcon-metadata
@@ -29,6 +30,12 @@
               - simplejpeg
               - pillow
               - requests
+        - name: Install debug tools from apt
+          apt:
+            install_recommends: false
+            package:
+              - gdb
+              - silversearcher-ag
         - name: Install colcon mixin
           shell: |
             colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
