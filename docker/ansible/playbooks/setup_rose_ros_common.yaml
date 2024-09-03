@@ -103,6 +103,9 @@
             package:
               - ros-{{ ros_distro.stdout }}-image-proc
               - ros-{{ ros_distro.stdout }}-apriltag-ros
+              - ros-{{ ros_distro.stdout }}-apriltag
+              - ros-{{ ros_distro.stdout }}-apriltag-detector
+              - ros-{{ ros_distro.stdout }}-apriltag-detector-mit
               - ros-{{ ros_distro.stdout }}-stereo-image-proc
               - ros-{{ ros_distro.stdout }}-depthimage-to-laserscan
               - ros-{{ ros_distro.stdout }}-depth-image-proc
@@ -143,6 +146,8 @@
               - ros-{{ ros_distro.stdout }}-joy-linux
               - ros-{{ ros_distro.stdout }}-teleop-tools
               - ros-{{ ros_distro.stdout }}-teleop-twist-joy
+              - ros-{{ ros_distro.stdout }}-teleop-twist-keyboard
+              - ros-{{ ros_distro.stdout }}-twist-mux
               - ros-{{ ros_distro.stdout }}-ublox
               - ros-{{ ros_distro.stdout }}-ublox-gps
               - ros-{{ ros_distro.stdout }}-realsense2-camera
