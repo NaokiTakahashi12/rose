@@ -105,7 +105,6 @@
               - ros-{{ ros_distro.stdout }}-apriltag-ros
               - ros-{{ ros_distro.stdout }}-apriltag
               - ros-{{ ros_distro.stdout }}-apriltag-detector
-              - ros-{{ ros_distro.stdout }}-apriltag-detector-mit
               - ros-{{ ros_distro.stdout }}-stereo-image-proc
               - ros-{{ ros_distro.stdout }}-depthimage-to-laserscan
               - ros-{{ ros_distro.stdout }}-depth-image-proc
