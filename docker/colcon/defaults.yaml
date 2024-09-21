@@ -12,4 +12,9 @@
       "ninja"
     ]
   }
+  "build": {
+    "merge-install": true,
+    "event-handlers": [
+      "console_direct+"
+    ]
 }
