@@ -30,6 +30,7 @@
               - simplejpeg
               - pillow
               - requests
+              - empy==3.3.4
         - name: Install debug tools from apt
           apt:
             install_recommends: false
