@@ -82,11 +82,13 @@
             package:
               - ros-{{ ros_distro.stdout }}-cartographer-ros
               - ros-{{ ros_distro.stdout }}-gtsam
+              - ros-{{ ros_distro.stdout }}-libg2o
         - name: Install navigation2 packages from apt
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:
+              - ros-{{ ros_distro.stdout }}-rcl-interfaces
               - ros-{{ ros_distro.stdout }}-nav2-bringup
               - ros-{{ ros_distro.stdout }}-nav2-simple-commander
               - ros-{{ ros_distro.stdout }}-nav2-mppi-controller
