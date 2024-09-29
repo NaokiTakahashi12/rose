@@ -180,4 +180,5 @@
               - ros-{{ ros_distro.stdout }}-domain-bridge
               - ros-{{ ros_distro.stdout }}-robot-state-publisher
               - ros-{{ ros_distro.stdout }}-joint-state-publisher
+              - ros-{{ ros_distro.stdout }}-rosbag2-storage-mcap
 
