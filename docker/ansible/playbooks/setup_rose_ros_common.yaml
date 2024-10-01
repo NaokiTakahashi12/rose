@@ -32,6 +32,7 @@
               - ros-{{ ros_distro.stdout }}-can-msgs
               - ros-{{ ros_distro.stdout }}-gps-msgs
               - ros-{{ ros_distro.stdout }}-vision-msgs
+              - ros-{{ ros_distro.stdout }}-graph-msgs
               - ros-{{ ros_distro.stdout }}-plotjuggler-msgs
               - ros-{{ ros_distro.stdout }}-micro-ros-diagnostic-msgs
               - ros-{{ ros_distro.stdout }}-micro-ros-msgs
@@ -110,6 +111,7 @@
               - ros-{{ ros_distro.stdout }}-depth-image-proc
               - ros-{{ ros_distro.stdout }}-pcl-ros
               - ros-{{ ros_distro.stdout }}-cv-bridge
+              - ros-{{ ros_distro.stdout }}-zbar-ros
         - name: Install IMU data processor packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
@@ -135,22 +137,20 @@
             package:
               - ros-{{ ros_distro.stdout }}-micro-ros-msgs
               - ros-{{ ros_distro.stdout }}-micro-ros-diagnostic-bridge
-        - name: Install ROS 2 utils packages without jazzy
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+        - name: Install ROS 2 driver packages
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-ros2-socketcan
               - ros-{{ ros_distro.stdout }}-joy
               - ros-{{ ros_distro.stdout }}-joy-linux
-              - ros-{{ ros_distro.stdout }}-teleop-tools
-              - ros-{{ ros_distro.stdout }}-teleop-twist-joy
-              - ros-{{ ros_distro.stdout }}-teleop-twist-keyboard
-              - ros-{{ ros_distro.stdout }}-twist-mux
               - ros-{{ ros_distro.stdout }}-ublox
               - ros-{{ ros_distro.stdout }}-ublox-gps
               - ros-{{ ros_distro.stdout }}-realsense2-camera
               - ros-{{ ros_distro.stdout }}-velodyne
+              - ros-{{ ros_distro.stdout }}-usb-cam
+              - ros-{{ ros_distro.stdout }}-v4l2-camera
         - name: Install flexbe packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
@@ -181,4 +181,9 @@
               - ros-{{ ros_distro.stdout }}-robot-state-publisher
               - ros-{{ ros_distro.stdout }}-joint-state-publisher
               - ros-{{ ros_distro.stdout }}-rosbag2-storage-mcap
+              - ros-{{ ros_distro.stdout }}-joy-teleop
+              - ros-{{ ros_distro.stdout }}-key-teleop
+              - ros-{{ ros_distro.stdout }}-teleop-twist-joy
+              - ros-{{ ros_distro.stdout }}-teleop-twist-keyboard
+              - ros-{{ ros_distro.stdout }}-twist-mux
 
