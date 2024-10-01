@@ -74,7 +74,6 @@
               - ros-{{ ros_distro.stdout }}-ament-cmake
               - ros-{{ ros_distro.stdout }}-ament-cmake-vendor-package
               - ros-{{ ros_distro.stdout }}-generate-parameter-library
-              - ros-{{ ros_distro.stdout }}-rviz2
         - name: Install SLAM and localization packages from apt
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
@@ -92,18 +91,26 @@
               - ros-{{ ros_distro.stdout }}-nav2-bringup
               - ros-{{ ros_distro.stdout }}-nav2-simple-commander
               - ros-{{ ros_distro.stdout }}-nav2-mppi-controller
-        - name: Install tool optional packages
+        - name: Install visualize packages from apt
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-rviz2
+              - ros-{{ ros_distro.stdout }}-rviz-visual-tools
+              - ros-{{ ros_distro.stdout }}-rqt-image-view
+              - ros-{{ ros_distro.stdout }}-rqt-plot
+              - ros-{{ ros_distro.stdout }}-rqt-robot-monitor
+              - ros-{{ ros_distro.stdout }}-rqt-runtime-monitor
+              - ros-{{ ros_distro.stdout }}-rqt-service-caller
+        - name: Install utility packages from apt
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-pointcloud-to-laserscan
               - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
-              - ros-{{ ros_distro.stdout }}-rqt-image-view
-              - ros-{{ ros_distro.stdout }}-rqt-plot
-              - ros-{{ ros_distro.stdout }}-rqt-robot-monitor
-              - ros-{{ ros_distro.stdout }}-rqt-runtime-monitor
-              - ros-{{ ros_distro.stdout }}-rqt-service-caller
+              - ros-{{ ros_distro.stdout }}-topic-tools
         - name: Install foxglove packages
           when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
           apt:
@@ -130,3 +137,9 @@
               - ros-{{ ros_distro.stdout }}-grid-map-rviz-plugin
               - ros-{{ ros_distro.stdout }}-vision-msgs-rviz-plugins
               - ros-{{ ros_distro.stdout }}-polygon-rviz-plugins
+        - name: Install rviz2 plugins packages without jazzy
+          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-as2-rviz-plugins
