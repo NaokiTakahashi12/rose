@@ -52,6 +52,7 @@
           - usbutils
           - libncurses-dev
           - libfastcdr-dev
+          - libnanoflann-dev
     - name: Install ROSE develop command line tools
       apt:
         install_recommends: false

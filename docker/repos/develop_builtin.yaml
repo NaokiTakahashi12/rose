@@ -1,4 +1,8 @@
 repositories:
+  borglab/gtsam:
+    type: git
+    url: https://github.com/borglab/gtsam.git
+    version: 4.2a9
   dheera/rosboard:
     type: git
     url: https://github.com/dheera/rosboard.git
