@@ -15,3 +15,11 @@ repositories:
     type: git
     url: https://github.com/rsasaki0109/lidar_localization_ros2.git
     version: main
+  rst_tu_dortmund/teb_local_planner:
+    type: git
+    url: https://github.com/rst-tu-dortmund/teb_local_planner.git
+    version: ros2-master
+  rst_tu_dortmund/costmap_converter:
+    type: git
+    url: https://github.com/rst-tu-dortmund/costmap_converter.git
+    version: ros2

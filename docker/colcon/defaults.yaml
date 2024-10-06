@@ -11,10 +11,11 @@
       "mold",
       "ninja"
     ]
-  }
-  "build": {
+  },
+  "test": {
     "merge-install": true,
     "event-handlers": [
       "console_direct+"
     ]
+  }
 }

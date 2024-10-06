@@ -54,7 +54,11 @@
                 -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" \
                 -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" \
                 -D CMAKE_MODULE_LINKER_FLAGS="-fuse-ld=mold" \
-                -D CMAKE_BUILD_TYPE=Release
+                -D CMAKE_BUILD_TYPE=Release \
+                -D GTSAM_USE_SYSTEM_EIGEN=ON \
+                -D GTSAM_BUILD_EXAMPLES_ALWAYS=OFF \
+                -D GTSAM_BUILD_TESTS=OFF \
+                -D BUILD_WITH_CUDA=$(if [ -x "$(command -v nvcc)" ]; then echo ON; else echo OFF; fi)
         - name: Add COLCON_IGNORE builtin workspace
           file:
             path: "{{ develop_builtin_ws_directory.stdout }}/COLCON_IGNORE"
