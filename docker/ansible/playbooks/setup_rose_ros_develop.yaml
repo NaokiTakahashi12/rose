@@ -16,6 +16,7 @@
               - vim
               - mold
               - fzf
+              - pcl-tools
         - name: Install compile dependency from pip
           pip:
             name:
