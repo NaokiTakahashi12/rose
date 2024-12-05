@@ -18,8 +18,8 @@ repositories:
   rst_tu_dortmund/teb_local_planner:
     type: git
     url: https://github.com/rst-tu-dortmund/teb_local_planner.git
-    version: ros2-master
+    version: 630a22e88dc9fd45be726a762edbb5b776bef231
   rst_tu_dortmund/costmap_converter:
     type: git
     url: https://github.com/rst-tu-dortmund/costmap_converter.git
-    version: ros2
+    version: 9565858432664e9cfe0b3556e1809336c4ab06d4
