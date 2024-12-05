@@ -44,7 +44,7 @@
               - ros-{{ ros_distro.stdout }}-ros2-control
               - ros-{{ ros_distro.stdout }}-ros2-controllers
         - name: Install nav2 packages
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:
@@ -131,7 +131,7 @@
               - ros-{{ ros_distro.stdout }}-laser-filters
               - ros-{{ ros_distro.stdout }}-robot-localization
         - name: Install micro-ros packages without jazzy
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:

@@ -16,6 +16,7 @@
               - vim
               - mold
               - fzf
+              - pcl-tools
         - name: Install compile dependency from pip
           pip:
             name:
@@ -119,7 +120,7 @@
             package:
               - ros-{{ ros_distro.stdout }}-foxglove-bridge
         - name: Install plotjuggler packages
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
             install_recommends: false
             package:

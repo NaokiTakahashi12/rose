@@ -3,6 +3,10 @@ repositories:
     type: git
     url: https://github.com/borglab/gtsam.git
     version: 4.2a9
+  prbonn/kiss_icp:
+    type: git
+    url: https://github.com/PRBonn/kiss-icp.git
+    version: main
   dheera/rosboard:
     type: git
     url: https://github.com/dheera/rosboard.git
@@ -11,6 +15,10 @@ repositories:
     type: git
     url: https://github.com/dheera/rosshow.git
     version: main
+  koide3/fast_gicp:
+    type: git
+    url: https://github.com/koide3/fast_gicp.git
+    version: master
   naokitakahashi12/teleop_twist_stamped_joy:
     type: git
     url: https://github.com/NaokiTakahashi12/teleop_twist_stamped_joy.git
