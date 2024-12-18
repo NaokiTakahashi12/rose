@@ -170,6 +170,13 @@
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-micro-ros-diagnostic-bridge
+        - name: Install ROS 2 calibration packages from apt
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-robot-calibration-msgs
+              - ros-{{ ros_distro.stdout }}-robot-calibration
         - name: Install ROS 2 utils packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
