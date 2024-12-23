@@ -9,7 +9,7 @@
         fi
         echo {{ lookup("env", "ROS_DISTRO") }}
     - name: Install ROS 2 simulation packages
-      when: ros_distro.stdout in ['humble', 'galactic']
+      when: ros_distro.stdout in ['humble', 'galactic', 'jazzy']
       block:
         - name: Get builtin source directory
           register: simulator_ws_directory
@@ -56,6 +56,12 @@
               - gz-{{ lookup("env", "GZ_VERSION") }}
         - name: Install ROS 2 integrate packages
           block:
+            - name: Install dependent library from apt
+              apt:
+                package:
+                  - glslang-dev
+                  - libx11-xcb-dev
+                  - libxcb-randr0-dev
             - name: Clone gz-sim builtin source
               shell: |
                 vcs import {{ simulator_ws_directory.stdout }}/src \
@@ -72,7 +78,8 @@
                     -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" \
                     -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" \
                     -D CMAKE_MODULE_LINKER_FLAGS="-fuse-ld=mold" \
-                    -D CMAKE_BUILD_TYPE=Release
+                    -D CMAKE_BUILD_TYPE=Release \
+                    -D BUILD_TESTING=OFF
             - name: Add COLCON_IGNORE workspace
               file:
                 path: "{{ simulator_ws_directory.stdout }}/COLCON_IGNORE"
