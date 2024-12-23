@@ -177,6 +177,14 @@
             package:
               - ros-{{ ros_distro.stdout }}-robot-calibration-msgs
               - ros-{{ ros_distro.stdout }}-robot-calibration
+        - name: Install ROS 2 rtabmap packages from apt
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-rtabmap-msgs
+              - ros-{{ ros_distro.stdout }}-rtabmap-odom
+              - ros-{{ ros_distro.stdout }}-rtabmap-slam
         - name: Install ROS 2 utils packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
