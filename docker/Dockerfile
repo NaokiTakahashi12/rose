@@ -11,6 +11,7 @@ RUN export DEBIANFRONTEND=nointeractive \
         ansible \
     && apt-get autoremove --yes \
     && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ansible/inventory/localhost.yaml /ansible/inventory/localhost.yaml
@@ -24,6 +25,7 @@ RUN export DEBIANFRONTEND=nointeractive \
         /ansible/playbooks/setup_base_common_tools.yaml \
     && apt-get autoremove --yes \
     && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -42,6 +44,7 @@ RUN export DEBIANFRONTEND=nointeractive \
         /ansible/playbooks/setup_ros_base.yaml \
     && apt-get autoremove --yes \
     && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
 
 
@@ -57,7 +60,9 @@ RUN export DEBIANFRONTEND=nointeractive \
         /ansible/playbooks/setup_rose_ros_common.yaml \
     && apt-get autoremove --yes \
     && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
+
 ARG ROSE_WORKSPACE=/rose/colcon_ws
 ENV ROSE_WORKSPACE=${ROSE_WORKSPACE}
 
@@ -74,6 +79,7 @@ RUN export DEBIANFRONTEND=nointeractive \
         /ansible/playbooks/setup_rose_ros_develop.yaml \
     && apt-get autoremove --yes \
     && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GZ_VERSION=garden
@@ -94,6 +100,7 @@ RUN export DEBIANFRONTEND=nointeractive \
         ${ROSE_WORKSPACE}/builtin/gz_sim/build \
     && apt-get autoremove --yes \
     && apt-get clean \
+    && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
 
 COPY repos/develop_builtin.yaml ${ROSE_WORKSPACE}/repos/develop_builtin.yaml
