@@ -93,6 +93,18 @@
               - ros-{{ ros_distro.stdout }}-nav2-bringup
               - ros-{{ ros_distro.stdout }}-nav2-simple-commander
               - ros-{{ ros_distro.stdout }}-nav2-mppi-controller
+        - name: Install moveit2 packages from apt
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-moveit-visual-tools
+              - ros-{{ ros_distro.stdout }}-moveit-ros-perception
+              - ros-{{ ros_distro.stdout }}-moveit-planners
+              - ros-{{ ros_distro.stdout }}-moveit-plugins
+              - ros-{{ ros_distro.stdout }}-moveit-resources
+              - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
+              - ros-{{ ros_distro.stdout }}-py-binding-tools
         - name: Install visualize packages from apt
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
@@ -111,7 +123,6 @@
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-pointcloud-to-laserscan
-              - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
               - ros-{{ ros_distro.stdout }}-topic-tools
         - name: Install foxglove packages
           when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
