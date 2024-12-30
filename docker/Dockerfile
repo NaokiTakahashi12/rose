@@ -84,6 +84,7 @@ RUN export DEBIANFRONTEND=nointeractive \
 
 ARG GZ_VERSION=garden
 ENV GZ_VERSION=${GZ_VERSION}
+ENV IGNITION_VERSION=${GZ_VERSION}
 
 COPY repos/gz_sim_${ROS_DISTRO}_builtin.yaml /${ROSE_WORKSPACE}/repos/gz_sim_builtin.yaml
 COPY ansible/playbooks/setup_rose_ros_simulator.yaml /ansible/playbooks/setup_rose_ros_simulator.yaml

@@ -38,6 +38,7 @@
             package:
               - gdb
               - silversearcher-ag
+              - cmake-curses-gui
         - name: Install colcon mixin
           shell: |
             colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
