@@ -142,6 +142,7 @@
                 path: "{{ simulator_ws_directory.stdout }}/src"
                 state: directory
         - name: Clone gz-sim source
+          when: ros_distro.stdout in ['humble']
           shell: |
             vcs import {{ simulator_ws_directory.stdout }}/src \
               --input https://raw.githubusercontent.com/ignition-tooling/gazebodistro/master/collection-{{ lookup("env", "GZ_VERSION") }}.yaml \
@@ -156,15 +157,14 @@
               executable: /bin/bash
           shell: |
             source /opt/ros/{{ ros_distro.stdout }}/setup.bash
+            MAKEFLAGS=1 \
             colcon build \
               --merge-install \
-              --executor sequential \
               --cmake-args \
-                -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" \
-                -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" \
-                -D CMAKE_MODULE_LINKER_FLAGS="-fuse-ld=mold" \
                 -D CMAKE_BUILD_TYPE=Release \
-                -D BUILD_TESTING=OFF
+                -D CMAKE_POSITION_INDEPENDENT_CODE=ON \
+                -D BUILD_TESTING=OFF \
+                -D SKIP_PYBIND11=ON
         - name: Add COLCON_IGNORE workspace
           file:
             path: "{{ simulator_ws_directory.stdout }}/COLCON_IGNORE"
