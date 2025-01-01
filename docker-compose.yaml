@@ -16,12 +16,16 @@ x-ros2-shared-volumes: &ros2-shared-volumes
     source: /dev
     target: /dev
   - type: bind
-    source: ./rmw_profiles/rmw_cyclonedds_profile.xml
+    source: ./config/rmw_profiles/rmw_cyclonedds_profile.xml
     target: /rose/colcon_ws/profiles/rmw_cyclonedds_profile.xml
     read_only: true
   - type: bind
-    source: ./rmw_profiles/rmw_fastrtps_profile.xml
+    source: ./config/rmw_profiles/rmw_fastrtps_profile.xml
     target: /rose/colcon_ws/profiles/rmw_fastrtps_profile.xml
+    read_only: true
+  - type: bind
+    source: ./config/colcon/defaults.yaml
+    target: /root/.colcon/defaults.yaml
     read_only: true
 
 services:

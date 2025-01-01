@@ -1,0 +1,21 @@
+{
+  "build": {
+    "merge-install": true,
+    "symlink-install": true,
+    "event-handlers": [
+      "console_direct+"
+    ],
+    "mixin": [
+      "rel-with-deb-info",
+      "ccache",
+      "mold",
+      "ninja"
+    ]
+  },
+  "test": {
+    "merge-install": true,
+    "event-handlers": [
+      "console_direct+"
+    ]
+  }
+}
