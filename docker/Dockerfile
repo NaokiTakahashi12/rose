@@ -82,7 +82,7 @@ RUN export DEBIANFRONTEND=nointeractive \
     && rm -rf /var/cache/apt/archives/* \
     && rm -rf /var/lib/apt/lists/*
 
-ARG GZ_VERSION=garden
+ARG GZ_VERSION=harmonic
 ENV GZ_VERSION=${GZ_VERSION}
 ENV IGNITION_VERSION=${GZ_VERSION}
 

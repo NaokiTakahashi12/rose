@@ -41,9 +41,6 @@
               apt:
                 install_recommends: false
                 package:
-                  - libbullet-dev
-                  - libbullet-extras-dev
-                  - libxaw7-dev
                   - binutils-dev
                   - freeglut3-dev
                   - libassimp-dev
@@ -53,12 +50,6 @@
                   - libavutil-dev
                   - libbenchmark-dev
                   - libcurl4-openssl-dev
-                  - libdart-collision-bullet-dev
-                  - libdart-collision-ode-dev
-                  - libdart-dev
-                  - libdart-external-ikfast-dev
-                  - libdart-external-odelcpsolver-dev
-                  - libdart-utils-urdf-dev
                   - libeigen3-dev
                   - libfreeimage-dev
                   - libgdal-dev
@@ -66,12 +57,17 @@
                   - libglew-dev
                   - libgts-dev
                   - libjsoncpp-dev
+                  - libogre-1.9-dev
+                  - libogre-next-2.3-dev
+                  - libogre-next-dev
                   - libprotobuf-dev
                   - libprotoc-dev
+                  - libpython3-dev
                   - libsqlite3-dev
                   - libswscale-dev
                   - libtinyxml2-dev
                   - liburdfdom-dev
+                  - libvulkan-dev
                   - libwebsockets-dev
                   - libxi-dev
                   - libxml2-utils
@@ -79,11 +75,14 @@
                   - libyaml-dev
                   - libzip-dev
                   - libzmq3-dev
-                  - libyaml-cpp-dev
-                  - libogre-next-2.3-dev
-                  - libogre-1.9-dev
+                  - mesa-utils
                   - pkg-config
                   - protobuf-compiler
+                  - python3-dev
+                  - python3-protobuf
+                  - python3-psutil
+                  - python3-pybind11
+                  - python3-pytest
                   - qml-module-qt-labs-folderlistmodel
                   - qml-module-qt-labs-platform
                   - qml-module-qt-labs-settings
@@ -107,7 +106,11 @@
                   - ruby-dev
                   - swig
                   - uuid-dev
+                  - x11-utils
                   - xvfb
+                  - libbullet-dev
+                  - libbullet-extras-dev
+                  - libxaw7-dev
                   - glslang-dev
                   - libx11-xcb-dev
                   - libxcb-randr0-dev
@@ -152,19 +155,18 @@
             vcs import {{ simulator_ws_directory.stdout }}/src \
               < {{ repos_directory.stdout }}/gz_sim_builtin.yaml \
         - name: Build gz-sim workspace
+          when: ansible_architecture == "x86_64"  # Avoid gcc segmentation fault
           args:
               chdir: "{{ simulator_ws_directory.stdout }}"
               executable: /bin/bash
           shell: |
             source /opt/ros/{{ ros_distro.stdout }}/setup.bash
-            MAKEFLAGS=1 \
             colcon build \
               --merge-install \
+              --executor sequential \
               --cmake-args \
                 -D CMAKE_BUILD_TYPE=Release \
-                -D CMAKE_POSITION_INDEPENDENT_CODE=ON \
-                -D BUILD_TESTING=OFF \
-                -D SKIP_PYBIND11=ON
+                -D BUILD_TESTING=OFF
         - name: Add COLCON_IGNORE workspace
           file:
             path: "{{ simulator_ws_directory.stdout }}/COLCON_IGNORE"

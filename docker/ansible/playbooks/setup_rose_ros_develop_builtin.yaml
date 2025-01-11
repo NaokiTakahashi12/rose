@@ -50,6 +50,7 @@
             source /opt/ros/{{ ros_distro.stdout }}/setup.bash
             colcon build \
               --merge-install \
+              --executor sequential \
               --cmake-args \
                 -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" \
                 -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" \

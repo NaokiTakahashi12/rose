@@ -1,8 +1,8 @@
 repositories:
-  borglab/gtsam:
-    type: git
-    url: https://github.com/borglab/gtsam.git
-    version: 4.2a9
+  # borglab/gtsam:
+  #   type: git
+  #   url: https://github.com/borglab/gtsam.git
+  #   version: 4.2a9
   prbonn/kiss_icp:
     type: git
     url: https://github.com/PRBonn/kiss-icp.git
