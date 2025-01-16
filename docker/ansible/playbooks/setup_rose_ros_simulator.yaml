@@ -164,6 +164,9 @@
             colcon build \
               --merge-install \
               --executor sequential \
+              --packages-ignore-regex \
+                ign_ros* \
+                ros_ign_* \
               --cmake-args \
                 -D CMAKE_BUILD_TYPE=Release \
                 -D BUILD_TESTING=OFF
