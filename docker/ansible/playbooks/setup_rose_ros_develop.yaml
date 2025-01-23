@@ -76,6 +76,7 @@
             package:
               - ros-{{ ros_distro.stdout }}-ament-cmake
               - ros-{{ ros_distro.stdout }}-ament-cmake-vendor-package
+              - ros-{{ ros_distro.stdout }}-ament-cmake-clang-format
               - ros-{{ ros_distro.stdout }}-generate-parameter-library
         - name: Install SLAM and localization packages from apt
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
