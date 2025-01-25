@@ -38,6 +38,7 @@
             package:
               - gdb
               - silversearcher-ag
+              - cmake-curses-gui
         - name: Install colcon mixin
           shell: |
             colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
@@ -75,6 +76,7 @@
             package:
               - ros-{{ ros_distro.stdout }}-ament-cmake
               - ros-{{ ros_distro.stdout }}-ament-cmake-vendor-package
+              - ros-{{ ros_distro.stdout }}-ament-cmake-clang-format
               - ros-{{ ros_distro.stdout }}-generate-parameter-library
         - name: Install SLAM and localization packages from apt
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
@@ -93,6 +95,18 @@
               - ros-{{ ros_distro.stdout }}-nav2-bringup
               - ros-{{ ros_distro.stdout }}-nav2-simple-commander
               - ros-{{ ros_distro.stdout }}-nav2-mppi-controller
+        - name: Install moveit2 packages from apt
+          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          apt:
+            install_recommends: false
+            package:
+              - ros-{{ ros_distro.stdout }}-moveit-visual-tools
+              - ros-{{ ros_distro.stdout }}-moveit-ros-perception
+              - ros-{{ ros_distro.stdout }}-moveit-planners
+              - ros-{{ ros_distro.stdout }}-moveit-plugins
+              - ros-{{ ros_distro.stdout }}-moveit-resources
+              - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
+              - ros-{{ ros_distro.stdout }}-py-binding-tools
         - name: Install visualize packages from apt
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
@@ -111,7 +125,6 @@
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-pointcloud-to-laserscan
-              - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
               - ros-{{ ros_distro.stdout }}-topic-tools
         - name: Install foxglove packages
           when: ros_distro.stdout in ['humble', 'galactic', 'rolling']

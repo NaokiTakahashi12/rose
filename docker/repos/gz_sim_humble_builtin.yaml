@@ -1,10 +1,9 @@
 repositories:
-  gazebosim/ros_gz:
+  gazebosim/ros_gz: # ros_gz_interfaces "cc: internal compiler error: Segmentation fault signal terminated program cc1"
     type: git
     url: https://github.com/gazebosim/ros_gz.git
     version: humble
-  # ros_controls/gz_ros2_control:
-  #   type: git
-  #   url: https://github.com/ros-controls/gz_ros2_control.git
-  #   version: humble
-
+  ros_controls/gz_ros2_control:
+    type: git
+    url: https://github.com/ros-controls/gz_ros2_control.git
+    version: humble

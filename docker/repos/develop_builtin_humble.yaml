@@ -7,6 +7,10 @@ repositories:
     type: git
     url: https://github.com/micro-ROS/micro_ros_setup.git
     version: humble
+  moveit/moveit_task_constructor:
+    type: git
+    url: https://github.com/moveit/moveit_task_constructor.git
+    version: humble
   rsasaki0109/ndt_omp_ros2:
     type: git
     url: https://github.com/rsasaki0109/ndt_omp_ros2.git

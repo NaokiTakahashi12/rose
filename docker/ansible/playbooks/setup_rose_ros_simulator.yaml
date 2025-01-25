@@ -8,8 +8,119 @@
           exit 129; \
         fi
         echo {{ lookup("env", "ROS_DISTRO") }}
-    - name: Install ROS 2 simulation packages
+    - name: Setup apt-key for gz-sim
+      block:
+        - name: Add gazebo GPG key
+          get_url:
+            url: https://packages.osrfoundation.org/gazebo.gpg
+            dest: /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+        - name: Get dpkg architecture
+          register: dpkg_architecture
+          shell: |
+            dpkg --print-architecture
+        - name: Add gazebo apt source list
+          apt_repository:
+            repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable {{ ansible_distribution_release }} main"
+            filename: gazebo-stable
+        - name: Update apt cache
+          apt:
+            update_cache: true
+    - name: Install ROS 2 simulation packages from apt
+      when: ros_distro.stdout in ['jazzy']
+      block:
+        - name: Install gz-sim from apt
+          apt:
+            package:
+              - gz-{{ lookup("env", "GZ_VERSION") }}
+    - name: Install ROS 2 simulation packages from apt
       when: ros_distro.stdout in ['humble', 'galactic']
+      block:
+        - name: Install ROS 2 integrate packages
+          block:
+            - name: Install gz-sim dependency from apt
+              apt:
+                install_recommends: false
+                package:
+                  - binutils-dev
+                  - freeglut3-dev
+                  - libassimp-dev
+                  - libavcodec-dev
+                  - libavdevice-dev
+                  - libavformat-dev
+                  - libavutil-dev
+                  - libbenchmark-dev
+                  - libcurl4-openssl-dev
+                  - libeigen3-dev
+                  - libfreeimage-dev
+                  - libgdal-dev
+                  - libgflags-dev
+                  - libglew-dev
+                  - libgts-dev
+                  - libjsoncpp-dev
+                  - libogre-1.9-dev
+                  - libogre-next-2.3-dev
+                  - libogre-next-dev
+                  - libprotobuf-dev
+                  - libprotoc-dev
+                  - libpython3-dev
+                  - libsqlite3-dev
+                  - libswscale-dev
+                  - libtinyxml2-dev
+                  - liburdfdom-dev
+                  - libvulkan-dev
+                  - libwebsockets-dev
+                  - libxi-dev
+                  - libxml2-utils
+                  - libxmu-dev
+                  - libyaml-dev
+                  - libzip-dev
+                  - libzmq3-dev
+                  - mesa-utils
+                  - pkg-config
+                  - protobuf-compiler
+                  - python3-dev
+                  - python3-protobuf
+                  - python3-psutil
+                  - python3-pybind11
+                  - python3-pytest
+                  - qml-module-qt-labs-folderlistmodel
+                  - qml-module-qt-labs-platform
+                  - qml-module-qt-labs-settings
+                  - qml-module-qtcharts
+                  - qml-module-qtgraphicaleffects
+                  - qml-module-qtlocation
+                  - qml-module-qtpositioning
+                  - qml-module-qtqml-models2
+                  - qml-module-qtquick-controls
+                  - qml-module-qtquick-controls2
+                  - qml-module-qtquick-dialogs
+                  - qml-module-qtquick-layouts
+                  - qml-module-qtquick-templates2
+                  - qml-module-qtquick-window2
+                  - qml-module-qtquick2
+                  - qtbase5-dev
+                  - qtdeclarative5-dev
+                  - qtquickcontrols2-5-dev
+                  - rubocop
+                  - ruby
+                  - ruby-dev
+                  - swig
+                  - uuid-dev
+                  - x11-utils
+                  - xvfb
+                  - libbullet-dev
+                  - libbullet-extras-dev
+                  - libxaw7-dev
+                  - glslang-dev
+                  - libx11-xcb-dev
+                  - libxcb-randr0-dev
+            - name: Install gz-sim dependency from pip
+              pip:
+                name:
+                  - psutil
+                  - pybind11
+    - name: Setup gz-sim builtin packages
+      when: ros_distro.stdout in ['humble', 'jazzy']
       block:
         - name: Get builtin source directory
           register: simulator_ws_directory
@@ -33,47 +144,33 @@
             - file:
                 path: "{{ simulator_ws_directory.stdout }}/src"
                 state: directory
-        - name: Setup apt-key for gz-sim
-          block:
-            - name: Add gazebo GPG key
-              get_url:
-                url: https://packages.osrfoundation.org/gazebo.gpg
-                dest: /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
-            - name: Get dpkg architecture
-              register: dpkg_architecture
-              shell: |
-                dpkg --print-architecture
-            - name: Add gazebo apt source list
-              apt_repository:
-                repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable {{ ansible_distribution_release }} main"
-                filename: gazebo-stable
-            - name: Update apt cache
-              apt:
-                update_cache: true
-        - name: Install gz-sim
-          apt:
-            package:
-              - gz-{{ lookup("env", "GZ_VERSION") }}
-        - name: Install ROS 2 integrate packages
-          block:
-            - name: Clone gz-sim builtin source
-              shell: |
-                vcs import {{ simulator_ws_directory.stdout }}/src \
-                  < {{ repos_directory.stdout }}/gz_sim_builtin.yaml
-            - name: Build gz-sim workspace
-              args:
-                  chdir: "{{ simulator_ws_directory.stdout }}"
-                  executable: /bin/bash
-              shell: |
-                source /opt/ros/{{ ros_distro.stdout }}/setup.bash
-                colcon build \
-                  --merge-install \
-                  --cmake-args \
-                    -D CMAKE_EXE_LINKER_FLAGS="-fuse-ld=mold" \
-                    -D CMAKE_SHARED_LINKER_FLAGS="-fuse-ld=mold" \
-                    -D CMAKE_MODULE_LINKER_FLAGS="-fuse-ld=mold" \
-                    -D CMAKE_BUILD_TYPE=Release
-            - name: Add COLCON_IGNORE workspace
-              file:
-                path: "{{ simulator_ws_directory.stdout }}/COLCON_IGNORE"
-                state: touch
+        - name: Clone gz-sim source
+          when: ros_distro.stdout in ['humble']
+          shell: |
+            vcs import {{ simulator_ws_directory.stdout }}/src \
+              --input https://raw.githubusercontent.com/ignition-tooling/gazebodistro/master/collection-{{ lookup("env", "GZ_VERSION") }}.yaml \
+              --recursive
+        - name: Clone gz-sim ROS 2 source
+          shell: |
+            vcs import {{ simulator_ws_directory.stdout }}/src \
+              < {{ repos_directory.stdout }}/gz_sim_builtin.yaml \
+        - name: Build gz-sim workspace
+          when: ansible_architecture == "x86_64"  # Avoid gcc segmentation fault
+          args:
+              chdir: "{{ simulator_ws_directory.stdout }}"
+              executable: /bin/bash
+          shell: |
+            source /opt/ros/{{ ros_distro.stdout }}/setup.bash
+            colcon build \
+              --merge-install \
+              --executor sequential \
+              --packages-ignore-regex \
+                ign_ros* \
+                ros_ign_* \
+              --cmake-args \
+                -D CMAKE_BUILD_TYPE=Release \
+                -D BUILD_TESTING=OFF
+        - name: Add COLCON_IGNORE workspace
+          file:
+            path: "{{ simulator_ws_directory.stdout }}/COLCON_IGNORE"
+            state: touch
