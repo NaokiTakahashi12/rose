@@ -15,6 +15,7 @@
             install_recommends: false
             package:
               - ros-{{ ros_distro.stdout }}-rmw-cyclonedds-cpp
+              - ros-{{ ros_distro.stdout }}-rmw-zenoh-cpp
         - name: Install message packages
           when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
           apt:
