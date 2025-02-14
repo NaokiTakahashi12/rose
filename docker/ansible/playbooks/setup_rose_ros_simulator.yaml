@@ -26,12 +26,27 @@
           apt:
             update_cache: true
     - name: Install ROS 2 simulation packages from apt
+      apt:
+        package:
+          - gz-{{ lookup("env", "GZ_VERSION") }}
+    - name: Install ros2-control simulation packages
+      when: ros_distro.stdout in ['humble', 'galactic']
+      apt:
+        package:
+          - ros-{{ ros_distro.stdout }}-ign-ros2-control
+          - ros-{{ ros_distro.stdout }}-ros-ign-gazebo
+          - ros-{{ ros_distro.stdout }}-ros-ign-interfaces
+          - ros-{{ ros_distro.stdout }}-ros-ign-bridge
+          - ros-{{ ros_distro.stdout }}-ros-ign-image
+    - name: Install ros2-control simulation packages
       when: ros_distro.stdout in ['jazzy']
-      block:
-        - name: Install gz-sim from apt
-          apt:
-            package:
-              - gz-{{ lookup("env", "GZ_VERSION") }}
+      apt:
+        package:
+          - ros-{{ ros_distro.stdout }}-gz-ros2-control
+          - ros-{{ ros_distro.stdout }}-ros-gz-sim
+          - ros-{{ ros_distro.stdout }}-ros-gz-interfaces
+          - ros-{{ ros_distro.stdout }}-ros-gz-bridge
+          - ros-{{ ros_distro.stdout }}-ros-gz-image
     - name: Install ROS 2 simulation packages from apt
       when: ros_distro.stdout in ['humble', 'galactic']
       block:
@@ -144,12 +159,6 @@
             - file:
                 path: "{{ simulator_ws_directory.stdout }}/src"
                 state: directory
-        - name: Clone gz-sim source
-          when: ros_distro.stdout in ['humble']
-          shell: |
-            vcs import {{ simulator_ws_directory.stdout }}/src \
-              --input https://raw.githubusercontent.com/ignition-tooling/gazebodistro/master/collection-{{ lookup("env", "GZ_VERSION") }}.yaml \
-              --recursive
         - name: Clone gz-sim ROS 2 source
           shell: |
             vcs import {{ simulator_ws_directory.stdout }}/src \
@@ -164,9 +173,6 @@
             colcon build \
               --merge-install \
               --executor sequential \
-              --packages-ignore-regex \
-                ign_ros* \
-                ros_ign_* \
               --cmake-args \
                 -D CMAKE_BUILD_TYPE=Release \
                 -D BUILD_TESTING=OFF
