@@ -6,7 +6,7 @@ repositories:
   prbonn/kiss_icp:
     type: git
     url: https://github.com/PRBonn/kiss-icp.git
-    version: main
+    version: v1.2.2
   dheera/rosboard:
     type: git
     url: https://github.com/dheera/rosboard.git
