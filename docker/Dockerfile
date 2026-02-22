@@ -124,7 +124,6 @@ COPY profiles/rmw_cyclonedds_profile.xml ${ROSE_WORKSPACE}/profiles/rmw_cycloned
 COPY setup.bash /setup.bash
 COPY entrypoint.bash /entrypoint.sh
 ENTRYPOINT ["bash", "/entrypoint.sh"]
-HEALTHCHECK --interval=30s --timeout=4s CMD bash -c ". /setup.bash; ros2 topic list --include-hidden-topics -c"
 CMD ["/bin/bash"]
 
 
@@ -138,7 +137,6 @@ RUN echo ". /setup.bash" >> ~/.bashrc
 WORKDIR ${ROSE_WORKSPACE}
 ENTRYPOINT ["bash", "/entrypoint.sh"]
 SHELL ["/bin/bash", "-c"]
-HEALTHCHECK --interval=30s --timeout=4s CMD bash -c ". /setup.bash; ros2 topic list --include-hidden-topics -c"
 CMD ["/bin/bash"]
 
 
