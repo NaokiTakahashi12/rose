@@ -1,367 +1,469 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-import platform
-import distro
+"""ROSE Docker Compose command wrapper."""
+
+from __future__ import annotations
 
 import argparse
+import os
+import platform
+import shlex
 import subprocess
-
+import sys
+from pathlib import Path
 from shutil import which
 
 
-class RoseCliHandler:
-    def __init__(self):
-        if self.__is_nvidia_jetson() and distro.version() == '20.04':
-            # Since there is only support for 20.04
-            self.default_profile = 'galactic'
-            self.default_exec_service = 'galactic'
-        else:
-            self.default_profile = 'humble'
-            self.default_exec_service = 'humble'
+VERSION = "0.2.0"
+DEFAULT_PROFILE = "humble"
+PREFERRED_DEFAULT_PROFILES = (DEFAULT_PROFILE, "humble", "galactic")
+DEFAULT_SHELL = "bash"
 
-        self.__init_arg_parser()
-        self.__init_compose_command()
 
+class RoseError(RuntimeError):
+    """Expected CLI error."""
+
+
+class RoseCli:
+    def __init__(self, argv: list[str] | None = None) -> None:
+        self.argv = argv
+        self.script_dir = Path(__file__).resolve().parent
+        self.package_dir = self.script_dir.parent
+        self.compose_file = self.package_dir / "docker-compose.yaml"
+        self.available_profiles = self._load_compose_profiles()
+        self.default_profile = self._detect_default_profile()
+        self.default_exec_service = os.environ.get(
+            "ROSE_EXEC_SERVICE",
+            self.default_profile,
+        )
+        self.parser = self._create_parser()
+        self._enable_argcomplete()
+
+    def run(self) -> int:
+        try:
+            args, passthrough_args = self.parser.parse_known_args(self.argv)
+            passthrough_args = self._extract_subcommand_profile(args, passthrough_args)
+            passthrough_args = self._normalize_passthrough(passthrough_args)
+
+            if not hasattr(args, "handler"):
+                self.parser.print_help()
+                return 0
+
+            return args.handler(args, passthrough_args)
+        except RoseError as error:
+            print(f"rose: error: {error}", file=sys.stderr)
+            return 1
+
+    def _enable_argcomplete(self) -> None:
         try:
             import argcomplete
         except ImportError:
-            pass
+            return
+        argcomplete.autocomplete(self.parser)
+
+    def show_help(
+        self,
+        args: argparse.Namespace,
+        passthrough_args: list[str],
+    ) -> int:
+        if passthrough_args:
+            topic = passthrough_args[0]
+            subparser = self.subparsers_by_name.get(topic)
+            if subparser is None:
+                raise RoseError(f"unknown help topic: {topic}")
+            subparser.print_help()
         else:
-            argcomplete.autocomplete(self.arg_parser)
+            self.parser.print_help()
+        return 0
 
-        self.parsed_args, self.parsed_unknown = self.arg_parser.parse_known_args()
+    def show_version(
+        self,
+        args: argparse.Namespace,
+        passthrough_args: list[str],
+    ) -> int:
+        print(f"rose version {VERSION}")
+        return 0
 
-        if hasattr(self.parsed_args, 'handler'):
-            self.parsed_args.handler(self.parsed_args)
-        else:
-            self.arg_parser.print_help()
+    def get_compose_prefix(
+        self,
+        args: argparse.Namespace,
+        passthrough_args: list[str],
+    ) -> int:
+        print(shlex.join(self._compose_command(args.profile)))
+        return 0
 
-    def help(self, args):
-        self.arg_parser.print_help()
+    def run_compose(
+        self,
+        args: argparse.Namespace,
+        passthrough_args: list[str],
+    ) -> int:
+        self._ensure_docker_compose()
+        command = self._compose_command(args.profile)
+        command += [args.compose_command]
+        command += self._legacy_args(args)
+        command += passthrough_args
+        return self._run(command)
 
-    def version(self, args):
-        # TODO
-        print('rose version 0.1.0')
+    def exec(self, args: argparse.Namespace, passthrough_args: list[str]) -> int:
+        self._ensure_docker_compose()
+        exec_args = self._legacy_args(args)
+        command_args = self._normalize_passthrough(args.command)
 
-    def get_compose_prefix(self, args):
-        print(' '.join(self.compose_command))
+        if passthrough_args:
+            command_args += passthrough_args
+        if not command_args:
+            command_args = [DEFAULT_SHELL]
 
-    def ps(self, args):
-        execute_command = self.compose_command + ['ps']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
+        command = self._compose_command(args.profile)
+        command += ["exec"]
+        command += exec_args
+        command += [args.service]
+        command += command_args
+        return self._run(command)
 
-    def ls(self, args):
-        execute_command = self.compose_command + ['ls']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
+    def up(self, args: argparse.Namespace, passthrough_args: list[str]) -> int:
+        self._ensure_docker_compose()
+        self._prepare_docker_xauth()
 
-    def logs(self, args):
-        execute_command = self.compose_command + ['logs']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
-
-    def pull(self, args):
-        execute_command = self.compose_command + ['pull']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
-
-    def exec(self, args):
-        execute_command = self.compose_command + ['exec']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        execute_command = execute_command + [args.service, 'bash']
-        subprocess.run(execute_command)
-
-    def start(self, args):
-        execute_command = self.compose_command + ['start']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
-
-    def stop(self, args):
-        execute_command = self.compose_command + ['stop']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
-
-    def up(self, args):
-        if platform.system() == 'Linux':
-            subprocess.run([
-                'sh',
-                os.path.join(
-                    self.rose_package_dir,
-                    'scripts',
-                    'generate_docker_xauth.sh'
-                )
-            ])
-        if args.network_mode == 'host':
-            host_mode_compose = self.compose_command + ['-f',
-                os.path.join(
-                    self.rose_package_dir,
-                    'override',
-                    'docker-compose.host.yaml'
-                )]
-            execute_command = host_mode_compose
-        elif args.network_mode == 'bridge':
-            bridge_mode_compose = self.compose_command + ['-f',
-                os.path.join(
-                    self.rose_package_dir,
-                    'override',
-                    'docker-compose.bridge.yaml'
-                )]
-            execute_command = bridge_mode_compose
-        else:
-            execute_command = self.compose_command
-        execute_command += ['up', '-d']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
-
-    def down(self, args):
-        execute_command = self.compose_command
-        execute_command += ['down']
-        if args.args != '':
-            execute_command += [args.args]
-        subprocess.run(execute_command)
-    
-    def build(self, args):
-        execute_command = self.compose_command + ['build']
-        if args.args != '':
-            execute_command = execute_command + [args.args]
-        subprocess.run(execute_command)
-    
-    def __init_arg_parser(self):
-        self.arg_parser = argparse.ArgumentParser(
-            prog='rose',
-            description='ROS Enviroment operation tools'
+        command = self._compose_command(
+            args.profile,
+            extra_files=self._network_compose_files(args.profile, args.network_mode),
         )
-        self.__init_sub_command()
+        command += ["up", "-d"]
+        command += self._legacy_args(args)
+        command += passthrough_args
+        return self._run(command)
 
-    def __init_sub_command(self):
-        self.sub_arg_parsers = self.arg_parser.add_subparsers(
-            dest='subcommand',
-            help='ROS Enviroment sub-commands'
+    def _create_parser(self) -> argparse.ArgumentParser:
+        parser = argparse.ArgumentParser(
+            prog="rose",
+            description="ROS environment operation tools",
+        )
+        parser.add_argument(
+            "--profile",
+            default=self.default_profile,
+            help=(
+                "Docker Compose profile to enable "
+                f"(default: {self.default_profile}, env: ROSE_PROFILE)"
+            ),
         )
 
-        common_parser_args = {
-        }
-        common_sub_cmd_args = {
-            'nargs': '+',
-            'action': 'append',
-            'default': []
-        }
+        self.subparsers = parser.add_subparsers(
+            dest="subcommand",
+            help="ROS environment sub-commands",
+        )
+        self.subparsers_by_name: dict[str, argparse.ArgumentParser] = {}
 
-        # TODO
-        self.parsers = {}
-
-        self.parsers['help'] = self.sub_arg_parsers.add_parser(
-            'help',
-            help='Show the ROSE help infomation.',
-            **common_parser_args
+        self._add_simple_parser(
+            "help",
+            "Show ROSE help information.",
+            self.show_help,
         )
-        self.parsers['help'].set_defaults(
-            handler=self.help
+        self._add_simple_parser(
+            "version",
+            "Show ROSE version information.",
+            self.show_version,
         )
-        self.parsers['version'] = self.sub_arg_parsers.add_parser(
-            'version',
-            help='Show the ROSE version infomation.',
-            **common_parser_args
-        )
-        self.parsers['version'].set_defaults(
-            handler=self.version
-        )
-        self.parsers['get_compose_prefix'] = self.sub_arg_parsers.add_parser(
-            'get-compose-prefix',
-            help='Get execute command prefix.',
-            **common_parser_args
-        )
-        self.parsers['get_compose_prefix'].set_defaults(
-            handler=self.get_compose_prefix
-        )
-        self.parsers['ps'] = self.sub_arg_parsers.add_parser(
-            'ps',
-            help='Show constainer process status.',
-            **common_parser_args
-        )
-        self.parsers['ps'].set_defaults(
-            handler=self.ps
-        )
-        self.parsers['ls'] = self.sub_arg_parsers.add_parser(
-            'ls',
-            help='List running compose containers.',
-            **common_parser_args
-        )
-        self.parsers['ls'].set_defaults(
-            handler=self.ls
-        )
-        self.parsers['logs'] = self.sub_arg_parsers.add_parser(
-            'logs',
-            help='View output log from container.',
-            **common_parser_args
-        )
-        self.parsers['logs'].set_defaults(
-            handler=self.logs
-        )
-        self.parsers['pull'] = self.sub_arg_parsers.add_parser(
-            'pull',
-            help='Pull ROSE service images.',
-            **common_parser_args
-        )
-        self.parsers['pull'].set_defaults(
-            handler=self.pull
-        )
-        self.parsers['exec'] = self.sub_arg_parsers.add_parser(
-            'exec',
-            help='Execute a bash command in a running container.',
-            **common_parser_args
-        )
-        self.parsers['exec'].set_defaults(
-            handler=self.exec
-        )
-        self.parsers['start'] = self.sub_arg_parsers.add_parser(
-            'start',
-            help='Start services.',
-            **common_parser_args
-        )
-        self.parsers['start'].set_defaults(
-            handler=self.start
-        )
-        self.parsers['stop'] = self.sub_arg_parsers.add_parser(
-            'stop',
-            help='Stop services.',
-            **common_parser_args
-        )
-        self.parsers['stop'].set_defaults(
-            handler=self.stop
-        )
-        self.parsers['up'] = self.sub_arg_parsers.add_parser(
-            'up',
-            help='Create and start services.',
-            **common_parser_args
-        )
-        self.parsers['up'].set_defaults(
-            handler=self.up
-        )
-        self.parsers['down'] = self.sub_arg_parsers.add_parser(
-            'down',
-            help='Stop and remove services.',
-            **common_parser_args
-        )
-        self.parsers['down'].set_defaults(
-            handler=self.down
-        )
-        self.parsers['build'] = self.sub_arg_parsers.add_parser(
-            'build',
-            help='Build or rebuild services.',
-            **common_parser_args
-        )
-        self.parsers['build'].set_defaults(
-            handler=self.build
+        self._add_simple_parser(
+            "get-compose-prefix",
+            "Print the docker compose command prefix.",
+            self.get_compose_prefix,
         )
 
-        self.parsers['exec'].add_argument(
-            '-s',
-            '--service',
-            choices=[
-                'humble', 'humble-runtime',
-                'galactic', 'galactic-runtime'
-            ],
-            default=self.default_exec_service
+        for command, description in (
+            ("ps", "Show container process status."),
+            ("ls", "List compose projects."),
+            ("logs", "View container logs."),
+            ("pull", "Pull ROSE service images."),
+            ("start", "Start services."),
+            ("stop", "Stop services."),
+            ("down", "Stop and remove services."),
+            ("build", "Build or rebuild services."),
+        ):
+            self._add_compose_parser(command, description)
+
+        exec_parser = self._add_simple_parser(
+            "exec",
+            "Execute a command in a running container.",
+            self.exec,
+        )
+        self._add_legacy_args(exec_parser)
+        exec_parser.add_argument(
+            "-s",
+            "--service",
+            default=self.default_exec_service,
+            help=(
+                "Service name to exec into "
+                f"(default: {self.default_exec_service}, env: ROSE_EXEC_SERVICE)"
+            ),
+        )
+        exec_parser.add_argument(
+            "command",
+            nargs=argparse.REMAINDER,
+            help=f"Command to run in the service (default: {DEFAULT_SHELL}).",
         )
 
-        self.parsers['up'].add_argument(
-            '-n',
-            '--network-mode',
-            choices=[
-                'bridge',
-                'host'
-            ],
-            default='bridge'
+        up_parser = self._add_simple_parser(
+            "up",
+            "Create and start services.",
+            self.up,
+        )
+        self._add_legacy_args(up_parser)
+        up_parser.add_argument(
+            "-n",
+            "--network-mode",
+            choices=("bridge", "host"),
+            default="bridge",
+            help="Network override to apply when starting services.",
         )
 
-        for key, parser in self.parsers.items():
-            parser.add_argument(
-                '--args',
-                help='Execute command argment string',
-                default=''
+        return parser
+
+    def _add_simple_parser(
+        self,
+        name: str,
+        help_text: str,
+        handler,
+    ) -> argparse.ArgumentParser:
+        subparser = self.subparsers.add_parser(name, help=help_text)
+        subparser.add_argument(
+            "--profile",
+            default=argparse.SUPPRESS,
+            help=argparse.SUPPRESS,
+        )
+        subparser.set_defaults(handler=handler)
+        self.subparsers_by_name[name] = subparser
+        return subparser
+
+    def _add_compose_parser(self, name: str, help_text: str) -> None:
+        subparser = self._add_simple_parser(name, help_text, self.run_compose)
+        subparser.set_defaults(compose_command=name)
+        self._add_legacy_args(subparser)
+
+    def _add_legacy_args(self, parser: argparse.ArgumentParser) -> None:
+        parser.add_argument(
+            "--args",
+            default="",
+            help=(
+                "Additional docker compose arguments. Prefer passing arguments "
+                "directly after the sub-command; this option is kept for "
+                "backward compatibility."
+            ),
+        )
+
+    def _compose_command(
+        self,
+        profile: str,
+        extra_files: list[Path] | None = None,
+    ) -> list[str]:
+        self._validate_profile(profile)
+
+        command = ["docker", "compose"]
+        command += self._compose_file_args([self.compose_file])
+        command += self._compose_file_args(self._hardware_compose_files(profile))
+        command += self._compose_file_args(extra_files or [])
+        command += ["--profile", profile]
+        return command
+
+    def _validate_profile(self, profile: str) -> None:
+        if not self.available_profiles or profile in self.available_profiles:
+            return
+
+        available = ", ".join(sorted(self.available_profiles))
+        raise RoseError(
+            f"profile '{profile}' is not defined in {self.compose_file} "
+            f"(available: {available})"
+        )
+
+    def _compose_file_args(self, compose_files: list[Path]) -> list[str]:
+        args: list[str] = []
+        for compose_file in compose_files:
+            if not compose_file.exists():
+                raise RoseError(f"compose file not found: {compose_file}")
+            args += ["-f", str(compose_file)]
+        return args
+
+    def _hardware_compose_files(self, profile: str) -> list[Path]:
+        if self._is_nvidia_jetson():
+            return self._profile_override_files(
+                profile,
+                [self.package_dir / "override" / "docker-compose.jetson.yaml"],
+            )
+        if self._has_nvidia_driver():
+            return self._profile_override_files(
+                profile,
+                [self.package_dir / "override" / "docker-compose.nvidia.yaml"],
+            )
+        return []
+
+    def _network_compose_files(self, profile: str, network_mode: str) -> list[Path]:
+        compose_file = (
+            self.package_dir / "override" / f"docker-compose.{network_mode}.yaml"
+        )
+        return self._profile_override_files(profile, [compose_file])
+
+    def _profile_override_files(
+        self,
+        profile: str,
+        compose_files: list[Path],
+    ) -> list[Path]:
+        return [
+            compose_file
+            for compose_file in compose_files
+            if self._compose_file_overrides_profile(compose_file, profile)
+        ]
+
+    def _compose_file_overrides_profile(self, compose_file: Path, profile: str) -> bool:
+        if not compose_file.exists():
+            raise RoseError(f"compose file not found: {compose_file}")
+
+        service_prefixes = (f"  {profile}:", f"  {profile}-")
+        return any(
+            line.startswith(service_prefixes)
+            for line in compose_file.read_text(encoding="utf-8").splitlines()
+        )
+
+    def _prepare_docker_xauth(self) -> None:
+        if platform.system() != "Linux":
+            return
+
+        script_path = self.script_dir / "generate_docker_xauth.sh"
+        if not script_path.exists():
+            print(
+                f"rose: warning: xauth helper not found: {script_path}",
+                file=sys.stderr,
+            )
+            return
+
+        try:
+            result = subprocess.run(["sh", str(script_path)])
+        except OSError as error:
+            print(
+                f"rose: warning: failed to run Docker Xauthority helper: {error}",
+                file=sys.stderr,
+            )
+            return
+
+        if result.returncode != 0:
+            print(
+                "rose: warning: failed to update Docker Xauthority; continuing",
+                file=sys.stderr,
             )
 
-    def __set_this_directory_path(self):
-        self.this_script_dir = os.path.dirname(os.path.realpath(__file__))
+    def _ensure_docker_compose(self) -> None:
+        if which("docker") is None:
+            raise RoseError("docker CLI not found. Please install Docker.")
 
-    def __init_compose_command(self):
-        if which('docker') is None:
-            raise OSError('Not found docker cil')
         try:
-            subprocess.run(
-                ['docker', 'compose', 'version'],
+            result = subprocess.run(
+                ["docker", "compose", "version"],
                 stderr=subprocess.DEVNULL,
                 stdout=subprocess.DEVNULL,
-                check=True
             )
-        except:
-            print('Not found docker compose v2')
-            print('Please install docker compose v2 https://docs.docker.com/compose/compose-v2/')
-            sys.exit(1)
+        except OSError as error:
+            raise RoseError(f"failed to execute docker: {error}") from error
 
-        self.__set_compose_command()
-
-    def __set_compose_command(self):
-        self.__set_this_directory_path()
-        self.rose_package_dir = os.path.join(
-            self.this_script_dir,
-            '..'
-        )
-        self.compose_command = []
-        self.compose_command.append('docker')
-        self.compose_command.append('compose')
-
-        self.compose_command += self.__gen_compose_file_path()
-        self.compose_command += ['--profile', self.default_profile]
-
-    def __gen_compose_file_path(self):
-        compose_file_override = []
-
-        compose_file_override.append('-f')
-        compose_file_override.append(
-            os.path.join(
-                self.rose_package_dir,
-                'docker-compose.yaml'
+        if result.returncode != 0:
+            raise RoseError(
+                "Docker Compose v2 not found. "
+                "Please install it from https://docs.docker.com/compose/compose-v2/"
             )
-        )
-        platform_specificate_compose = None
 
-        if self.__is_nvidia_jetson():
-            platform_specificate_compose = 'docker-compose.jetson.yaml'
-        elif self.__has_nvidia_driver():
-            platform_specificate_compose = 'docker-compose.nvidia.yaml'
+    def _run(self, command: list[str]) -> int:
+        try:
+            return subprocess.run(command).returncode
+        except OSError as error:
+            raise RoseError(f"failed to execute {command[0]}: {error}") from error
 
-        if platform_specificate_compose is not None:
-            compose_path = os.path.join(
-                self.rose_package_dir,
-                'override',
-                platform_specificate_compose
-            )
-            if not os.path.exists(compose_path):
-                raise RuntimeError('Not found override compose path ' + compose_path)
-            compose_file_override += ['-f', compose_path]
+    def _legacy_args(self, args: argparse.Namespace) -> list[str]:
+        raw_args = getattr(args, "args", "")
+        if not raw_args:
+            return []
+        try:
+            return shlex.split(raw_args)
+        except ValueError as error:
+            raise RoseError(f"failed to parse --args: {error}") from error
 
-        return compose_file_override
+    def _detect_default_profile(self) -> str:
+        env_profile = os.environ.get("ROSE_PROFILE")
+        if env_profile:
+            return env_profile
 
-    def __has_nvidia_driver(self):
-        return which('nvidia-smi') is not None
+        for profile in PREFERRED_DEFAULT_PROFILES:
+            if profile in self.available_profiles:
+                return profile
+        if self.available_profiles:
+            return sorted(self.available_profiles)[0]
+        return DEFAULT_PROFILE
 
-    def __is_nvidia_jetson(self):
-        return which('tegrastats') is not None
+    def _load_compose_profiles(self) -> set[str]:
+        if not self.compose_file.exists():
+            return set()
+
+        profiles: set[str] = set()
+        lines = self.compose_file.read_text(encoding="utf-8").splitlines()
+        for index, line in enumerate(lines):
+            if line.strip() != "profiles:":
+                continue
+
+            indent = len(line) - len(line.lstrip())
+            for child in lines[index + 1 :]:
+                stripped = child.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+
+                child_indent = len(child) - len(child.lstrip())
+                if child_indent <= indent:
+                    break
+
+                if stripped.startswith("- "):
+                    profiles.add(stripped[2:].strip("\"'"))
+
+        return profiles
+
+    def _has_nvidia_driver(self) -> bool:
+        return which("nvidia-smi") is not None
+
+    def _is_nvidia_jetson(self) -> bool:
+        return which("tegrastats") is not None
+
+    @staticmethod
+    def _normalize_passthrough(args: list[str]) -> list[str]:
+        if args and args[0] == "--":
+            return args[1:]
+        return args
+
+    @staticmethod
+    def _extract_subcommand_profile(
+        namespace: argparse.Namespace,
+        args: list[str],
+    ) -> list[str]:
+        normalized_args: list[str] = []
+        index = 0
+        while index < len(args):
+            arg = args[index]
+            if arg == "--":
+                normalized_args += args[index:]
+                break
+            if arg == "--profile":
+                if index + 1 >= len(args):
+                    raise RoseError(f"{arg} requires an argument")
+                namespace.profile = args[index + 1]
+                index += 2
+                continue
+            if arg.startswith("--profile="):
+                namespace.profile = arg.split("=", 1)[1]
+                index += 1
+                continue
+            normalized_args.append(arg)
+            index += 1
+        return normalized_args
 
 
-if __name__ == '__main__':
-    rose_cli_handler = RoseCliHandler()
+def main() -> int:
+    return RoseCli().run()
+
+
+if __name__ == "__main__":
+    sys.exit(main())
