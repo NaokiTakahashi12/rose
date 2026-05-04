@@ -1,5 +1,31 @@
 ---
 services:
+  jazzy-runtime:
+    build:
+      args:
+        BASE_IMAGE: nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04
+    image: naokitakahashi12/rose:jazzy-runtime-cuda-12.6.3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+  jazzy:
+    build:
+      args:
+        BASE_IMAGE: nvidia/cuda:12.6.3-cudnn-devel-ubuntu24.04
+    image: naokitakahashi12/rose:jazzy-devel-cuda-12.6.3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
   humble-runtime:
     build:
       args:
@@ -28,6 +54,32 @@ services:
                 - gpu
   humble-foxglove-bridge:
     image: naokitakahashi12/rose:humble-devel-cuda-12.2.0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+  galactic-runtime:
+    build:
+      args:
+        BASE_IMAGE: nvidia/cudagl:11.0.3-runtime-ubuntu20.04
+    image: naokitakahashi12/rose:galactic-runtime-cudagl-11.0.3
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+  galactic:
+    build:
+      args:
+        BASE_IMAGE: nvidia/cudagl:11.0.3-runtime-ubuntu20.04
+    image: naokitakahashi12/rose:galactic-develop-cudagl-11.0.3
     deploy:
       resources:
         reservations:
