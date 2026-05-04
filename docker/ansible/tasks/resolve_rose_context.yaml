@@ -1,0 +1,56 @@
+---
+- name: Resolve ROSE execution identity
+  ansible.builtin.set_fact:
+    rose_user_home: "{{ ansible_user_dir | default(lookup('env', 'HOME'), true) }}"
+    rose_run_as_root: "{{ (ansible_user_uid | default(0) | int) == 0 }}"
+    rose_use_become: "{{ (ansible_user_uid | default(0) | int) != 0 }}"
+  changed_when: false
+
+- name: Resolve ROSE default paths
+  ansible.builtin.set_fact:
+    rose_default_workspace: "{{ '/rose/colcon_ws' if (rose_run_as_root | bool) else (rose_user_home ~ '/rose/colcon_ws') }}"
+    rose_default_python_tools_venv: "{{ '/opt/pylocal' if (rose_run_as_root | bool) else (rose_user_home ~ '/.local/share/rose/pylocal') }}"
+  changed_when: false
+
+- name: Resolve ROSE Ansible context
+  ansible.builtin.set_fact:
+    rose_effective_ros_distro: "{{ rose_ros_distro | default(lookup('env', 'ROS_DISTRO'), true) }}"
+    rose_effective_workspace: "{{ rose_workspace | default(lookup('env', 'ROSE_WORKSPACE'), true) | default(rose_default_workspace, true) }}"
+    rose_effective_gz_version: "{{ rose_gz_version | default(lookup('env', 'GZ_VERSION'), true) }}"
+    rose_effective_repos_directory: "{{ rose_repos_directory | default(lookup('env', 'ROSE_REPOS_DIRECTORY'), true) | default(((playbook_dir | dirname | dirname) ~ '/repos'), true) }}"
+    rose_effective_python_tools_venv: "{{ rose_python_tools_venv | default(lookup('env', 'ROSE_PYTHON_TOOLS_VENV'), true) | default(rose_default_python_tools_venv, true) }}"
+  changed_when: false
+
+- name: Resolve ROSE execution helpers
+  ansible.builtin.set_fact:
+    rose_effective_path: "{{ rose_effective_python_tools_venv ~ '/bin:' ~ (ansible_playbook_python | dirname) ~ ':' ~ (rose_user_home ~ '/.local/bin') ~ ':' ~ (ansible_env.PATH | default(lookup('env', 'PATH'))) }}"
+  changed_when: false
+
+- name: Validate ROS distro input
+  ansible.builtin.assert:
+    that:
+      - rose_effective_ros_distro | length > 0
+    fail_msg: Set rose_ros_distro or ROS_DISTRO before running this playbook.
+  when: rose_require_ros_distro | default(false)
+
+- name: Validate Gazebo version input
+  ansible.builtin.assert:
+    that:
+      - rose_effective_gz_version | length > 0
+    fail_msg: Set rose_gz_version or GZ_VERSION before running this playbook.
+  when: rose_require_gz_version | default(false)
+
+- name: Check ROSE repos directory
+  ansible.builtin.stat:
+    path: "{{ rose_effective_repos_directory }}"
+  register: rose_repos_directory_stat
+  changed_when: false
+  when: rose_require_repos_directory | default(false)
+
+- name: Validate ROSE repos directory
+  ansible.builtin.assert:
+    that:
+      - rose_repos_directory_stat.stat.exists
+      - rose_repos_directory_stat.stat.isdir
+    fail_msg: "ROSE repos directory '{{ rose_effective_repos_directory }}' does not exist."
+  when: rose_require_repos_directory | default(false)

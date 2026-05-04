@@ -1,63 +1,295 @@
 ---
 - hosts: all
+  pre_tasks:
+    - name: Resolve ROSE context
+      import_tasks: ../tasks/resolve_rose_context.yaml
+      vars:
+        rose_require_ros_distro: true
+        rose_require_repos_directory: true
   tasks:
-    - name: Install ROSE develop builtin packages from source
+    - name: Define builtin workspace metadata
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_workspace_root: "{{ rose_effective_workspace }}/builtin"
+        rose_develop_builtin_src_directory: "{{ rose_effective_workspace }}/builtin/src"
+        rose_develop_builtin_build_directory: "{{ rose_effective_workspace }}/builtin/build"
+        rose_develop_builtin_install_directory: "{{ rose_effective_workspace }}/builtin/install"
+        rose_develop_builtin_log_directory: "{{ rose_effective_workspace }}/builtin/log"
+        rose_develop_builtin_install_setup_path: "{{ rose_effective_workspace }}/builtin/install/setup.bash"
+        rose_develop_builtin_build_stamp_path: "{{ rose_effective_workspace }}/builtin/.rose_build_fingerprint"
+        rose_develop_builtin_managed_repositories_path: "{{ rose_effective_workspace }}/builtin/.rose_managed_repositories.json"
+        rose_develop_builtin_common_manifest_path: "{{ rose_effective_repos_directory }}/develop_builtin.yaml"
+        rose_develop_builtin_distro_manifest_path: "{{ rose_effective_repos_directory }}/develop_builtin_{{ rose_effective_ros_distro }}.yaml"
+        rose_develop_builtin_cleanup_build_artifacts: "{{ rose_cleanup_source_build_artifacts | default(false) | bool }}"
+
+    - name: Check builtin common manifest
+      ansible.builtin.stat:
+        path: "{{ rose_develop_builtin_common_manifest_path }}"
+      register: develop_builtin_common_manifest
+      changed_when: false
+
+    - name: Check builtin distro manifest
+      ansible.builtin.stat:
+        path: "{{ rose_develop_builtin_distro_manifest_path }}"
+      register: develop_builtin_distro_manifest
+      changed_when: false
+
+    - name: Validate builtin manifests
+      ansible.builtin.assert:
+        that:
+          - develop_builtin_common_manifest.stat.exists
+          - develop_builtin_distro_manifest.stat.exists
+        fail_msg: "Builtin manifest files are missing under '{{ rose_effective_repos_directory }}'."
+
+    - name: Read builtin repository manifests
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_common_manifest_content: "{{ lookup('file', rose_develop_builtin_common_manifest_path) }}"
+        rose_develop_builtin_distro_manifest_content: "{{ lookup('file', rose_develop_builtin_distro_manifest_path) }}"
+
+    - name: Define builtin repository manifests
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_common_manifest: "{{ rose_develop_builtin_common_manifest_content | from_yaml | default({}, true) }}"
+        rose_develop_builtin_distro_manifest: "{{ rose_develop_builtin_distro_manifest_content | from_yaml | default({}, true) }}"
+
+    - name: Define builtin repository maps
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_common_repository_map: "{{ rose_develop_builtin_common_manifest.repositories | default({}, true) }}"
+        rose_develop_builtin_distro_repository_map: "{{ rose_develop_builtin_distro_manifest.repositories | default({}, true) }}"
+
+    - name: Define builtin repository map
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_repository_map: "{{ rose_develop_builtin_common_repository_map | combine(rose_develop_builtin_distro_repository_map, recursive=True) }}"
+
+    - name: Define builtin desired repository paths
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_desired_repository_paths: "{{ rose_develop_builtin_repository_map.keys() | list | sort }}"
+
+    - name: Validate builtin repository types
+      ansible.builtin.assert:
+        that:
+          - item.value.type == 'git'
+        fail_msg: "Unsupported repository type '{{ item.value.type }}' for '{{ item.key }}'."
+      loop: "{{ rose_develop_builtin_repository_map | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: Install builtin source checkout packages
+      when: rose_develop_builtin_desired_repository_paths | length > 0
+      become: "{{ rose_use_become }}"
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        install_recommends: false
+        name:
+          - git-core
+
+    - name: Create builtin workspace directory
       block:
-        - name: Get ROS 2 distro
-          register: ros_distro
-          shell: |
-            if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
-              exit 129; \
-            fi
-            echo {{ lookup("env", "ROS_DISTRO") }}
-        - name: Get builtin source directory
-          register: develop_builtin_ws_directory
-          shell: |
-            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
-              exit 129; \
-            fi
-            echo {{ lookup("env", "ROSE_WORKSPACE") }}/builtin
-        - name: Get repos source directory
-          register: repos_directory
-          shell: |
-            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
-              exit 129; \
-            fi
-            echo {{ lookup("env", "ROSE_WORKSPACE") }}/repos
-        - name: Create workspace directory
-          block:
-            - file:
-                path: "{{ develop_builtin_ws_directory.stdout }}"
-                state: directory
-            - file:
-                path: "{{ develop_builtin_ws_directory.stdout }}/src"
-                state: directory
-        - name: Clone builtin source
-          block:
-            - name: Clone builtin common source
-              shell: |
-                vcs import {{ develop_builtin_ws_directory.stdout }}/src \
-                  < {{ repos_directory.stdout }}/develop_builtin.yaml
-            - name: Clone builtin distro source
-              shell: |
-                vcs import {{ develop_builtin_ws_directory.stdout }}/src \
-                  < {{ repos_directory.stdout }}/develop_builtin_{{ ros_distro.stdout }}.yaml
-        - name: Build builtin workspace
-          args:
-              chdir: "{{ develop_builtin_ws_directory.stdout }}"
-              executable: /bin/bash
-          shell: |
-            source /opt/ros/{{ ros_distro.stdout }}/setup.bash
-            colcon build \
-              --merge-install \
-              --executor sequential \
-              --cmake-args \
-                -D CMAKE_BUILD_TYPE=Release \
-                -D GTSAM_USE_SYSTEM_EIGEN=ON \
-                -D GTSAM_BUILD_EXAMPLES_ALWAYS=OFF \
-                -D GTSAM_BUILD_TESTS=OFF \
-                -D BUILD_WITH_CUDA=$(if [ -x "$(command -v nvcc)" ]; then echo ON; else echo OFF; fi)
-        - name: Add COLCON_IGNORE builtin workspace
-          file:
-            path: "{{ develop_builtin_ws_directory.stdout }}/COLCON_IGNORE"
-            state: touch
+        - ansible.builtin.file:
+            path: "{{ rose_develop_builtin_workspace_root }}"
+            state: directory
+        - ansible.builtin.file:
+            path: "{{ rose_develop_builtin_src_directory }}"
+            state: directory
+
+    - name: Discover existing builtin repositories for state migration
+      ansible.builtin.find:
+        paths: "{{ rose_develop_builtin_src_directory }}"
+        patterns: .git
+        file_type: directory
+        hidden: true
+        depth: 3
+        recurse: true
+      register: rose_develop_builtin_existing_git_directories
+      changed_when: false
+
+    - name: Detect CUDA support for builtin workspace
+      changed_when: false
+      environment:
+        PATH: "{{ rose_effective_path }}"
+      args:
+        executable: /bin/bash
+      ansible.builtin.shell: |
+        if command -v nvcc >/dev/null 2>&1; then
+          printf 'ON'
+        else
+          printf 'OFF'
+        fi
+      register: rose_develop_builtin_cuda_detection
+
+    - name: Define builtin build parameters
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_cuda_enabled: "{{ rose_develop_builtin_cuda_detection.stdout | trim }}"
+        rose_develop_builtin_build_fingerprint: "{{ [rose_develop_builtin_common_manifest_content, rose_develop_builtin_distro_manifest_content, rose_effective_ros_distro, 'merge-install', 'executor=sequential', 'CMAKE_BUILD_TYPE=Release', 'GTSAM_USE_SYSTEM_EIGEN=ON', 'GTSAM_BUILD_EXAMPLES_ALWAYS=OFF', 'GTSAM_BUILD_TESTS=OFF', 'BUILD_WITH_CUDA=' ~ (rose_develop_builtin_cuda_detection.stdout | trim)] | join('\n---\n') | hash('sha256') }}"
+
+    - name: Check builtin install setup
+      ansible.builtin.stat:
+        path: "{{ rose_develop_builtin_install_setup_path }}"
+      register: rose_develop_builtin_install_setup
+      changed_when: false
+
+    - name: Check builtin build stamp
+      ansible.builtin.stat:
+        path: "{{ rose_develop_builtin_build_stamp_path }}"
+      register: rose_develop_builtin_build_stamp
+      changed_when: false
+
+    - name: Read builtin build stamp
+      when: rose_develop_builtin_build_stamp.stat.exists
+      ansible.builtin.slurp:
+        path: "{{ rose_develop_builtin_build_stamp_path }}"
+      register: rose_develop_builtin_build_stamp_content
+      changed_when: false
+
+    - name: Determine builtin current build fingerprint
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_current_build_fingerprint: "{{ (rose_develop_builtin_build_stamp_content.content | b64decode | trim) if rose_develop_builtin_build_stamp.stat.exists else '' }}"
+
+    - name: Check builtin managed repository state
+      ansible.builtin.stat:
+        path: "{{ rose_develop_builtin_managed_repositories_path }}"
+      register: rose_develop_builtin_managed_repositories_stat
+      changed_when: false
+
+    - name: Read builtin managed repository state
+      when: rose_develop_builtin_managed_repositories_stat.stat.exists
+      ansible.builtin.slurp:
+        path: "{{ rose_develop_builtin_managed_repositories_path }}"
+      register: rose_develop_builtin_managed_repositories_content
+      changed_when: false
+
+    - name: Define builtin previous managed repository paths
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_previous_managed_repository_paths: "{{ ((rose_develop_builtin_managed_repositories_content.content | b64decode | from_json) if rose_develop_builtin_managed_repositories_stat.stat.exists else ((rose_develop_builtin_existing_git_directories.files | map(attribute='path') | map('dirname') | map('replace', rose_develop_builtin_src_directory ~ '/', '') | list))) | unique | sort }}"
+
+    - name: Determine builtin managed repository state
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_managed_repository_paths: "{{ rose_develop_builtin_previous_managed_repository_paths }}"
+        rose_develop_builtin_stale_repository_paths: "{{ (rose_develop_builtin_previous_managed_repository_paths | difference(rose_develop_builtin_desired_repository_paths)) | sort }}"
+        rose_develop_builtin_needs_repository_cleanup: "{{ (rose_develop_builtin_previous_managed_repository_paths | difference(rose_develop_builtin_desired_repository_paths) | length) > 0 }}"
+        rose_develop_builtin_needs_repository_state_update: "{{ (not rose_develop_builtin_managed_repositories_stat.stat.exists) or (rose_develop_builtin_previous_managed_repository_paths != rose_develop_builtin_desired_repository_paths) }}"
+
+    - name: Determine whether builtin source sync is required
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_repository_refresh_required: "{{ (not rose_develop_builtin_cleanup_build_artifacts) or (not rose_develop_builtin_install_setup.stat.exists) or (rose_develop_builtin_current_build_fingerprint != rose_develop_builtin_build_fingerprint) or rose_develop_builtin_needs_repository_cleanup }}"
+
+    - name: Determine builtin source sync status
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_source_sync_required: "{{ rose_develop_builtin_repository_refresh_required }}"
+
+    - name: Remove stale builtin repositories
+      when: rose_develop_builtin_stale_repository_paths | length > 0
+      ansible.builtin.file:
+        path: "{{ rose_develop_builtin_src_directory }}/{{ item }}"
+        state: absent
+      loop: "{{ rose_develop_builtin_stale_repository_paths }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Remove builtin build artifacts after repository removal
+      when: rose_develop_builtin_needs_repository_cleanup or (rose_develop_builtin_desired_repository_paths | length == 0)
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ rose_develop_builtin_build_directory }}"
+        - "{{ rose_develop_builtin_install_directory }}"
+        - "{{ rose_develop_builtin_log_directory }}"
+
+    - name: Create builtin repository parent directories
+      when:
+        - rose_develop_builtin_source_sync_required
+        - item.key | dirname != '.'
+      ansible.builtin.file:
+        path: "{{ rose_develop_builtin_src_directory }}/{{ item.key | dirname }}"
+        state: directory
+      loop: "{{ rose_develop_builtin_repository_map | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+
+    - name: Sync builtin repositories
+      when: rose_develop_builtin_source_sync_required
+      ansible.builtin.git:
+        repo: "{{ item.value.url }}"
+        dest: "{{ rose_develop_builtin_src_directory }}/{{ item.key }}"
+        version: "{{ item.value.version }}"
+        update: true
+      loop: "{{ rose_develop_builtin_repository_map | dict2items }}"
+      loop_control:
+        label: "{{ item.key }}"
+      register: rose_develop_builtin_repository_sync
+
+    - name: Determine builtin repository sync status
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_repositories_changed: "{{ rose_develop_builtin_needs_repository_cleanup or (rose_develop_builtin_source_sync_required and (((rose_develop_builtin_repository_sync.results | default([])) | selectattr('changed') | list | length) > 0)) }}"
+
+    - name: Determine whether builtin build is required
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_needs_build: "{{ (rose_develop_builtin_desired_repository_paths | length > 0) and (rose_develop_builtin_repositories_changed or (not rose_develop_builtin_install_setup.stat.exists) or (rose_develop_builtin_current_build_fingerprint != rose_develop_builtin_build_fingerprint)) }}"
+
+    - name: Determine whether builtin build stamp update is required
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_develop_builtin_needs_build_stamp_update: "{{ rose_develop_builtin_needs_build or (not rose_develop_builtin_build_stamp.stat.exists) or (rose_develop_builtin_current_build_fingerprint != rose_develop_builtin_build_fingerprint) }}"
+
+    - name: Build builtin workspace
+      when: rose_develop_builtin_needs_build
+      environment:
+        PATH: "{{ rose_effective_path }}"
+      args:
+        chdir: "{{ rose_develop_builtin_workspace_root }}"
+        executable: /bin/bash
+      ansible.builtin.shell: |
+        source /opt/ros/{{ rose_effective_ros_distro }}/setup.bash
+        colcon build \
+          --merge-install \
+          --executor sequential \
+          --cmake-args \
+            -D CMAKE_BUILD_TYPE=Release \
+            -D GTSAM_USE_SYSTEM_EIGEN=ON \
+            -D GTSAM_BUILD_EXAMPLES_ALWAYS=OFF \
+            -D GTSAM_BUILD_TESTS=OFF \
+            -D BUILD_WITH_CUDA={{ rose_develop_builtin_cuda_enabled }}
+
+    - name: Update builtin build stamp
+      when: rose_develop_builtin_needs_build_stamp_update
+      ansible.builtin.copy:
+        dest: "{{ rose_develop_builtin_build_stamp_path }}"
+        content: "{{ rose_develop_builtin_build_fingerprint }}\n"
+        mode: "0644"
+
+    - name: Update builtin managed repository state
+      when: rose_develop_builtin_needs_repository_state_update
+      ansible.builtin.copy:
+        dest: "{{ rose_develop_builtin_managed_repositories_path }}"
+        content: "{{ rose_develop_builtin_desired_repository_paths | to_json }}\n"
+        mode: "0644"
+
+    - name: Ensure COLCON_IGNORE for builtin workspace
+      ansible.builtin.copy:
+        dest: "{{ rose_develop_builtin_workspace_root }}/COLCON_IGNORE"
+        content: ""
+        mode: "0644"
+
+    - name: Remove builtin source build artifacts after setup
+      when: rose_develop_builtin_cleanup_build_artifacts
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ rose_develop_builtin_src_directory }}"
+        - "{{ rose_develop_builtin_build_directory }}"
+        - "{{ rose_develop_builtin_log_directory }}"

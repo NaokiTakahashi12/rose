@@ -1,14 +1,89 @@
 ---
 - hosts: all
+  vars:
+    # Keep package/source availability exceptions named so distro support changes stay centralized.
+    rose_simulator_builtin_distros:
+      - humble
+      - jazzy
+    rose_simulator_ignition_bridge_distros:
+      - humble
+      - galactic
+    rose_simulator_gazebo_bridge_distros:
+      - jazzy
+  pre_tasks:
+    - name: Resolve ROSE context
+      import_tasks: ../tasks/resolve_rose_context.yaml
+      vars:
+        rose_require_ros_distro: true
+        rose_require_gz_version: true
+        rose_require_repos_directory: true
   tasks:
-    - name: Get ROS 2 distro
-      register: ros_distro
-      shell: |
-        if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
-          exit 129; \
-        fi
-        echo {{ lookup("env", "ROS_DISTRO") }}
+    - name: Define simulator workspace metadata
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_simulator_workspace_root: "{{ rose_effective_workspace }}/builtin/gz_sim"
+        rose_simulator_src_directory: "{{ rose_effective_workspace }}/builtin/gz_sim/src"
+        rose_simulator_build_directory: "{{ rose_effective_workspace }}/builtin/gz_sim/build"
+        rose_simulator_install_directory: "{{ rose_effective_workspace }}/builtin/gz_sim/install"
+        rose_simulator_log_directory: "{{ rose_effective_workspace }}/builtin/gz_sim/log"
+        rose_simulator_install_setup_path: "{{ rose_effective_workspace }}/builtin/gz_sim/install/setup.bash"
+        rose_simulator_build_stamp_path: "{{ rose_effective_workspace }}/builtin/gz_sim/.rose_build_fingerprint"
+        rose_simulator_managed_repositories_path: "{{ rose_effective_workspace }}/builtin/gz_sim/.rose_managed_repositories.json"
+        rose_simulator_manifest_path: "{{ rose_effective_repos_directory }}/gz_sim_{{ rose_effective_ros_distro }}_builtin.yaml"
+        rose_simulator_repository_map: {}
+        rose_simulator_desired_repository_paths: []
+        rose_simulator_build_supported: "{{ ansible_architecture == 'x86_64' }}"
+        rose_simulator_cleanup_build_artifacts: "{{ rose_cleanup_source_build_artifacts | default(false) | bool }}"
+
+    - name: Check gz-sim distro manifest
+      when: rose_effective_ros_distro in rose_simulator_builtin_distros
+      ansible.builtin.stat:
+        path: "{{ rose_simulator_manifest_path }}"
+      register: gz_sim_manifest
+      changed_when: false
+
+    - name: Validate gz-sim distro manifest
+      when: rose_effective_ros_distro in rose_simulator_builtin_distros
+      ansible.builtin.assert:
+        that:
+          - gz_sim_manifest.stat.exists
+        fail_msg: "gz-sim manifest file is missing under '{{ rose_effective_repos_directory }}'."
+
+    - name: Read simulator repository manifest
+      when: rose_effective_ros_distro in rose_simulator_builtin_distros
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_simulator_manifest_content: "{{ lookup('file', rose_simulator_manifest_path) }}"
+
+    - name: Parse simulator repository manifest
+      when: rose_effective_ros_distro in rose_simulator_builtin_distros
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_simulator_manifest: "{{ rose_simulator_manifest_content | from_yaml | default({}, true) }}"
+
+    - name: Define simulator repository map and build fingerprint
+      when: rose_effective_ros_distro in rose_simulator_builtin_distros
+      changed_when: false
+      ansible.builtin.set_fact:
+        rose_simulator_repository_map: "{{ rose_simulator_manifest.repositories | default({}, true) }}"
+        rose_simulator_desired_repository_paths: "{{ (rose_simulator_manifest.repositories | default({}, true)).keys() | list | sort }}"
+        rose_simulator_build_fingerprint: "{{ [rose_simulator_manifest_content, rose_effective_ros_distro, rose_effective_gz_version, 'merge-install', 'executor=sequential', 'CMAKE_BUILD_TYPE=Release', 'BUILD_TESTING=OFF'] | join('\n---\n') | hash('sha256') }}"
+
+    - name: Install simulator source checkout packages
+      when:
+        - rose_effective_ros_distro in rose_simulator_builtin_distros
+        - rose_simulator_build_supported | bool
+        - rose_simulator_desired_repository_paths | length > 0
+      become: "{{ rose_use_become }}"
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        install_recommends: false
+        name:
+          - git-core
+
     - name: Setup apt-key for gz-sim
+      become: "{{ rose_use_become }}"
       block:
         - name: Add gazebo GPG key
           get_url:
@@ -16,8 +91,8 @@
             dest: /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
         - name: Get dpkg architecture
           register: dpkg_architecture
-          shell: |
-            dpkg --print-architecture
+          changed_when: false
+          command: dpkg --print-architecture
         - name: Add gazebo apt source list
           apt_repository:
             repo: "deb [arch={{ dpkg_architecture.stdout }} signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable {{ ansible_distribution_release }} main"
@@ -25,37 +100,47 @@
         - name: Update apt cache
           apt:
             update_cache: true
-    - name: Install ROS 2 simulation packages from apt
+
+    - name: Install Gazebo simulator package
+      become: "{{ rose_use_become }}"
       apt:
-        package:
-          - gz-{{ lookup("env", "GZ_VERSION") }}
-    - name: Install ros2-control simulation packages
-      when: ros_distro.stdout in ['humble', 'galactic']
+        name:
+          - gz-{{ rose_effective_gz_version }}
+
+    - name: Install Ignition bridge packages
+      when: rose_effective_ros_distro in rose_simulator_ignition_bridge_distros
+      become: "{{ rose_use_become }}"
       apt:
-        package:
-          - ros-{{ ros_distro.stdout }}-ign-ros2-control
-          - ros-{{ ros_distro.stdout }}-ros-ign-gazebo
-          - ros-{{ ros_distro.stdout }}-ros-ign-interfaces
-          - ros-{{ ros_distro.stdout }}-ros-ign-bridge
-          - ros-{{ ros_distro.stdout }}-ros-ign-image
-    - name: Install ros2-control simulation packages
-      when: ros_distro.stdout in ['jazzy']
+        name:
+          - ros-{{ rose_effective_ros_distro }}-ign-ros2-control
+          - ros-{{ rose_effective_ros_distro }}-ros-ign-gazebo
+          - ros-{{ rose_effective_ros_distro }}-ros-ign-interfaces
+          - ros-{{ rose_effective_ros_distro }}-ros-ign-bridge
+          - ros-{{ rose_effective_ros_distro }}-ros-ign-image
+
+    - name: Install Gazebo bridge packages
+      when: rose_effective_ros_distro in rose_simulator_gazebo_bridge_distros
+      become: "{{ rose_use_become }}"
       apt:
-        package:
-          - ros-{{ ros_distro.stdout }}-gz-ros2-control
-          - ros-{{ ros_distro.stdout }}-ros-gz-sim
-          - ros-{{ ros_distro.stdout }}-ros-gz-interfaces
-          - ros-{{ ros_distro.stdout }}-ros-gz-bridge
-          - ros-{{ ros_distro.stdout }}-ros-gz-image
-    - name: Install ROS 2 simulation packages from apt
-      when: ros_distro.stdout in ['humble', 'galactic']
+        name:
+          - ros-{{ rose_effective_ros_distro }}-gz-ros2-control
+          - ros-{{ rose_effective_ros_distro }}-ros-gz-sim
+          - ros-{{ rose_effective_ros_distro }}-ros-gz-interfaces
+          - ros-{{ rose_effective_ros_distro }}-ros-gz-bridge
+          - ros-{{ rose_effective_ros_distro }}-ros-gz-image
+
+    - name: Install Gazebo source build dependencies
+      when:
+        - rose_simulator_build_supported | bool
+        - rose_simulator_desired_repository_paths | length > 0
+      become: "{{ rose_use_become }}"
       block:
         - name: Install ROS 2 integrate packages
           block:
             - name: Install gz-sim dependency from apt
               apt:
                 install_recommends: false
-                package:
+                name:
                   - binutils-dev
                   - freeglut3-dev
                   - libassimp-dev
@@ -73,7 +158,6 @@
                   - libgts-dev
                   - libjsoncpp-dev
                   - libogre-1.9-dev
-                  - libogre-next-2.3-dev
                   - libogre-next-dev
                   - libprotobuf-dev
                   - libprotoc-dev
@@ -130,53 +214,219 @@
                   - libx11-xcb-dev
                   - libxcb-randr0-dev
             - name: Install gz-sim dependency from pip
+              become: false
               pip:
-                name:
-                  - psutil
-                  - pybind11
+                requirements: "{{ playbook_dir }}/../requirements/gz_sim_source.txt"
+                state: present
+                virtualenv: "{{ rose_effective_python_tools_venv }}"
+                virtualenv_command: /usr/bin/python3 -m venv
+
+    - name: Remove unsupported simulator source build artifacts
+      when:
+        - rose_effective_ros_distro in rose_simulator_builtin_distros
+        - not (rose_simulator_build_supported | bool)
+        - rose_simulator_cleanup_build_artifacts
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - "{{ rose_simulator_src_directory }}"
+        - "{{ rose_simulator_build_directory }}"
+        - "{{ rose_simulator_log_directory }}"
+
     - name: Setup gz-sim builtin packages
-      when: ros_distro.stdout in ['humble', 'jazzy']
+      when:
+        - rose_effective_ros_distro in rose_simulator_builtin_distros
+        - (rose_simulator_build_supported | bool) or (rose_simulator_desired_repository_paths | length == 0)
       block:
-        - name: Get builtin source directory
-          register: simulator_ws_directory
-          shell: |
-            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
-              exit 129; \
-            fi
-            echo {{ lookup("env", "ROSE_WORKSPACE") }}/builtin/gz_sim
-        - name: Get builtin repos directory
-          register: repos_directory
-          shell: |
-            if [[ $(echo {{ lookup("env", "ROSE_WORKSPACE") }} | wc -c) -eq 0 ]]; then \
-              exit 129; \
-            fi
-            echo {{ lookup("env", "ROSE_WORKSPACE") }}/repos
+        - name: Validate simulator repository types
+          ansible.builtin.assert:
+            that:
+              - item.value.type == 'git'
+            fail_msg: "Unsupported repository type '{{ item.value.type }}' for '{{ item.key }}'."
+          loop: "{{ rose_simulator_repository_map | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+
         - name: Create simulator workspace directory
           block:
-            - file:
-                path: "{{ simulator_ws_directory.stdout }}"
+            - ansible.builtin.file:
+                path: "{{ rose_simulator_workspace_root }}"
                 state: directory
-            - file:
-                path: "{{ simulator_ws_directory.stdout }}/src"
+            - ansible.builtin.file:
+                path: "{{ rose_simulator_src_directory }}"
                 state: directory
-        - name: Clone gz-sim ROS 2 source
-          shell: |
-            vcs import {{ simulator_ws_directory.stdout }}/src \
-              < {{ repos_directory.stdout }}/gz_sim_builtin.yaml \
+
+        - name: Discover existing simulator repositories for state migration
+          ansible.builtin.find:
+            paths: "{{ rose_simulator_src_directory }}"
+            patterns: .git
+            file_type: directory
+            hidden: true
+            depth: 3
+            recurse: true
+          register: rose_simulator_existing_git_directories
+          changed_when: false
+
+        - name: Check simulator install setup
+          ansible.builtin.stat:
+            path: "{{ rose_simulator_install_setup_path }}"
+          register: rose_simulator_install_setup
+          changed_when: false
+
+        - name: Check simulator build stamp
+          ansible.builtin.stat:
+            path: "{{ rose_simulator_build_stamp_path }}"
+          register: rose_simulator_build_stamp
+          changed_when: false
+
+        - name: Read simulator build stamp
+          when: rose_simulator_build_stamp.stat.exists
+          ansible.builtin.slurp:
+            path: "{{ rose_simulator_build_stamp_path }}"
+          register: rose_simulator_build_stamp_content
+          changed_when: false
+
+        - name: Determine simulator current build fingerprint
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_current_build_fingerprint: "{{ (rose_simulator_build_stamp_content.content | b64decode | trim) if rose_simulator_build_stamp.stat.exists else '' }}"
+
+        - name: Check simulator managed repository state
+          ansible.builtin.stat:
+            path: "{{ rose_simulator_managed_repositories_path }}"
+          register: rose_simulator_managed_repositories_stat
+          changed_when: false
+
+        - name: Read simulator managed repository state
+          when: rose_simulator_managed_repositories_stat.stat.exists
+          ansible.builtin.slurp:
+            path: "{{ rose_simulator_managed_repositories_path }}"
+          register: rose_simulator_managed_repositories_content
+          changed_when: false
+
+        - name: Define simulator previous managed repository paths
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_previous_managed_repository_paths: "{{ ((rose_simulator_managed_repositories_content.content | b64decode | from_json) if rose_simulator_managed_repositories_stat.stat.exists else ((rose_simulator_existing_git_directories.files | map(attribute='path') | map('dirname') | map('replace', rose_simulator_src_directory ~ '/', '') | list))) | unique | sort }}"
+
+        - name: Determine simulator managed repository state
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_managed_repository_paths: "{{ rose_simulator_previous_managed_repository_paths }}"
+            rose_simulator_stale_repository_paths: "{{ (rose_simulator_previous_managed_repository_paths | difference(rose_simulator_desired_repository_paths)) | sort }}"
+            rose_simulator_needs_repository_cleanup: "{{ (rose_simulator_previous_managed_repository_paths | difference(rose_simulator_desired_repository_paths) | length) > 0 }}"
+            rose_simulator_needs_repository_state_update: "{{ (not rose_simulator_managed_repositories_stat.stat.exists) or (rose_simulator_previous_managed_repository_paths != rose_simulator_desired_repository_paths) }}"
+
+        - name: Determine whether simulator source sync is required
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_repository_refresh_required: "{{ (not rose_simulator_cleanup_build_artifacts) or (not rose_simulator_install_setup.stat.exists) or (rose_simulator_current_build_fingerprint != rose_simulator_build_fingerprint) or rose_simulator_needs_repository_cleanup }}"
+
+        - name: Determine simulator source sync status
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_source_sync_required: "{{ (rose_simulator_build_supported | bool) and (rose_simulator_desired_repository_paths | length > 0) and rose_simulator_repository_refresh_required }}"
+
+        - name: Remove stale simulator repositories
+          when: rose_simulator_stale_repository_paths | length > 0
+          ansible.builtin.file:
+            path: "{{ rose_simulator_src_directory }}/{{ item }}"
+            state: absent
+          loop: "{{ rose_simulator_stale_repository_paths }}"
+          loop_control:
+            label: "{{ item }}"
+
+        - name: Remove simulator build artifacts after repository removal
+          when: rose_simulator_needs_repository_cleanup or (rose_simulator_desired_repository_paths | length == 0)
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - "{{ rose_simulator_build_directory }}"
+            - "{{ rose_simulator_install_directory }}"
+            - "{{ rose_simulator_log_directory }}"
+
+        - name: Create simulator repository parent directories
+          when:
+            - rose_simulator_source_sync_required
+            - item.key | dirname != '.'
+          ansible.builtin.file:
+            path: "{{ rose_simulator_src_directory }}/{{ item.key | dirname }}"
+            state: directory
+          loop: "{{ rose_simulator_repository_map | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+
+        - name: Sync simulator repositories
+          when: rose_simulator_source_sync_required
+          ansible.builtin.git:
+            repo: "{{ item.value.url }}"
+            dest: "{{ rose_simulator_src_directory }}/{{ item.key }}"
+            version: "{{ item.value.version }}"
+            update: true
+          loop: "{{ rose_simulator_repository_map | dict2items }}"
+          loop_control:
+            label: "{{ item.key }}"
+          register: rose_simulator_repository_sync
+
+        - name: Determine simulator repository sync status
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_repositories_changed: "{{ rose_simulator_needs_repository_cleanup or (rose_simulator_source_sync_required and (((rose_simulator_repository_sync.results | default([])) | selectattr('changed') | list | length) > 0)) }}"
+
+        - name: Determine whether simulator build is required
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_needs_build: "{{ (rose_simulator_build_supported | bool) and (rose_simulator_desired_repository_paths | length > 0) and (rose_simulator_repositories_changed or (not rose_simulator_install_setup.stat.exists) or (rose_simulator_current_build_fingerprint != rose_simulator_build_fingerprint)) }}"
+
+        - name: Determine whether simulator build stamp update is required
+          changed_when: false
+          ansible.builtin.set_fact:
+            rose_simulator_needs_build_stamp_update: "{{ rose_simulator_needs_build or ((rose_simulator_desired_repository_paths | length == 0) and ((not rose_simulator_build_stamp.stat.exists) or (rose_simulator_current_build_fingerprint != rose_simulator_build_fingerprint))) }}"
+
         - name: Build gz-sim workspace
-          when: ansible_architecture == "x86_64"  # Avoid gcc segmentation fault
+          when: rose_simulator_needs_build
+          environment:
+            PATH: "{{ rose_effective_path }}"
           args:
-              chdir: "{{ simulator_ws_directory.stdout }}"
-              executable: /bin/bash
-          shell: |
-            source /opt/ros/{{ ros_distro.stdout }}/setup.bash
+            chdir: "{{ rose_simulator_workspace_root }}"
+            executable: /bin/bash
+          ansible.builtin.shell: |
+            source /opt/ros/{{ rose_effective_ros_distro }}/setup.bash
             colcon build \
               --merge-install \
               --executor sequential \
               --cmake-args \
                 -D CMAKE_BUILD_TYPE=Release \
                 -D BUILD_TESTING=OFF
-        - name: Add COLCON_IGNORE workspace
-          file:
-            path: "{{ simulator_ws_directory.stdout }}/COLCON_IGNORE"
-            state: touch
+
+        - name: Update simulator build stamp
+          when: rose_simulator_needs_build_stamp_update
+          ansible.builtin.copy:
+            dest: "{{ rose_simulator_build_stamp_path }}"
+            content: "{{ rose_simulator_build_fingerprint }}\n"
+            mode: "0644"
+
+        - name: Update simulator managed repository state
+          when: rose_simulator_needs_repository_state_update
+          ansible.builtin.copy:
+            dest: "{{ rose_simulator_managed_repositories_path }}"
+            content: "{{ rose_simulator_desired_repository_paths | to_json }}\n"
+            mode: "0644"
+
+        - name: Ensure COLCON_IGNORE for simulator workspace
+          ansible.builtin.copy:
+            dest: "{{ rose_simulator_workspace_root }}/COLCON_IGNORE"
+            content: ""
+            mode: "0644"
+
+        - name: Remove simulator source build artifacts after setup
+          when: rose_simulator_cleanup_build_artifacts
+          ansible.builtin.file:
+            path: "{{ item }}"
+            state: absent
+          loop:
+            - "{{ rose_simulator_src_directory }}"
+            - "{{ rose_simulator_build_directory }}"
+            - "{{ rose_simulator_log_directory }}"

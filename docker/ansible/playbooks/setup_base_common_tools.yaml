@@ -1,9 +1,18 @@
 ---
 - hosts: all
+  pre_tasks:
+    - name: Resolve ROSE context
+      import_tasks: ../tasks/resolve_rose_context.yaml
   tasks:
-    - name: Install source management packages
+    - name: Update apt cache
+      become: "{{ rose_use_become }}"
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base common packages
+      become: "{{ rose_use_become }}"
       apt:
         install_recommends: false
-        package:
-         - git-core
-         - ca-certificates
+        name:
+          - ca-certificates

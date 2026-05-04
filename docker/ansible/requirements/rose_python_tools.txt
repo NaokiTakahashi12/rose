@@ -1,0 +1,13 @@
+# Keep Docker builds and local Ansible setup on the same Python toolchain.
+vcstool==0.3.0
+rosdep==0.25.1
+colcon-common-extensions==0.3.0
+colcon-mixin==0.2.3
+colcon-metadata==0.2.5
+lark==1.2.2
+numpy==1.26.4
+tornado==6.4.1
+simplejpeg==1.7.6
+pillow==10.4.0
+requests==2.32.3
+empy==3.3.4

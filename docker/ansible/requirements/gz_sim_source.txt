@@ -1,0 +1,3 @@
+# Python dependencies used only when building gz-sim source workspaces.
+psutil==6.1.1
+pybind11==2.13.6
