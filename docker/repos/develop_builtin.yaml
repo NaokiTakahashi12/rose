@@ -6,7 +6,7 @@ repositories:
   prbonn/kiss_icp:
     type: git
     url: https://github.com/PRBonn/kiss-icp.git
-    version: main
+    version: v1.2.2
   dheera/rosboard:
     type: git
     url: https://github.com/dheera/rosboard.git
@@ -67,10 +67,6 @@ repositories:
     type: git
     url: https://github.com/NaokiTakahashi12/livox_sdk2_vendor.git
     version: main
-  naokitakahashi12/livox_ros_driver2:
-    type: git
-    url: https://github.com/NaokiTakahashi12/livox_ros_driver2.git
-    version: humble
   naokitakahashi12/fzf_ros2:
     type: git
     url: https://github.com/NaokiTakahashi12/fzf_ros2.git

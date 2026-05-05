@@ -1,160 +1,225 @@
 ---
 - hosts: all
+  vars:
+    # Keep package availability exceptions named so distro support changes stay centralized.
+    rose_develop_supported_distros:
+      - humble
+      - galactic
+      - jazzy
+      - rolling
+    rose_develop_non_jazzy_package_distros:
+      - humble
+      - galactic
+      - rolling
+    rose_develop_modern_distros:
+      - humble
+      - jazzy
+      - rolling
+  pre_tasks:
+    - name: Resolve ROSE context
+      import_tasks: ../tasks/resolve_rose_context.yaml
+      vars:
+        rose_require_ros_distro: true
   tasks:
+    - name: Update apt cache
+      become: "{{ rose_use_become }}"
+      apt:
+        update_cache: true
+        cache_valid_time: 3600
+
     - name: Install compile toolchain packages
       block:
         - name: Install compile dependency from apt
+          become: "{{ rose_use_become }}"
           apt:
             install_recommends: false
-            package:
+            name:
               - gcc
               - g++
               - make
               - ninja-build
               - ccache
               - cmake
+              - git-core
+              - python3-venv
               - vim
               - mold
               - fzf
               - pcl-tools
         - name: Install compile dependency from pip
           pip:
-            name:
-              - vcstool
-              - rosdep
-              - colcon-common-extensions
-              - colcon-mixin
-              - colcon-metadata
-              - lark
-              - numpy
-              - tornado
-              - simplejpeg
-              - pillow
-              - requests
-              - empy==3.3.4
+            requirements: "{{ playbook_dir }}/../requirements/rose_python_tools.txt"
+            state: present
+            virtualenv: "{{ rose_effective_python_tools_venv }}"
+            virtualenv_command: /usr/bin/python3 -m venv
         - name: Install debug tools from apt
+          become: "{{ rose_use_become }}"
           apt:
             install_recommends: false
-            package:
+            name:
               - gdb
               - silversearcher-ag
               - cmake-curses-gui
-        - name: Install colcon mixin
-          shell: |
-            colcon mixin add default https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
-        - name: Update colcon mixin
-          shell: |
-            colcon mixin update default
-    - name: Install micro-ROS depencency packages
+        - name: Check colcon default mixin
+          environment:
+            PATH: "{{ rose_effective_path }}"
+          changed_when: false
+          failed_when: false
+          command:
+            argv:
+              - colcon
+              - mixin
+              - list
+              - default
+          register: rose_colcon_default_mixin
+        - name: Add colcon default mixin
+          when: rose_colcon_default_mixin.rc != 0
+          environment:
+            PATH: "{{ rose_effective_path }}"
+          command:
+            argv:
+              - colcon
+              - mixin
+              - add
+              - default
+              - https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml
+          register: rose_colcon_mixin_add
+        - name: Update colcon default mixin
+          when: >
+            (rose_colcon_default_mixin.rc == 0)
+            or (rose_colcon_mixin_add.changed | default(false))
+            or (rose_update_colcon_mixin | default(false) | bool)
+          environment:
+            PATH: "{{ rose_effective_path }}"
+          changed_when: false
+          command:
+            argv:
+              - colcon
+              - mixin
+              - update
+              - default
+
+    - name: Install micro-ROS dependency packages
+      become: "{{ rose_use_become }}"
       apt:
         install_recommends: false
-        package:
+        name:
           - flex
           - bison
           - usbutils
           - libncurses-dev
           - libfastcdr-dev
           - libnanoflann-dev
+
     - name: Install ROSE develop command line tools
+      become: "{{ rose_use_become }}"
       apt:
         install_recommends: false
-        package:
+        name:
           - i2c-tools
+
     - name: Install ROSE develop ROS 2 packages
+      become: "{{ rose_use_become }}"
       block:
-        - name: Get ROS 2 distro
-          register: ros_distro
-          shell: |
-            if [[ $(echo {{ lookup("env", "ROS_DISTRO") }} | wc -c) -eq 0 ]]; then \
-              exit 129; \
-            fi
-            echo {{ lookup("env", "ROS_DISTRO") }}
         - name: Install develop common packages
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_supported_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-ament-cmake
-              - ros-{{ ros_distro.stdout }}-ament-cmake-vendor-package
-              - ros-{{ ros_distro.stdout }}-ament-cmake-clang-format
-              - ros-{{ ros_distro.stdout }}-generate-parameter-library
+            name:
+              - ros-{{ rose_effective_ros_distro }}-ament-cmake
+              - ros-{{ rose_effective_ros_distro }}-ament-cmake-vendor-package
+              - ros-{{ rose_effective_ros_distro }}-ament-cmake-clang-format
+        - name: Install generate-parameter-library package
+          when: rose_effective_ros_distro in rose_develop_modern_distros
+          apt:
+            install_recommends: false
+            name:
+              - ros-{{ rose_effective_ros_distro }}-generate-parameter-library
         - name: Install SLAM and localization packages from apt
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_supported_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-cartographer-ros
-              - ros-{{ ros_distro.stdout }}-gtsam
-              - ros-{{ ros_distro.stdout }}-libg2o
+            name:
+              - ros-{{ rose_effective_ros_distro }}-cartographer-ros
+              - ros-{{ rose_effective_ros_distro }}-gtsam
+              - ros-{{ rose_effective_ros_distro }}-libg2o
         - name: Install navigation2 packages from apt
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_supported_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-rcl-interfaces
-              - ros-{{ ros_distro.stdout }}-nav2-bringup
-              - ros-{{ ros_distro.stdout }}-nav2-simple-commander
-              - ros-{{ ros_distro.stdout }}-nav2-mppi-controller
+            name:
+              - ros-{{ rose_effective_ros_distro }}-nav2-bringup
+              - ros-{{ rose_effective_ros_distro }}-nav2-simple-commander
+        - name: Install navigation2 MPPI packages
+          when: rose_effective_ros_distro in rose_develop_modern_distros
+          apt:
+            install_recommends: false
+            name:
+              - ros-{{ rose_effective_ros_distro }}-nav2-mppi-controller
         - name: Install moveit2 packages from apt
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_supported_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-moveit-visual-tools
-              - ros-{{ ros_distro.stdout }}-moveit-ros-perception
-              - ros-{{ ros_distro.stdout }}-moveit-planners
-              - ros-{{ ros_distro.stdout }}-moveit-plugins
-              - ros-{{ ros_distro.stdout }}-moveit-resources
-              - ros-{{ ros_distro.stdout }}-moveit-setup-assistant
-              - ros-{{ ros_distro.stdout }}-py-binding-tools
+            name:
+              - ros-{{ rose_effective_ros_distro }}-moveit-ros-perception
+              - ros-{{ rose_effective_ros_distro }}-moveit-planners
+              - ros-{{ rose_effective_ros_distro }}-moveit-plugins
+              - ros-{{ rose_effective_ros_distro }}-moveit-resources
+              - ros-{{ rose_effective_ros_distro }}-moveit-setup-assistant
+        - name: Install modern moveit2 extra packages from apt
+          when: rose_effective_ros_distro in rose_develop_modern_distros
+          apt:
+            install_recommends: false
+            name:
+              - ros-{{ rose_effective_ros_distro }}-moveit-visual-tools
+              - ros-{{ rose_effective_ros_distro }}-py-binding-tools
         - name: Install visualize packages from apt
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_supported_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-rviz2
-              - ros-{{ ros_distro.stdout }}-rviz-visual-tools
-              - ros-{{ ros_distro.stdout }}-rqt-image-view
-              - ros-{{ ros_distro.stdout }}-rqt-plot
-              - ros-{{ ros_distro.stdout }}-rqt-robot-monitor
-              - ros-{{ ros_distro.stdout }}-rqt-runtime-monitor
-              - ros-{{ ros_distro.stdout }}-rqt-service-caller
+            name:
+              - ros-{{ rose_effective_ros_distro }}-rviz2
+              - ros-{{ rose_effective_ros_distro }}-rviz-visual-tools
+              - ros-{{ rose_effective_ros_distro }}-rqt-image-view
+              - ros-{{ rose_effective_ros_distro }}-rqt-plot
+              - ros-{{ rose_effective_ros_distro }}-rqt-robot-monitor
+              - ros-{{ rose_effective_ros_distro }}-rqt-runtime-monitor
+              - ros-{{ rose_effective_ros_distro }}-rqt-service-caller
         - name: Install utility packages from apt
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_supported_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-pointcloud-to-laserscan
-              - ros-{{ ros_distro.stdout }}-topic-tools
+            name:
+              - ros-{{ rose_effective_ros_distro }}-pointcloud-to-laserscan
+              - ros-{{ rose_effective_ros_distro }}-topic-tools
         - name: Install foxglove packages
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_non_jazzy_package_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-foxglove-bridge
+            name:
+              - ros-{{ rose_effective_ros_distro }}-foxglove-bridge
         - name: Install plotjuggler packages
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_modern_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-plotjuggler
-              - ros-{{ ros_distro.stdout }}-plotjuggler-ros
+            name:
+              - ros-{{ rose_effective_ros_distro }}-plotjuggler
+              - ros-{{ rose_effective_ros_distro }}-plotjuggler-ros
         - name: Install rviz2 plugins packages
-          when: ros_distro.stdout in ['humble', 'galactic', 'jazzy', 'rolling']
+          when: rose_effective_ros_distro in rose_develop_supported_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-rviz-default-plugins
-              - ros-{{ ros_distro.stdout }}-rviz-imu-plugin
-              - ros-{{ ros_distro.stdout }}-rviz-2d-overlay-plugins
-              - ros-{{ ros_distro.stdout }}-nav2-rviz-plugins
-              - ros-{{ ros_distro.stdout }}-octomap-rviz-plugins
-              - ros-{{ ros_distro.stdout }}-grid-map-rviz-plugin
-              - ros-{{ ros_distro.stdout }}-vision-msgs-rviz-plugins
-              - ros-{{ ros_distro.stdout }}-polygon-rviz-plugins
-        - name: Install rviz2 plugins packages without jazzy
-          when: ros_distro.stdout in ['humble', 'galactic', 'rolling']
+            name:
+              - ros-{{ rose_effective_ros_distro }}-rviz-default-plugins
+              - ros-{{ rose_effective_ros_distro }}-rviz-imu-plugin
+              - ros-{{ rose_effective_ros_distro }}-nav2-rviz-plugins
+              - ros-{{ rose_effective_ros_distro }}-octomap-rviz-plugins
+              - ros-{{ rose_effective_ros_distro }}-grid-map-rviz-plugin
+        - name: Install modern rviz2 plugins packages
+          when: rose_effective_ros_distro in rose_develop_modern_distros
           apt:
             install_recommends: false
-            package:
-              - ros-{{ ros_distro.stdout }}-as2-rviz-plugins
+            name:
+              - ros-{{ rose_effective_ros_distro }}-rviz-2d-overlay-plugins
+              - ros-{{ rose_effective_ros_distro }}-vision-msgs-rviz-plugins
+              - ros-{{ rose_effective_ros_distro }}-polygon-rviz-plugins

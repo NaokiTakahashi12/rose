@@ -1,18 +1,43 @@
 #!/bin/bash
-. /opt/pylocal/bin/activate
-. /opt/ros/${ROS_DISTRO}/setup.bash
+if [ -z "${ROSE_PYTHON_TOOLS_VENV}" ]
+then
+    if [ "$(id -u)" = "0" ]
+    then
+        ROSE_PYTHON_TOOLS_VENV=/opt/pylocal
+    else
+        ROSE_PYTHON_TOOLS_VENV="${HOME}/.local/share/rose/pylocal"
+    fi
+fi
+export ROSE_PYTHON_TOOLS_VENV
 
-if [ -f "${ROSE_WORKSPACE}/builtin/install/setup.bash" ] 
+if [ -z "${ROSE_WORKSPACE}" ]
 then
-    . ${ROSE_WORKSPACE}/builtin/install/setup.bash
+    if [ "$(id -u)" = "0" ]
+    then
+        ROSE_WORKSPACE=/rose/colcon_ws
+    else
+        ROSE_WORKSPACE="${HOME}/rose/colcon_ws"
+    fi
 fi
-if [ -f "${ROSE_WORKSPACE}/builtin/gz_sim/install/setup.bash" ] 
+export ROSE_WORKSPACE
+
+if [ -f "${ROSE_PYTHON_TOOLS_VENV}/bin/activate" ]
 then
-    . ${ROSE_WORKSPACE}/builtin/gz_sim/install/setup.bash
+    . "${ROSE_PYTHON_TOOLS_VENV}/bin/activate"
 fi
-if [ -f "${ROSE_WORKSPACE}/install/setup.bash" ] 
+. "/opt/ros/${ROS_DISTRO}/setup.bash"
+
+if [ -f "${ROSE_WORKSPACE}/builtin/install/setup.bash" ]
 then
-    . ${ROSE_WORKSPACE}/install/setup.bash
+    . "${ROSE_WORKSPACE}/builtin/install/setup.bash"
+fi
+if [ -f "${ROSE_WORKSPACE}/builtin/gz_sim/install/setup.bash" ]
+then
+    . "${ROSE_WORKSPACE}/builtin/gz_sim/install/setup.bash"
+fi
+if [ -f "${ROSE_WORKSPACE}/install/setup.bash" ]
+then
+    . "${ROSE_WORKSPACE}/install/setup.bash"
 fi
 
 if [ -z "$RMW_IMPLEMENTATION" ]
@@ -20,7 +45,7 @@ then
     export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     if [ -f "${ROSE_WORKSPACE}/profiles/rmw_cyclonedds_profile.xml" ]
     then
-        export CYCLONEDDS_URI=${ROSE_WORKSPACE}/profiles/rmw_cyclonedds_profile.xml
+        export CYCLONEDDS_URI="${ROSE_WORKSPACE}/profiles/rmw_cyclonedds_profile.xml"
     fi
 fi
 
