@@ -60,6 +60,8 @@
               - gdb
               - silversearcher-ag
               - cmake-curses-gui
+              - ripgrep
+              - bubblewrap
         - name: Check colcon default mixin
           environment:
             PATH: "{{ rose_effective_path }}"
