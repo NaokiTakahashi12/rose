@@ -10,8 +10,12 @@ x-ros2-shared-volumes: &ros2-shared-volumes
     source: /var/run/udev
     target: /var/run/udev
   - type: bind
-    source: /tmp
-    target: /tmp
+    source: /tmp/rose
+    target: /tmp/rose
+  - type: bind
+    source: /etc/OpenCL/vendors
+    target: /etc/OpenCL/vendors
+    read_only: true
   - type: bind
     source: /dev
     target: /dev
@@ -35,6 +39,10 @@ services:
       - type: bind
         source: /tmp/.X11-unix
         target: /tmp/.X11-unix
+        read_only: true
+      - type: bind
+        source: /tmp/.XIM-unix
+        target: /tmp/.XIM-unix
         read_only: true
       - type: bind
         source: ~/.Xauthority

@@ -1,2 +1,3 @@
 #!/bin/sh
-xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f /tmp/.docker.$USER.xauth nmerge -
+mkdir /tmp/rose
+xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f /tmp/rose/docker.$USER.xauth nmerge -
